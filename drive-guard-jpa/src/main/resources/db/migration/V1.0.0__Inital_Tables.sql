@@ -1,5 +1,12 @@
 
-
+create table driver (
+    id bigint not null primary key,
+    first_name text not null,
+    last_name text not null,
+    username text unique not null,
+    password text not null,
+    overall_score integer not null
+);
 
 
 
