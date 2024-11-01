@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ public class DriverJpa implements Serializable {
     @Column
     private String password;
 
+    @Range(min = 0, max = 100)
     @NonNull
     @Column
     private Integer overallScore;

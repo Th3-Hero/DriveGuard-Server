@@ -8,6 +8,12 @@ create table driver (
     overall_score integer not null
 );
 
+create table session(
+    token text not null primary key,
+    driver_id bigint not null,
+    created_at timestamp not null
+);
+
 
 
 
