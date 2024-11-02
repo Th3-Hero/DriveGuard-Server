@@ -1,5 +1,6 @@
-package com.group11.driveguard.jpa.user;
+package com.group11.driveguard.jpa.driver.session;
 
+import com.group11.driveguard.jpa.driver.DriverJpa;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -18,26 +19,29 @@ import java.util.Objects;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class SessionJpa implements Serializable {
 
-    @Id
-    @NonNull
-    @Setter(AccessLevel.NONE)
-    private String token;
+    @EmbeddedId
+    private SessionId id;
 
     @ManyToOne
+    @MapsId("driverId")
     @JoinColumn(name = "driver_id")
     @NonNull
     private DriverJpa driver;
 
     @NonNull
     @Column
-    private LocalDateTime creationDate;
+    private LocalDateTime createdAt;
 
-    public static SessionJpa create(String token, DriverJpa driver, LocalDateTime creationDate) {
+    public static SessionJpa create(String token, DriverJpa driver) {
         return SessionJpa.builder()
-            .token(token)
+            .id(new SessionId(token, driver.getId()))
             .driver(driver)
-            .creationDate(creationDate)
+            .createdAt(LocalDateTime.now())
             .build();
+    }
+
+    public String getToken() {
+        return id.getToken();
     }
 
     @Override
@@ -50,12 +54,11 @@ public class SessionJpa implements Serializable {
         }
 
         SessionJpa sessionJpa = (SessionJpa) o;
-        return token.equals(sessionJpa.token) && driver.equals(sessionJpa.driver);
+        return id.equals(sessionJpa.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(token);
+        return Objects.hashCode(id);
     }
-
 }

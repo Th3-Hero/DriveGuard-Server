@@ -1,9 +1,7 @@
-package com.group11.driveguard.jpa.user;
+package com.group11.driveguard.jpa.driver;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.group11.driveguard.api.driver.Driver;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.validator.constraints.Range;
@@ -23,7 +21,8 @@ import java.util.Objects;
 public class DriverJpa implements Serializable {
 
     @Id
-    @NonNull
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "driver_id_seq")
+    @SequenceGenerator(name = "driver_id_seq", sequenceName = "driver_id_seq", allocationSize = 1)
     @Setter(AccessLevel.NONE)
     private Long id;
 
@@ -43,25 +42,38 @@ public class DriverJpa implements Serializable {
     @Column
     private String password;
 
+    @NonNull
+    @Column
+    private String salt;
+
+    @Builder.Default
     @Range(min = 0, max = 100)
     @NonNull
     @Column
-    private Integer overallScore;
+    private Integer overallScore = 0;
 
     @NonNull
     @Column
-    private LocalDateTime accountCreationDate;
+    private LocalDateTime createdAt;
 
-    public static DriverJpa create(Long id, String firstName, String lastName, String username, String password, Integer overallScore, LocalDateTime accountCreationDate) {
+    @Builder.Default
+    @NonNull
+    @Column
+    private Boolean deleted = false;
+
+    public static DriverJpa create(String firstName, String lastName, String username, String password, String salt) {
         return DriverJpa.builder()
-            .id(id)
             .firstName(firstName)
             .lastName(lastName)
             .username(username)
             .password(password)
-            .overallScore(overallScore)
-            .accountCreationDate(accountCreationDate)
+            .salt(salt)
+            .createdAt(LocalDateTime.now())
             .build();
+    }
+
+    public Driver toDto() {
+        return new Driver(id, firstName, lastName, username, overallScore, createdAt);
     }
 
     @Override

@@ -1,17 +1,25 @@
 
+create sequence driver_id_seq start 1000 increment 1;
 create table driver (
     id bigint not null primary key,
     first_name text not null,
     last_name text not null,
     username text unique not null,
     password text not null,
-    overall_score integer not null
+    salt varchar(64) not null,
+    overall_score integer not null,
+    created_at timestamp not null,
+    deleted boolean not null
 );
 
+create sequence session_id_seq start 1000 increment 1;
 create table session(
-    token text not null primary key,
+    token text not null,
     driver_id bigint not null,
-    created_at timestamp not null
+    created_at timestamp not null,
+    foreign key (driver_id)
+        references driver (id),
+    primary key (token, driver_id)
 );
 
 
