@@ -2,7 +2,6 @@ package com.group11.driveguard.app.controllers;
 
 import com.group11.driveguard.api.driver.Driver;
 import com.group11.driveguard.api.driver.DriverUpload;
-import com.group11.driveguard.app.exceptions.InvalidCredentialsException;
 import com.group11.driveguard.app.services.DriverManagementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,13 +23,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class DriverController {
     private final DriverManagementService driverManagementService;
-
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public String handleInvalidClassException(InvalidCredentialsException e) {
-        // We could throw a 403 Forbidden here, but 401 Unauthorized hides the existence of the resource
-        return e.getMessage();
-    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalStateException.class)
@@ -81,6 +73,7 @@ public class DriverController {
     @ApiResponse(responseCode = "400", description = "Invalid fields provided")
     @ApiResponse(responseCode = "401", description = "Invalid credentials")
     @ApiResponse(responseCode = "404", description = "Driver not found")
+    @ApiResponse(responseCode = "409", description = "Username already exists")
     public Driver updateUsername(
         @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
         @RequestParam @NotBlank(message = "Token is required") String token,

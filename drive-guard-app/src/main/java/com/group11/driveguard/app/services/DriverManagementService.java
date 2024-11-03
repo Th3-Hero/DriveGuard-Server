@@ -30,8 +30,9 @@ public class DriverManagementService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-
     private static final String INVALID_CREDENTIALS = "Invalid credentials";
+    private static final String MISSING_DRIVER_WITH_ID = "Unknown driver with ID %s";
+    private static final String MISSING_DRIVER_WITH_USERNAME = "Unknown driver with username %s";
 
     public Driver createDriver(DriverUpload driverUpload) {
         if (driverRepository.existsByUsername(driverUpload.username())) {
@@ -54,7 +55,7 @@ public class DriverManagementService {
 
     public String loginDriver(String username, String password) {
         DriverJpa driverJpa = driverRepository.findByUsername(username)
-            .orElseThrow(() -> new EntityNotFoundException("Driver with username does not exist"));
+            .orElseThrow(() -> new EntityNotFoundException(MISSING_DRIVER_WITH_USERNAME.formatted(username)));
 
         if (!verifyPassword(password, driverJpa)) {
             throw new InvalidCredentialsException(INVALID_CREDENTIALS);
@@ -67,7 +68,7 @@ public class DriverManagementService {
 
     public Driver updateName(Long driverId, String token, String firstName, String lastName) {
         DriverJpa driverJpa = driverRepository.findById(driverId)
-            .orElseThrow(() -> new EntityNotFoundException("Driver with ID does not exist"));
+            .orElseThrow(() -> new EntityNotFoundException(MISSING_DRIVER_WITH_ID.formatted(driverId)));
 
         verifyAuthentication(driverId, token);
 
@@ -79,7 +80,7 @@ public class DriverManagementService {
 
     public Driver updateUsername(Long driverId, String token, String username) {
         DriverJpa driverJpa = driverRepository.findById(driverId)
-            .orElseThrow(() -> new EntityNotFoundException("Driver with ID does not exist"));
+            .orElseThrow(() -> new EntityNotFoundException(MISSING_DRIVER_WITH_ID.formatted(driverId)));
 
         verifyAuthentication(driverId, token);
 
@@ -94,7 +95,7 @@ public class DriverManagementService {
 
     public void changePassword(Long driverId, String token, String oldPassword, String newPassword) {
         DriverJpa driverJpa = driverRepository.findById(driverId)
-            .orElseThrow(() -> new EntityNotFoundException("Driver with ID does not exist"));
+            .orElseThrow(() -> new EntityNotFoundException(MISSING_DRIVER_WITH_ID.formatted(driverId)));
 
         verifyAuthentication(driverId, token);
 
@@ -114,7 +115,7 @@ public class DriverManagementService {
 
     public void deleteDriver(Long driverId, String token, String password) {
         DriverJpa driverJpa = driverRepository.findById(driverId)
-            .orElseThrow(() -> new EntityNotFoundException("Driver with ID does not exist"));
+            .orElseThrow(() -> new EntityNotFoundException(MISSING_DRIVER_WITH_ID.formatted(driverId)));
 
         verifyAuthentication(driverId, token);
 
@@ -132,7 +133,7 @@ public class DriverManagementService {
 
     public Driver recoverDriver(String username, String password) {
         DriverJpa driverJpa = driverRepository.findByUsernameIncludingDeleted(username)
-            .orElseThrow(() -> new EntityNotFoundException("Driver with username does not exist"));
+            .orElseThrow(() -> new EntityNotFoundException(MISSING_DRIVER_WITH_USERNAME.formatted(username)));
 
         if (!driverJpa.isDeleted()) {
             throw new IllegalStateException("Driver with username is not deleted");

@@ -1,5 +1,6 @@
 package com.group11.driveguard.app.controllers;
 
+import com.group11.driveguard.app.exceptions.InvalidCredentialsException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityExistsException.class)
     public ProblemDetail entityExistsException(EntityExistsException e) {
         return createProblemDetail(HttpStatus.CONFLICT, e);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ProblemDetail invalidCredentialsException(InvalidCredentialsException e) {
+        // We could throw a 403 Forbidden here, but 401 Unauthorized hides the existence of the resource
+        return createProblemDetail(HttpStatus.UNAUTHORIZED, e);
     }
 
     private ProblemDetail createProblemDetail(HttpStatus status, Exception e) {
