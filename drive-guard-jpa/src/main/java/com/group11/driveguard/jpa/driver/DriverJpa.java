@@ -56,6 +56,7 @@ public class DriverJpa implements Serializable {
     @Column
     private LocalDateTime createdAt;
 
+    @Getter(AccessLevel.NONE)
     @Builder.Default
     @NonNull
     @Column
@@ -74,6 +75,10 @@ public class DriverJpa implements Serializable {
 
     public Driver toDto() {
         return new Driver(id, firstName, lastName, username, overallScore, createdAt);
+    }
+
+    public boolean isDeleted() {
+        return this.deleted;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class DriverController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
-    @Operation(summary = "Create a new Driver")
+    @Operation(summary = "Create a new Driver", description = "Note you must login after creating the account to get the token.")
     @ApiResponse(responseCode = "201", description = "Driver created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided")
     @ApiResponse(responseCode = "409", description = "Username already exists")
@@ -120,7 +120,7 @@ public class DriverController {
     }
 
     @PostMapping("/recover")
-    @Operation(summary = "Recover a deleted Driver account within the recovery period")
+    @Operation(summary = "Recover a deleted Driver account within the recovery period", description = "Note: You must login after recovering the account to get the token.")
     @ApiResponse(responseCode = "200", description = "Driver account recovered successfully")
     @ApiResponse(responseCode = "400", description = "Driver account not deleted")
     @ApiResponse(responseCode = "401", description = "Invalid credentials")

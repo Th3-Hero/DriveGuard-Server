@@ -31,3 +31,5 @@ spring:
 springdoc:
   swagger-ui:
     use-root-path: true
+config:
+  account-recovery-time: 30

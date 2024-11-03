@@ -22,9 +22,14 @@ import java.util.Base64;
 @Transactional
 @RequiredArgsConstructor
 public class DriverManagementService {
+
     private final DriverRepository driverRepository;
     private final SessionRepository sessionRepository;
+
+    private final SchedulingService schedulingService;
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
 
     private static final String INVALID_CREDENTIALS = "Invalid credentials";
 
@@ -118,14 +123,18 @@ public class DriverManagementService {
         }
 
         driverJpa.setDeleted(true);
+
+        // Mark the driver as deleted and delete all auth sessions
+        schedulingService.scheduleAccountForDeletion(driverId);
+        sessionRepository.deleteAllByIdDriverId(driverId);
         driverRepository.save(driverJpa);
     }
 
     public Driver recoverDriver(String username, String password) {
-        DriverJpa driverJpa = driverRepository.findByUsername(username)
+        DriverJpa driverJpa = driverRepository.findByUsernameIncludingDeleted(username)
             .orElseThrow(() -> new EntityNotFoundException("Driver with username does not exist"));
 
-        if (!driverJpa.getDeleted()) {
+        if (!driverJpa.isDeleted()) {
             throw new IllegalStateException("Driver with username is not deleted");
         }
 
@@ -133,6 +142,7 @@ public class DriverManagementService {
             throw new InvalidCredentialsException(INVALID_CREDENTIALS);
         }
 
+        schedulingService.removeAccountDeletionTrigger(driverJpa.getId());
         driverJpa.setDeleted(false);
         return driverRepository.save(driverJpa).toDto();
     }
