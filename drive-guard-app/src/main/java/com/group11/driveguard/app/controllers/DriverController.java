@@ -25,10 +25,16 @@ import org.springframework.web.bind.annotation.*;
 public class DriverController {
     private final DriverManagementService driverManagementService;
 
-    @ExceptionHandler(InvalidCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(InvalidCredentialsException.class)
     public String handleInvalidClassException(InvalidCredentialsException e) {
         // We could throw a 403 Forbidden here, but 401 Unauthorized hides the existence of the resource
+        return e.getMessage();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalStateException.class)
+    public String handleIllegalStateException(IllegalStateException e) {
         return e.getMessage();
     }
 
@@ -54,8 +60,7 @@ public class DriverController {
         return driverManagementService.loginDriver(username, password);
     }
 
-    // Update name
-    @PatchMapping("/update/{driverId}/name")
+    @PatchMapping("/name/{driverId}")
     @Operation(summary = "Update the name of the Driver")
     @ApiResponse(responseCode = "200", description = "Name updated successfully")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided")
@@ -70,9 +75,61 @@ public class DriverController {
         return driverManagementService.updateName(driverId, token, firstName, lastName);
     }
 
-    // Update username
+    @PatchMapping("/username/{driverId}")
+    @Operation(summary = "Update the username of the Driver")
+    @ApiResponse(responseCode = "200", description = "Username updated successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided")
+    @ApiResponse(responseCode = "401", description = "Invalid credentials")
+    @ApiResponse(responseCode = "404", description = "Driver not found")
+    public Driver updateUsername(
+        @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
+        @RequestParam @NotBlank(message = "Token is required") String token,
+        @RequestParam @NotBlank(message = "Username is required") String username
+    ) {
+        return driverManagementService.updateUsername(driverId, token, username);
+    }
 
-    // Change password
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping("/password/{driverId}")
+    @Operation(summary = "Change the password of the Driver")
+    @ApiResponse(responseCode = "200", description = "Password changed successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided")
+    @ApiResponse(responseCode = "401", description = "Invalid credentials")
+    @ApiResponse(responseCode = "404", description = "Driver not found")
+    public void changePassword(
+        @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
+        @RequestParam @NotBlank(message = "Token is required") String token,
+        @RequestParam @NotBlank(message = "Old password is required") String oldPassword,
+        @RequestParam @NotBlank(message = "New password is required") String newPassword
+    ) {
+        driverManagementService.changePassword(driverId, token, oldPassword, newPassword);
+    }
 
-    // Delete account
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{driverId}")
+    @Operation(summary = "Delete a Driver account")
+    @ApiResponse(responseCode = "204", description = "Driver account deleted successfully")
+    @ApiResponse(responseCode = "401", description = "Invalid credentials")
+    @ApiResponse(responseCode = "404", description = "Driver not found")
+    public void deleteDriver(
+        @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
+        @RequestParam @NotBlank(message = "Token is required") String token,
+        @RequestParam @NotBlank(message = "Password is required") String password
+    ) {
+        driverManagementService.deleteDriver(driverId, token, password);
+    }
+
+    @PostMapping("/recover")
+    @Operation(summary = "Recover a deleted Driver account within the recovery period")
+    @ApiResponse(responseCode = "200", description = "Driver account recovered successfully")
+    @ApiResponse(responseCode = "400", description = "Driver account not deleted")
+    @ApiResponse(responseCode = "401", description = "Invalid credentials")
+    @ApiResponse(responseCode = "404", description = "Driver not found or recovery period expired")
+    public Driver recoverDriver(
+        @RequestParam @NotBlank(message = "Username is required") String username,
+        @RequestParam @NotBlank(message = "Password is required") String password
+    ) {
+        return driverManagementService.recoverDriver(username, password);
+    }
+
 }

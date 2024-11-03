@@ -51,7 +51,7 @@ public class DriverManagementService {
         DriverJpa driverJpa = driverRepository.findByUsername(username)
             .orElseThrow(() -> new EntityNotFoundException("Driver with username does not exist"));
 
-        if (!verifyPassword(password, driverJpa.getSalt(), driverJpa.getPassword())) {
+        if (!verifyPassword(password, driverJpa)) {
             throw new InvalidCredentialsException(INVALID_CREDENTIALS);
         }
 
@@ -69,6 +69,71 @@ public class DriverManagementService {
         driverJpa.setFirstName(firstName);
         driverJpa.setLastName(lastName);
 
+        return driverRepository.save(driverJpa).toDto();
+    }
+
+    public Driver updateUsername(Long driverId, String token, String username) {
+        DriverJpa driverJpa = driverRepository.findById(driverId)
+            .orElseThrow(() -> new EntityNotFoundException("Driver with ID does not exist"));
+
+        verifyAuthentication(driverId, token);
+
+        if (driverRepository.existsByUsername(username)) {
+            throw new EntityExistsException("Driver with username already exists");
+        }
+
+        driverJpa.setUsername(username);
+
+        return driverRepository.save(driverJpa).toDto();
+    }
+
+    public void changePassword(Long driverId, String token, String oldPassword, String newPassword) {
+        DriverJpa driverJpa = driverRepository.findById(driverId)
+            .orElseThrow(() -> new EntityNotFoundException("Driver with ID does not exist"));
+
+        verifyAuthentication(driverId, token);
+
+        // Make sure the old password is correct
+        if (!verifyPassword(oldPassword, driverJpa)) {
+            throw new InvalidCredentialsException(INVALID_CREDENTIALS);
+        }
+
+        String salt = generateSalt();
+        String hashedPassword = hashPassword(newPassword, salt);
+
+        driverJpa.setPassword(hashedPassword);
+        driverJpa.setSalt(salt);
+
+        driverRepository.save(driverJpa);
+    }
+
+    public void deleteDriver(Long driverId, String token, String password) {
+        DriverJpa driverJpa = driverRepository.findById(driverId)
+            .orElseThrow(() -> new EntityNotFoundException("Driver with ID does not exist"));
+
+        verifyAuthentication(driverId, token);
+
+        if (!verifyPassword(password, driverJpa)) {
+            throw new InvalidCredentialsException(INVALID_CREDENTIALS);
+        }
+
+        driverJpa.setDeleted(true);
+        driverRepository.save(driverJpa);
+    }
+
+    public Driver recoverDriver(String username, String password) {
+        DriverJpa driverJpa = driverRepository.findByUsername(username)
+            .orElseThrow(() -> new EntityNotFoundException("Driver with username does not exist"));
+
+        if (!driverJpa.getDeleted()) {
+            throw new IllegalStateException("Driver with username is not deleted");
+        }
+
+        if (!verifyPassword(password, driverJpa)) {
+            throw new InvalidCredentialsException(INVALID_CREDENTIALS);
+        }
+
+        driverJpa.setDeleted(false);
         return driverRepository.save(driverJpa).toDto();
     }
 
@@ -90,8 +155,8 @@ public class DriverManagementService {
         return passwordEncoder.encode(password + salt);
     }
 
-    private boolean verifyPassword(String password, String salt, String hashedPassword) {
-        return passwordEncoder.matches(password + salt, hashedPassword);
+    private boolean verifyPassword(String password, DriverJpa driverJpa) {
+        return passwordEncoder.matches(password + driverJpa.getSalt(), driverJpa.getPassword());
     }
 
     private void verifyAuthentication(Long driverId, String token) {
