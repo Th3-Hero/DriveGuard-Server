@@ -22,6 +22,49 @@ create table session(
     primary key (token, driver_id)
 );
 
+create sequence location_id_seq start 1000 increment 1;
+create table location (
+    id bigint primary key,
+    latitude double precision not null,
+    longitude double precision not null
+);
+
+create sequence trip_id_seq start 1000 increment 1;
+create table trip (
+    id bigint primary key,
+    driver_id bigint,
+    start_location_id bigint not null,
+    end_location_id bigint,
+    start_time timestamp not null,
+    end_time timestamp,
+    status varchar(32) not null,
+    foreign key (driver_id)
+        references driver (id)
+);
+
+create sequence driving_event_id_seq start 1000 increment 1;
+create table driving_event (
+    id bigint primary key,
+    trip_id bigint,
+    location_id bigint not null,
+    event_time timestamp not null,
+    event_type varchar(32) not null,
+    severity varchar(32) not null,
+    weather varchar(32) not null,
+    foreign key (trip_id)
+        references trip (id),
+    foreign key (location_id)
+        references location (id)
+);
+
+create table trip_summary(
+    trip_id bigint,
+    score integer not null check ( score >= 0 and score <= 100),
+    distance double precision not null,
+    foreign key (trip_id)
+        references trip (id),
+    primary key (trip_id)
+);
 
 
 

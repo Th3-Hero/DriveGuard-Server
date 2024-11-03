@@ -1,6 +1,7 @@
 package com.group11.driveguard.jpa.driver;
 
 import com.group11.driveguard.api.driver.Driver;
+import com.group11.driveguard.jpa.trip.TripJpa;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -8,13 +9,15 @@ import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
 @Setter
 @Entity
 @Builder
-@ToString
+@ToString(exclude = "trips")
 @Table(name = "driver")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -52,6 +55,11 @@ public class DriverJpa implements Serializable {
     @Column
     private Integer overallScore = 0;
 
+    @Builder.Default
+    @NonNull
+    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
+    private List<TripJpa> trips = new ArrayList<>();
+
     @NonNull
     @Column
     private LocalDateTime createdAt;
@@ -77,6 +85,7 @@ public class DriverJpa implements Serializable {
         return new Driver(id, firstName, lastName, username, overallScore, createdAt);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isDeleted() {
         return this.deleted;
     }
