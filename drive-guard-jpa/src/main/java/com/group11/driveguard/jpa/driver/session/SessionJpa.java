@@ -40,6 +40,10 @@ public class SessionJpa implements Serializable {
             .build();
     }
 
+    public static SessionId createId(Long driverId, String token) {
+        return new SessionId(token, driverId);
+    }
+
     public String getToken() {
         return id.getToken();
     }
