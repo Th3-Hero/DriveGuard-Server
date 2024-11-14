@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DriveGuard</string>
+    <string name="title_activity_start_trip">start_trip</string>
 </resources>
