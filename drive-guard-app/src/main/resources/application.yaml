@@ -33,3 +33,4 @@ springdoc:
     use-root-path: true
 config:
   account-recovery-time: 30
+  map-api-url: http://localhost:7002

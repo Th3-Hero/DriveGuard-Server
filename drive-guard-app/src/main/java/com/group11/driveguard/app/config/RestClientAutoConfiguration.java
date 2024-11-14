@@ -7,13 +7,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestClient;
 
-@AutoConfiguration(after = org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration.class)
+@AutoConfiguration
 @ConditionalOnClass(RestClient.class)
-@ConditionalOnBean(RestClient.Builder.class)
 public class RestClientAutoConfiguration {
+
     @Bean
     @ConditionalOnMissingBean
-    RestClient restClient(RestClient.Builder builder) {
-        return builder.build();
+    public RestClient restClient() {
+        return RestClient.builder().build();
     }
 }

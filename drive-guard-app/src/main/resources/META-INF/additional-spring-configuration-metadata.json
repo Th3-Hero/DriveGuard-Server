@@ -4,5 +4,11 @@
       "name": "config.account-recovery-time",
       "type": "java.lang.Integer",
       "description": "The time in days that a user has to recover their account after it has been deleted."
-  }
-] }
+    },
+    {
+      "name": "config.map-api-url",
+      "type": "java.lang.String",
+      "description": "The URL of the map API to use."
+    }
+  ]
+}
