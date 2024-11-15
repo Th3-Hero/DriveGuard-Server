@@ -5,27 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        layout="@layout/button_deck"/>
+    <include layout="@layout/button_deck" />
 
-    <Button
-        android:id="@+id/start_trip"
-        style="@android:style/Widget.Material.Button.Toggle"
-        android:layout_width="259dp"
-        android:layout_height="154dp"
-        android:layout_marginStart="76dp"
-        android:layout_marginTop="211dp"
-        android:layout_marginEnd="76dp"
-        android:background="#4CAF50"
-        android:backgroundTint="#4CAF50"
-        android:backgroundTintMode="add"
-        android:text="Start Trip"
-        android:textColor="@color/black"
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="246dp"
+        android:layout_height="152dp"
+        android:layout_marginStart="82dp"
+        android:layout_marginTop="204dp"
+        android:layout_marginEnd="83dp"
+        android:background="@drawable/trip_button_toggle"
+        android:text="ToggleButton"
+        android:textOff="Start Trip"
+        android:textOn="Stop Trip"
         android:textSize="34sp"
-        app:backgroundTint="@null"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:rippleColor="@color/white" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
