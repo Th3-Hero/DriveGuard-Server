@@ -5,6 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        layout="@layout/button_deck"/>
+
     <Button
         android:id="@+id/start_trip"
         style="@android:style/Widget.Material.Button.Toggle"
@@ -12,6 +15,7 @@
         android:layout_height="154dp"
         android:layout_marginStart="76dp"
         android:layout_marginTop="211dp"
+        android:layout_marginEnd="76dp"
         android:background="#4CAF50"
         android:backgroundTint="#4CAF50"
         android:backgroundTintMode="add"
@@ -19,17 +23,9 @@
         android:textColor="@color/black"
         android:textSize="34sp"
         app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:rippleColor="@color/white" />
 
-    <Button
-        android:id="@+id/home_page"
-        android:layout_width="103dp"
-        android:layout_height="105dp"
-        android:layout_marginStart="152dp"
-        android:layout_marginBottom="56dp"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

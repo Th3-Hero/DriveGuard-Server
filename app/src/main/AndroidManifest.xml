@@ -13,12 +13,12 @@
         android:theme="@style/Theme.DriveGuard"
         tools:targetApi="31">
         <activity
-            android:name=".StartTrip"
+            android:name=".TripScreen"
             android:exported="false"
             android:label="@string/title_activity_start_trip"
             android:theme="@style/Theme.DriveGuard" />
         <activity
-            android:name=".MainActivity"
+            android:name=".HomeScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ButtonDeck"/>
     </application>
 
 </manifest>
