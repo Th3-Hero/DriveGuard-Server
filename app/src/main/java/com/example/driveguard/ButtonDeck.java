@@ -31,4 +31,14 @@ public static void SetUpButtons(Activity activity){
         });
 
     }
+    public static void ToggleButtons(Activity activity){
+        Button home = activity.findViewById(R.id.homeButton);
+        Button previousTrips = activity.findViewById(R.id.previousTrips);
+        Button trip = activity.findViewById(R.id.trip);
+        Button help = activity.findViewById(R.id.help);
+        home.setEnabled(!home.isEnabled());
+        previousTrips.setEnabled(!previousTrips.isEnabled());
+        trip.setEnabled(!trip.isEnabled());
+        help.setEnabled(!help.isEnabled());
+    }
 }

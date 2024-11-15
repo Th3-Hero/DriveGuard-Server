@@ -18,13 +18,14 @@
         />
 
     <ToggleButton
-        android:id="@+id/toggleButton"
+        android:id="@+id/startButton"
         android:layout_width="246dp"
         android:layout_height="152dp"
         android:layout_marginStart="82dp"
         android:layout_marginTop="204dp"
         android:layout_marginEnd="83dp"
         android:background="@drawable/trip_button_toggle"
+        android:checked="false"
         android:text="ToggleButton"
         android:textOff="Start Trip"
         android:textOn="Stop Trip"

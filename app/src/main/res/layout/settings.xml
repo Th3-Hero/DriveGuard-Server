@@ -1,20 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/button_deck"/>
+
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switch3"
+        android:layout_width="297dp"
+        android:layout_height="92dp"
+        android:layout_marginStart="57dp"
+        android:layout_marginTop="136dp"
+        android:layout_marginEnd="57dp"
+        android:scrollbarSize="8sp"
+        android:text="Dark Mode"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switch1"
+        android:layout_width="297dp"
+        android:layout_height="92dp"
+        android:layout_marginStart="57dp"
+        android:layout_marginTop="228dp"
+        android:layout_marginEnd="57dp"
+        android:scrollbarSize="8sp"
+        android:text="Notifications"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switch2"
+        android:layout_width="297dp"
+        android:layout_height="92dp"
+        android:layout_marginStart="57dp"
+        android:layout_marginTop="320dp"
+        android:layout_marginEnd="57dp"
+        android:scrollbarSize="8sp"
+        android:text="Data Collection"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include layout="@layout/button_deck" />
 
     <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/toolbar"
         android:background="@color/navy"
-        app:titleTextColor="@color/white"
-        app:title="Settings"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        app:title="Settings"
+        app:titleTextColor="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

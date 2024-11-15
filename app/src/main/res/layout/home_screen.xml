@@ -16,19 +16,20 @@
         android:id="@+id/toolbar"
         android:background="@color/navy"
         app:titleTextColor="@color/white"
-        app:title="DriveGuard"
+        app:title="Dashboard"
         app:layout_constraintTop_toTopOf="parent"
         />
 
     <ImageView
 
         android:id="@+id/imageView"
-        android:layout_width="314dp"
-        android:layout_height="475dp"
+        android:layout_width="307dp"
+        android:layout_height="518dp"
         android:layout_marginStart="48dp"
         android:layout_marginTop="75dp"
         android:layout_marginEnd="49dp"
-        android:src="@drawable/shrek"
+        android:backgroundTint="@color/navy"
+        android:src="@drawable/driver_guard_logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
