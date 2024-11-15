@@ -2,11 +2,16 @@ package com.example.driveguard;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+//import android.widget.Toolbar;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -24,7 +29,24 @@ public class HomeScreen extends AppCompatActivity {
             return insets;
         });
 
-        ButtonDeck.SetUpButtons(this);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
+        ButtonDeck.SetUpButtons(HomeScreen.this);
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        int id = item.getItemId();
+        if (id == R.id.settings){
+            Intent intent = new Intent(HomeScreen.this, Settings.class);
+            startActivity(intent);
+        }
+        return true;
     }
 }

@@ -10,6 +10,16 @@
     <include
         layout="@layout/button_deck"/>
 
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar"
+        android:background="@color/navy"
+        app:titleTextColor="@color/white"
+        app:title="DriveGuard"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <ImageView
 
         android:id="@+id/imageView"

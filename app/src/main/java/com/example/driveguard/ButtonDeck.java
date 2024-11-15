@@ -25,6 +25,7 @@ public static void SetUpButtons(Activity activity){
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, TripScreen.class);
+
                 activity.startActivity(intent);
             }
         });

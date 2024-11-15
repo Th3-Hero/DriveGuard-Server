@@ -7,6 +7,16 @@
 
     <include layout="@layout/button_deck" />
 
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar"
+        android:background="@color/navy"
+        app:titleTextColor="@color/white"
+        app:title="Trip Controls"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <ToggleButton
         android:id="@+id/toggleButton"
         android:layout_width="246dp"

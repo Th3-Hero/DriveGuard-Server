@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<item android:title="Notifications"
+    android:id="@+id/notifications"
+    android:icon="@drawable/notification_icon"
+    app:showAsAction="ifRoom"/>
+
+    <item android:title="Profile"
+        android:id="@+id/profile"
+        android:icon="@drawable/profile_icon"
+        app:showAsAction="ifRoom"/>
+
+    <item android:title="Settings"
+        android:id="@+id/settings"
+        android:icon="@drawable/settings_icon"
+        app:showAsAction="ifRoom"/>
+
+
+</menu>
