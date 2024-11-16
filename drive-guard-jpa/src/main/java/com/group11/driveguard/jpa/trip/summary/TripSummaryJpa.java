@@ -1,5 +1,6 @@
-package com.group11.driveguard.jpa.trip;
+package com.group11.driveguard.jpa.trip.summary;
 
+import com.group11.driveguard.jpa.trip.TripJpa;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,10 +14,13 @@ import java.io.Serializable;
 @Table(name = "trip_summary")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class TripSummary implements Serializable {
+public class TripSummaryJpa implements Serializable {
 
     @Id
+    private Long id;
+
     @OneToOne
+    @MapsId
     @JoinColumn(name = "trip_id", nullable = false)
     private TripJpa trip;
 
@@ -27,4 +31,12 @@ public class TripSummary implements Serializable {
     @NonNull
     @Column
     private Double distance;
+
+    public static TripSummaryJpa create(TripJpa trip, Integer score, Double distance) {
+        return TripSummaryJpa.builder()
+                .trip(trip)
+                .score(score)
+                .distance(distance)
+                .build();
+    }
 }

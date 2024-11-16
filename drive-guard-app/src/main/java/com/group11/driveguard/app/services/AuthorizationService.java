@@ -43,7 +43,7 @@ public class AuthorizationService {
             salt
         );
 
-        return driverRepository.save(driverJpa).toDto();
+        return driverRepository.save(driverJpa).toDriverDto();
     }
 
     public String loginDriver(String username, String password) {

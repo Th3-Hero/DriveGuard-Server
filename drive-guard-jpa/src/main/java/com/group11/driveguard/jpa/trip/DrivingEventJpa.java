@@ -1,14 +1,16 @@
 package com.group11.driveguard.jpa.trip;
 
 
+import com.group11.driveguard.api.trip.event.DrivingEvent;
 import com.group11.driveguard.api.trip.event.EventType;
 import com.group11.driveguard.api.trip.event.Weather;
-import com.group11.driveguard.jpa.LocationJpa;
+import com.group11.driveguard.jpa.location.LocationJpa;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -53,4 +55,20 @@ public class DrivingEventJpa implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column
     private Weather weather;
+
+    public DrivingEvent toDto() {
+        return new DrivingEvent(
+                eventTime,
+                location.toDto(),
+                eventType,
+                severity,
+                weather
+        );
+    }
+
+    public static List<DrivingEvent> toDtoList(List<DrivingEventJpa> drivingEventJpaList) {
+        return drivingEventJpaList.stream()
+                .map(DrivingEventJpa::toDto)
+                .toList();
+    }
 }

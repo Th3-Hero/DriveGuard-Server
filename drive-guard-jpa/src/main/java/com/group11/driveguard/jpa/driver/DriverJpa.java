@@ -81,7 +81,7 @@ public class DriverJpa implements Serializable {
             .build();
     }
 
-    public Driver toDto() {
+    public Driver toDriverDto() {
         return new Driver(id, firstName, lastName, username, overallScore, createdAt);
     }
 

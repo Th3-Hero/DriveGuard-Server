@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class DrivingContextService {
 
@@ -48,6 +47,10 @@ public class DrivingContextService {
         String uri = MAP_API_BASE_URL + "/map/road";
 
         return callApi(uri, location, Road.class);
+    }
+
+    public double getDistanceBetweenCoordinates(Location locationOne, Location locationTwo) {
+        return getDistanceBetweenCoordinates(new LocationPair(locationOne, locationTwo));
     }
 
     public double getDistanceBetweenCoordinates(LocationPair locationPair) {

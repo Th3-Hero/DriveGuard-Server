@@ -1,8 +1,11 @@
 package com.group11.driveguard.jpa.trip;
 
+import com.group11.driveguard.api.trip.CompletedTrip;
+import com.group11.driveguard.api.trip.Trip;
 import com.group11.driveguard.api.trip.TripStatus;
-import com.group11.driveguard.jpa.LocationJpa;
+import com.group11.driveguard.jpa.location.LocationJpa;
 import com.group11.driveguard.jpa.driver.DriverJpa;
+import com.group11.driveguard.jpa.trip.summary.TripSummaryJpa;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -57,7 +60,42 @@ public class TripJpa implements Serializable {
     @Column
     private TripStatus status;
 
-    @OneToOne(mappedBy = "trip", cascade = CascadeType.ALL, optional = false)
-    private TripSummary tripSummary;
+    @OneToOne(mappedBy = "trip", cascade = CascadeType.ALL)
+    private TripSummaryJpa tripSummaryJpa;
+
+    public static TripJpa create(DriverJpa driver, LocationJpa startLocation) {
+        return TripJpa.builder()
+                .driver(driver)
+                .startLocation(startLocation)
+                .startTime(LocalDateTime.now())
+                .status(TripStatus.IN_PROGRESS)
+                .build();
+    }
+
+    public Trip toTripDto() {
+        return new Trip(
+            id,
+            driver.getId(),
+            startTime,
+            startLocation.toDto(),
+            status
+        );
+    }
+
+    public CompletedTrip toCompletedTripDto() {
+        return new CompletedTrip(
+            id,
+            driver.getId(),
+            startTime,
+            endTime,
+            startLocation.toDto(),
+            endLocation.toDto(),
+            status,
+            tripSummaryJpa.getScore(),
+            tripSummaryJpa.getDistance(),
+            DrivingEventJpa.toDtoList(drivingEvents)
+        );
+    }
+
 
 }

@@ -1,5 +1,6 @@
-package com.group11.driveguard.jpa;
+package com.group11.driveguard.jpa.location;
 
+import com.group11.driveguard.api.map.Location;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,4 +29,15 @@ public class LocationJpa implements Serializable {
     @NonNull
     @Column
     private Double longitude;
+
+    public static LocationJpa fromLocation(Location location) {
+        return LocationJpa.builder()
+                .latitude(location.latitude())
+                .longitude(location.longitude())
+                .build();
+    }
+
+    public Location toDto() {
+        return new Location(latitude, longitude);
+    }
 }

@@ -38,7 +38,7 @@ public class DriverController {
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Driver not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    public Driver updateName(
+    Driver updateName(
         @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
         @RequestParam @NotBlank(message = "Token is required") String token,
         @RequestParam @NotBlank(message = "First name is required") String firstName,
@@ -54,7 +54,7 @@ public class DriverController {
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Driver not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "409", description = "Username already exists", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    public Driver updateUsername(
+    Driver updateUsername(
         @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
         @RequestParam @NotBlank(message = "Token is required") String token,
         @RequestParam @NotBlank(message = "Username is required") String username
@@ -69,7 +69,7 @@ public class DriverController {
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Driver not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    public void deleteDriver(
+    void deleteDriver(
         @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
         @RequestParam @NotBlank(message = "Token is required") String token,
         @RequestParam @NotBlank(message = "Password is required") String password
@@ -83,7 +83,7 @@ public class DriverController {
     @ApiResponse(responseCode = "400", description = "Driver account not deleted", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Driver not found or recovery period expired", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    public Driver recoverDriver(
+    Driver recoverDriver(
         @RequestParam @NotBlank(message = "Username is required") String username,
         @RequestParam @NotBlank(message = "Password is required") String password
     ) {

@@ -30,7 +30,7 @@ public class DriverManagementService {
         driverJpa.setFirstName(firstName);
         driverJpa.setLastName(lastName);
 
-        return driverRepository.save(driverJpa).toDto();
+        return driverRepository.save(driverJpa).toDriverDto();
     }
 
     public Driver updateUsername(Long driverId, String token, String username) {
@@ -45,7 +45,7 @@ public class DriverManagementService {
 
         driverJpa.setUsername(username);
 
-        return driverRepository.save(driverJpa).toDto();
+        return driverRepository.save(driverJpa).toDriverDto();
     }
 
     public void deleteDriver(Long driverId, String token, String password) {
@@ -75,7 +75,7 @@ public class DriverManagementService {
 
         schedulingService.removeAccountDeletionTrigger(driverJpa.getId());
         driverJpa.setDeleted(false);
-        return driverRepository.save(driverJpa).toDto();
+        return driverRepository.save(driverJpa).toDriverDto();
     }
 
 
