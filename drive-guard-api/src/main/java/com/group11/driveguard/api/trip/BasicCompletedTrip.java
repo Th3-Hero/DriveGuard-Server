@@ -5,6 +5,7 @@ import java.time.Duration;
 public record BasicCompletedTrip (
     Long id,
     Long driverId,
+    Integer score,
     Double distanceKM,
     Duration duration
 ) { }

@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ProblemDetail illegalStateException(IllegalStateException e) {
+        return ProblemDetailFactory.createProblemDetail(HttpStatus.CONFLICT, e);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ProblemDetail entityNotFoundException(EntityNotFoundException e) {
         return ProblemDetailFactory.createProblemDetail(HttpStatus.NOT_FOUND, e);

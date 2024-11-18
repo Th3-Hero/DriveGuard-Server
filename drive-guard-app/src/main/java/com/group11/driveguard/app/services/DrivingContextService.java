@@ -4,12 +4,12 @@ import com.group11.driveguard.api.map.Address;
 import com.group11.driveguard.api.map.Location;
 import com.group11.driveguard.api.map.LocationPair;
 import com.group11.driveguard.api.map.Road;
+import com.group11.driveguard.api.trip.event.Weather;
 import com.group11.driveguard.app.exceptions.UnexpectedMapApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 @Service
@@ -47,6 +47,11 @@ public class DrivingContextService {
         String uri = MAP_API_BASE_URL + "/map/road";
 
         return callApi(uri, location, Road.class);
+    }
+
+    public Weather getWeatherFromCoordinates(Location location) {
+        // TODO: Implement weather API
+        return Weather.CLEAR;
     }
 
     public double getDistanceBetweenCoordinates(Location locationOne, Location locationTwo) {

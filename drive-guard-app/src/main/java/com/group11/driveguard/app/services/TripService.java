@@ -5,14 +5,16 @@ import com.group11.driveguard.api.trip.BasicCompletedTrip;
 import com.group11.driveguard.api.trip.CompletedTrip;
 import com.group11.driveguard.api.trip.Trip;
 import com.group11.driveguard.api.trip.TripStatus;
-import com.group11.driveguard.api.trip.event.DrivingEvent;
-import com.group11.driveguard.jpa.location.LocationJpa;
+import com.group11.driveguard.api.trip.event.DrivingEventUpload;
+import com.group11.driveguard.api.trip.event.Weather;
 import com.group11.driveguard.jpa.driver.DriverJpa;
 import com.group11.driveguard.jpa.driver.DriverRepository;
+import com.group11.driveguard.jpa.location.LocationJpa;
 import com.group11.driveguard.jpa.location.LocationRepository;
-import com.group11.driveguard.jpa.trip.DrivingEventJpa;
 import com.group11.driveguard.jpa.trip.TripJpa;
 import com.group11.driveguard.jpa.trip.TripRepository;
+import com.group11.driveguard.jpa.trip.event.DrivingEventJpa;
+import com.group11.driveguard.jpa.trip.event.DrivingEventRepository;
 import com.group11.driveguard.jpa.trip.summary.TripSummaryJpa;
 import com.group11.driveguard.jpa.trip.summary.TripSummaryRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,16 +37,30 @@ public class TripService {
     private final DriverRepository driverRepository;
     private final TripSummaryRepository tripSummaryRepository;
     private final LocationRepository locationRepository;
+    private final DrivingEventRepository drivingEventRepository;
 
     private final AuthorizationService authorizationService;
     private final DrivingContextService drivingContextService;
+
+    public static final String TRIP_NOT_FOUND = "Trip %s not found";
+
+    public Trip getCurrentTrip(Long driverId, String token) {
+        authorizationService.validateSession(driverId, token);
+
+        List<TripJpa> trips = tripRepository.findAllByDriverIdAndStatus(driverId, TripStatus.IN_PROGRESS);
+        if (trips.isEmpty()) {
+            throw new EntityNotFoundException("Driver %s is not on a trip".formatted(driverId));
+        }
+
+        return trips.getFirst().toTripDto();
+    }
 
     public Trip startTrip(Long driverId, String token, Location startLocation) {
 
         authorizationService.validateSession(driverId, token);
 
         DriverJpa driver = driverRepository.findById(driverId)
-                .orElseThrow(() -> new EntityNotFoundException("Driver %s not found".formatted(driverId)));
+            .orElseThrow(() -> new EntityNotFoundException("Driver %s not found".formatted(driverId)));
 
         List<TripJpa> trips = tripRepository.findAllByDriverIdAndStatus(driverId, TripStatus.IN_PROGRESS);
         if (!trips.isEmpty()) {
@@ -60,18 +77,35 @@ public class TripService {
         return newTrip.toTripDto();
     }
 
-    public void addDrivingEvent(Long driverId, Long tripId, String token, DrivingEvent drivingEvent) {
+    public void addDrivingEvent(Long driverId, Long tripId, String token, DrivingEventUpload drivingEventUpload) {
+        authorizationService.validateSession(driverId, token);
 
+        TripJpa tripJpa = tripRepository.findById(tripId)
+            .orElseThrow(() -> new EntityNotFoundException(TRIP_NOT_FOUND.formatted(tripId)));
+        if (!tripJpa.getStatus().equals(TripStatus.IN_PROGRESS)) {
+            throw new IllegalStateException("Trip %s is already complete".formatted(tripId));
+        }
+
+        Weather weather = drivingContextService.getWeatherFromCoordinates(drivingEventUpload.location());
+
+        LocationJpa eventLocation = locationRepository.save(LocationJpa.fromLocation(drivingEventUpload.location()));
+
+        DrivingEventJpa drivingEventJpa = DrivingEventJpa.create(drivingEventUpload, weather, eventLocation, tripJpa);
+
+        drivingEventJpa = drivingEventRepository.save(drivingEventJpa);
+
+        tripJpa.getDrivingEvents().add(drivingEventJpa);
+        tripRepository.save(tripJpa);
     }
 
     public CompletedTrip endTrip(Long driverId, Long tripId, String token, Location endLocation) {
         authorizationService.validateSession(driverId, token);
 
         TripJpa tripJpa = tripRepository.findById(tripId)
-                .orElseThrow(() -> new EntityNotFoundException("Trip %s not found".formatted(tripId)));
+            .orElseThrow(() -> new EntityNotFoundException(TRIP_NOT_FOUND.formatted(tripId)));
 
-        if (tripJpa.getStatus() != TripStatus.IN_PROGRESS) {
-            throw new IllegalStateException("Trip %s is already ended".formatted(tripId));
+        if (!tripJpa.getStatus().equals(TripStatus.IN_PROGRESS)) {
+            throw new IllegalStateException("Trip %s is already complete".formatted(tripId));
         }
 
         tripJpa.setEndTime(LocalDateTime.now());
@@ -91,15 +125,38 @@ public class TripService {
     }
 
     public CompletedTrip getTripSummary(Long driverId, Long tripId, String token) {
-        return null;
+        authorizationService.validateSession(driverId, token);
+
+        TripJpa tripJpa = tripRepository.findById(tripId)
+            .orElseThrow(() -> new EntityNotFoundException(TRIP_NOT_FOUND.formatted(tripId)));
+        if (!tripJpa.getStatus().equals(TripStatus.COMPLETED)) {
+            throw new IllegalStateException("Trip %s is not completed".formatted(tripId));
+        }
+
+        return tripJpa.toCompletedTripDto();
     }
 
-    public List<BasicCompletedTrip> getListOfTrips() {
-        return null;
+    public List<BasicCompletedTrip> getListOfTrips(Long driverId, String token) {
+        authorizationService.validateSession(driverId, token);
+
+        List<TripJpa> trips = tripRepository.findAllByDriverIdAndStatus(driverId, TripStatus.COMPLETED);
+
+        return trips.stream()
+            .map(trip ->
+                new BasicCompletedTrip(
+                    trip.getId(),
+                    trip.getDriver().getId(),
+                    trip.getTripSummaryJpa().getScore(),
+                    trip.getTripSummaryJpa().getDistance(),
+                    Duration.between(trip.getStartTime(), trip.getEndTime())
+                )
+            )
+            .toList();
     }
 
 
     private int calculateTripScore(List<DrivingEventJpa> drivingEvents) {
+        // TODO: For Brooke to implement
         return 5;
     }
 }

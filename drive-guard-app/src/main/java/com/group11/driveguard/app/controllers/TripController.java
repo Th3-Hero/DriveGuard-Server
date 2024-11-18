@@ -6,7 +6,7 @@ import com.group11.driveguard.api.map.Location;
 import com.group11.driveguard.api.trip.BasicCompletedTrip;
 import com.group11.driveguard.api.trip.CompletedTrip;
 import com.group11.driveguard.api.trip.Trip;
-import com.group11.driveguard.api.trip.event.DrivingEvent;
+import com.group11.driveguard.api.trip.event.DrivingEventUpload;
 import com.group11.driveguard.app.services.TripService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,6 +33,19 @@ import java.util.List;
 class TripController {
 
     private final TripService tripService;
+
+    @GetMapping("/current/{driverId}")
+    @Operation(summary = "Get the current trip for a driver")
+    @ApiResponse(responseCode = "200", description = "Current trip retrieved successfully")
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "404", description = "Driver or trip not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "409", description = "Driver is not on a trip", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    Trip getCurrentTrip(
+        @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
+        @RequestParam @NotBlank(message = "Token is required") String token
+    ) {
+        return tripService.getCurrentTrip(driverId, token);
+    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{driverId}")
@@ -62,9 +75,9 @@ class TripController {
         @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
         @PathVariable @NotNull(message = "Trip ID is required") Long tripId,
         @RequestParam @NotBlank(message = "Token is required") String token,
-        @RequestBody @NotNull(message = "Driving event is required") @Valid DrivingEvent drivingEvent
+        @RequestBody @NotNull(message = "Driving event is required") @Valid DrivingEventUpload drivingEventUpload
     ) {
-        tripService.addDrivingEvent(driverId, tripId, token, drivingEvent);
+        tripService.addDrivingEvent(driverId, tripId, token, drivingEventUpload);
     }
 
     @PatchMapping("/{driverId}/{tripId}")
@@ -108,7 +121,7 @@ class TripController {
         @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
         @RequestParam @NotBlank(message = "Token is required") String token
     ) {
-        return tripService.getListOfTrips();
+        return tripService.getListOfTrips(driverId, token);
     }
 
 

@@ -5,6 +5,7 @@ import com.group11.driveguard.api.trip.Trip;
 import com.group11.driveguard.api.trip.TripStatus;
 import com.group11.driveguard.jpa.location.LocationJpa;
 import com.group11.driveguard.jpa.driver.DriverJpa;
+import com.group11.driveguard.jpa.trip.event.DrivingEventJpa;
 import com.group11.driveguard.jpa.trip.summary.TripSummaryJpa;
 import jakarta.persistence.*;
 import lombok.*;
