@@ -10,9 +10,20 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private static final List<String> ALLOWED_PATHS = List.of(
+        "/",
+        "/trip/",
+        "/auth/",
+        "/driver/",
+        "/driving-context/"
+    );
+
     @Bean
     public SecurityFilterChain securityFiIterChain(HttpSecurity http) throws Exception {
         http
@@ -34,9 +45,13 @@ public class SecurityConfig {
             boolean isLocalRequest = cfHeader == null &&
                 (remoteAddr.startsWith("192.168.") || remoteAddr.startsWith("127.0."));
             boolean isCloudflareRequest = cfHeader != null &&
-                requestUrl.startsWith("http://clan-tracker-api.the-hero.dev");
+                requestUrl.startsWith("https://drive-guard-api.the-hero.dev");
 
-            return new AuthorizationDecision(isLocalRequest || isCloudflareRequest);
+            if (ALLOWED_PATHS.stream().anyMatch(requestUri::startsWith)) {
+                return new AuthorizationDecision(isLocalRequest || isCloudflareRequest);
+            } else {
+                return new AuthorizationDecision(isLocalRequest);
+            }
         };
     }
 }

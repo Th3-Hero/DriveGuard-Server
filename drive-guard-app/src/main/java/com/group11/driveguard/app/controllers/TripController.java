@@ -27,7 +27,7 @@ import java.util.List;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/trips")
+@RequestMapping("/trip")
 @Tag(name = "Trip Controller", description = "Handles all operations regarding Trips")
 @RequiredArgsConstructor
 class TripController {

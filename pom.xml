@@ -12,7 +12,7 @@
 
 	<groupId>com.group11</groupId>
 	<artifactId>drive-guard</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>Drive Guard</name>
 	<description>Drive Guard</description>
 	<packaging>pom</packaging>
