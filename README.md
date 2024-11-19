@@ -1,5 +1,9 @@
 # Y1T1_SENG7100_Group_Project-Server
 
+## API Docs
+[API Flow docs](docs/endpoints/main.md) \
+[Swagger docs](https://drive-guard-api.the-hero.dev/swagger)
+
 ## Pre-requisites:
 - Java Development Kit (JDK) 21 found [here](https://adoptium.net/temurin/releases/?os=windows)
 - Maven (build tool) found [here](https://maven.apache.org/download.cgi)
