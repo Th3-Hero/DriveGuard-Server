@@ -45,7 +45,7 @@ public class SecurityConfig {
             boolean isLocalRequest = cfHeader == null &&
                 (remoteAddr.startsWith("192.168.") || remoteAddr.startsWith("127.0."));
             boolean isCloudflareRequest = cfHeader != null &&
-                requestUrl.startsWith("https://drive-guard-api.the-hero.dev");
+                requestUrl.startsWith("http://drive-guard-api.the-hero.dev");
 
             if (ALLOWED_PATHS.stream().anyMatch(requestUri::startsWith)) {
                 return new AuthorizationDecision(isLocalRequest || isCloudflareRequest);
