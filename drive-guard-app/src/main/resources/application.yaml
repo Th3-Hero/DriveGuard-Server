@@ -30,7 +30,7 @@ spring:
       max-file-size: 32MB
 springdoc:
   swagger-ui:
-    use-root-path: true
+    path: /swagger
 config:
   account-recovery-time: 30
   map-api-url: http://localhost:7002
