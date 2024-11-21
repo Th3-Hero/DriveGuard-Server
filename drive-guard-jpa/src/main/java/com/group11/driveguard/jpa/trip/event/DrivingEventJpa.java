@@ -4,7 +4,8 @@ package com.group11.driveguard.jpa.trip.event;
 import com.group11.driveguard.api.trip.event.DrivingEvent;
 import com.group11.driveguard.api.trip.event.DrivingEventUpload;
 import com.group11.driveguard.api.trip.event.EventType;
-import com.group11.driveguard.api.trip.event.Weather;
+import com.group11.driveguard.api.trip.event.WeatherType;
+import com.group11.driveguard.api.weather.Weather;
 import com.group11.driveguard.jpa.location.LocationJpa;
 import com.group11.driveguard.jpa.trip.TripJpa;
 import jakarta.persistence.*;
@@ -56,7 +57,12 @@ public class DrivingEventJpa implements Serializable {
     @NonNull
     @Enumerated(EnumType.STRING)
     @Column
-    private Weather weather;
+    private WeatherType weatherType;
+
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column
+    private WeatherType.WeatherSeverity weatherSeverity;
 
     public static DrivingEventJpa create(DrivingEventUpload drivingEventUpload, Weather weather, LocationJpa location, TripJpa trip) {
         return DrivingEventJpa.builder()
@@ -65,23 +71,24 @@ public class DrivingEventJpa implements Serializable {
             .location(location)
             .eventType(drivingEventUpload.eventType())
             .severity(drivingEventUpload.severity())
-            .weather(weather)
+            .weatherType(weather.getWeatherType())
+            .weatherSeverity(weather.getWeatherSeverity())
             .build();
     }
 
     public DrivingEvent toDto() {
         return new DrivingEvent(
-                eventTime,
-                location.toDto(),
-                eventType,
-                severity,
-                weather
+            eventTime,
+            location.toDto(),
+            eventType,
+            severity,
+            weatherType
         );
     }
 
     public static List<DrivingEvent> toDtoList(List<DrivingEventJpa> drivingEventJpaList) {
         return drivingEventJpaList.stream()
-                .map(DrivingEventJpa::toDto)
-                .toList();
+            .map(DrivingEventJpa::toDto)
+            .toList();
     }
 }

@@ -29,5 +29,5 @@ public record DrivingEvent(
 
     @Schema(description = "The weather at the time and location of the event.")
     @NonNull
-    Weather weather
+    WeatherType weatherType
 ) { }

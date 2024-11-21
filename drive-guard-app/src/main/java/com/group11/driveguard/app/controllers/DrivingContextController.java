@@ -5,6 +5,7 @@ import com.group11.driveguard.api.map.Address;
 import com.group11.driveguard.api.map.Location;
 import com.group11.driveguard.api.map.LocationPair;
 import com.group11.driveguard.api.map.Road;
+import com.group11.driveguard.api.weather.Weather;
 import com.group11.driveguard.app.services.DrivingContextService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -59,5 +60,15 @@ public class DrivingContextController {
         @RequestBody @NotNull(message = "Location pair is required") @Valid LocationPair locationPair
     ) {
         return drivingContextService.getDistanceBetweenCoordinates(locationPair);
+    }
+
+    @PostMapping("/weather")
+    @Operation(summary = "Get weather from coordinates")
+    @ApiResponse(responseCode = "200", description = "Weather found")
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
+    Weather getWeatherFromCoordinates(
+        @RequestBody @NotNull(message = "Location is required") @Valid Location location
+    ) {
+        return drivingContextService.getWeatherFromCoordinates(location);
     }
 }
