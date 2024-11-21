@@ -82,7 +82,8 @@ public class DrivingEventJpa implements Serializable {
             location.toDto(),
             eventType,
             severity,
-            weatherType
+            weatherType,
+            weatherSeverity
         );
     }
 
