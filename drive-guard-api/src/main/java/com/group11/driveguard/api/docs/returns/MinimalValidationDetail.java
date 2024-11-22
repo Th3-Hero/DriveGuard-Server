@@ -19,7 +19,6 @@ public class MinimalValidationDetail extends MinimalProblemDetail {
     private record ValidationError(
         @Schema(description = "The reason for the error") String message,
         @Schema(description = "What field the error is on") @Nullable String field
-    ) {
-    }
+    ) { }
 
 }

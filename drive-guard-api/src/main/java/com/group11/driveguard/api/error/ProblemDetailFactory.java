@@ -17,4 +17,8 @@ public final class ProblemDetailFactory {
         return new ValidationDetail();
     }
 
+    public static ValidationDetail createValidationDetail(final ProblemDetail problemDetail) {
+        return new ValidationDetail(problemDetail);
+    }
+
 }

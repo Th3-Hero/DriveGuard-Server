@@ -14,6 +14,12 @@ public class ValidationDetail extends ProblemDetail {
 
     private final Collection<ValidationError> errors = new ArrayList<>();
 
+    ValidationDetail(ProblemDetail problemDetail) {
+        super(problemDetail);
+        this.setDetail(DEFAULT_MESSAGE);
+        this.setProperty("errors", errors);
+    }
+
     ValidationDetail() {
         super(HttpStatus.BAD_REQUEST.value());
         this.setTitle("Validation Error");
