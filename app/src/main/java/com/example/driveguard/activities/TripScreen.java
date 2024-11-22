@@ -1,33 +1,36 @@
-package com.example.driveguard;
+package com.example.driveguard.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.gson.Gson;
+import com.example.driveguard.ButtonDeck;
+import com.example.driveguard.NetworkManager;
+import com.example.driveguard.R;
+import com.example.driveguard.objects.Trip;
 
 import java.io.IOException;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 import trip_data.DataCollector;
 
 public class TripScreen extends AppCompatActivity {
 
     private DataCollector dataCollector;
-    int driverID;
-    int token;
+    private int driverID;
+    private int tripID;
+    private int token;
+    private Trip currentTrip;
+    private final int START_TRIP_SUCCESS = 201;
+    private final int STOP_TRIP_SUCCESS = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +56,32 @@ public class TripScreen extends AppCompatActivity {
             public void onClick(View v) {
                 ButtonDeck.ToggleButtons(TripScreen.this);
 
-                OkHttpClient client = new OkHttpClient();
+                NetworkManager networkManager = new NetworkManager();
 
                 //start trip here
                 if (!startButton.isChecked()){//for starting trip
-                    //String serverResponse = RequestStartTrip(client);
-                    //System.out.println(serverResponse);
+                    // 201 means a trip was started successfully
+                    Response response = networkManager.StartTrip(driverID, token, TripScreen.this);
+                    if (response != null && response.code() == START_TRIP_SUCCESS){
+                        //more will probably be needed here
+                        networkManager.dataCollector.startDataCollection();
+                        try {
+                            assert response.body() != null;
+                            currentTrip =  networkManager.ResponseToTrip(response.body().string());
+                            tripID = currentTrip.getId();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    else{//set button back to unchecked. Add error message later
+                        startButton.setChecked(false);
+                    }
                 }
                 else if(startButton.isChecked()){
-
+                    Response response = networkManager.EndTrip(driverID, tripID, token);
+                    if (response != null && response.code() == STOP_TRIP_SUCCESS){
+                        networkManager.dataCollector.stopDataCollection();
+                    }
                 }
 
             }

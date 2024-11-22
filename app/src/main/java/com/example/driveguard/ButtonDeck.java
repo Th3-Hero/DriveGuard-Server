@@ -2,11 +2,11 @@ package com.example.driveguard;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.example.driveguard.activities.HomeScreen;
+import com.example.driveguard.activities.TripScreen;
 
 public class ButtonDeck {
 public static void SetUpButtons(Activity activity){

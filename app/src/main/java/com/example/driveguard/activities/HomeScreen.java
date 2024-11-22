@@ -1,4 +1,4 @@
-package com.example.driveguard;
+package com.example.driveguard.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.example.driveguard.ButtonDeck;
+import com.example.driveguard.R;
 
 public class HomeScreen extends AppCompatActivity {
 
