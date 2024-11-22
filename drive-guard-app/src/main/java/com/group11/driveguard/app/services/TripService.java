@@ -6,7 +6,6 @@ import com.group11.driveguard.api.trip.CompletedTrip;
 import com.group11.driveguard.api.trip.Trip;
 import com.group11.driveguard.api.trip.TripStatus;
 import com.group11.driveguard.api.trip.event.DrivingEventUpload;
-import com.group11.driveguard.api.trip.event.WeatherType;
 import com.group11.driveguard.api.weather.Weather;
 import com.group11.driveguard.jpa.driver.DriverJpa;
 import com.group11.driveguard.jpa.driver.DriverRepository;
@@ -153,6 +152,21 @@ public class TripService {
                 )
             )
             .toList();
+    }
+
+    public void clearTripHistory(Long driverId, String token) {
+        authorizationService.validateSession(driverId, token);
+
+        DriverJpa driver = driverRepository.findById(driverId)
+            .orElseThrow(() -> new EntityNotFoundException("Driver %s not found".formatted(driverId)));
+
+        List<TripJpa> trips = tripRepository.findAllByDriverId(driverId);
+
+        driver.getTrips().clear();
+        driver.setOverallScore(0);
+
+        driverRepository.save(driver);
+        tripRepository.deleteAll(trips);
     }
 
 

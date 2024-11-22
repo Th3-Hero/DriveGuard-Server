@@ -124,10 +124,18 @@ class TripController {
         return tripService.getListOfTrips(driverId, token);
     }
 
-
-
-
-
-
+    @Operation(summary = "Clear trip history (FOR DEVELOPMENT)", description = "Clears all trip history for a driver (FOR DEVELOPMENT ONLY)")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponse(responseCode = "204", description = "Trip history cleared successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "404", description = "Driver not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @DeleteMapping("/{driverId}")
+    void clearTripHistory(
+        @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
+        @RequestParam @NotBlank(message = "Token is required") String token
+    ) {
+        tripService.clearTripHistory(driverId, token);
+    }
 
 }
