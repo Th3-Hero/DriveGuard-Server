@@ -9,6 +9,16 @@
       "name": "config.map-api-url",
       "type": "java.lang.String",
       "description": "The URL of the map API to use."
+    },
+    {
+      "name": "cors.urls",
+      "type": "java.lang.String",
+      "description": "CSV list of URLs to allow CORS for."
+    },
+    {
+      "name": "cors.methods",
+      "type": "java.lang.String",
+      "description": "CSV list of HTTP methods to allow CORS for."
     }
   ]
 }

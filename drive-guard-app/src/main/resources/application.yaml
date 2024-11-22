@@ -34,3 +34,6 @@ springdoc:
 config:
   account-recovery-time: 30
   map-api-url: http://localhost:7002
+cors:
+  urls: https://drive-guard-api.the-hero.dev, http://localhost:7001
+  methods: GET, POST, DELETE, PUT, PATCH, OPTIONS
