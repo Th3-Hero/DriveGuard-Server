@@ -1,6 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarDriverScore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/navy"
+        app:title="Trip Summary"
+        app:titleTextColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewDriverScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="85"
+        android:textSize="100dp"
+        android:textColor="@color/navy"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarDriverScore"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp" />
+
+    <TextView
+        android:id="@+id/textViewScoreLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your Score for This Trip"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDriverScore"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/textViewDeductions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Deductions:"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@+id/textViewScoreLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayoutDeductions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDeductions"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/textViewHardAcceleration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hard Acceleration: -5"
+            android:textSize="18sp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/textViewAggressiveManeuvers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aggressive Maneuvers: -10"
+            android:textSize="18sp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/textViewSpeeding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Speeding: -8"
+            android:textSize="18sp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/textViewHardBraking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hard Braking: -6"
+            android:textSize="18sp"
+            android:textColor="@color/black" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/previousTrips"
+        android:layout_width="82dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="118dp"
+        android:layout_marginBottom="28dp"
+        android:background="#3F51B5"
+        android:backgroundTint="#3F51B5"
+        android:text="Prev"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/homeButton"
+        android:layout_width="82dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="28dp"
+        android:background="#3F51B5"
+        android:backgroundTint="#3F51B5"
+        android:text="Home"
+        android:textSize="12sp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/help"
+        android:layout_width="82dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="28dp"
+        android:background="#3F51B5"
+        android:backgroundTint="#3F51B5"
+        android:text="Help"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/trip"
+        android:layout_width="82dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="118dp"
+        android:layout_marginBottom="28dp"
+        android:background="#3F51B5"
+        android:backgroundTint="#3F51B5"
+        android:text="Trip"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
