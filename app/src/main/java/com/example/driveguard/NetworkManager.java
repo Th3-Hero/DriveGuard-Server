@@ -2,9 +2,17 @@ package com.example.driveguard;
 
 import android.app.Activity;
 
-import com.example.driveguard.objects.Trip;
-import com.google.gson.Gson;
+import androidx.annotation.NonNull;
 
+import com.example.driveguard.objects.Account;
+import com.example.driveguard.objects.Trip;
+import com.example.driveguard.objects.Credentials;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 
 import okhttp3.Call;
 import okhttp3.HttpUrl;
@@ -14,6 +22,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import trip_data.DataCollector;
+import trip_data.Event;
 
 public class NetworkManager {
     private OkHttpClient client;
@@ -28,7 +37,7 @@ public class NetworkManager {
     public NetworkManager(){
         client = new OkHttpClient();
     }
-    public Response StartTrip(int driverID, int token, Activity activity) {
+    public Response StartTrip(@NonNull Credentials credentials, Activity activity) {
         dataCollector = new DataCollector(activity);
 
         Gson gson = new Gson();
@@ -38,7 +47,7 @@ public class NetworkManager {
                 .scheme(scheme)
                 .host(baseUrl)
                 .addPathSegment(tripUrl)
-                .addQueryParameter("token", String.valueOf(token))
+                .addQueryParameter("token", String.valueOf(credentials.getToken()))
                 .build();
         //building the request
         Request request = new Request.Builder()
@@ -51,16 +60,12 @@ public class NetworkManager {
         //Synchronous request to server
         Call call = client.newCall(request);
         try {
-            Response response = call.execute();
-            //possibly display trip details but for now just check that trip has been started
-            return response;
-        } catch (Exception e) {
-            e.printStackTrace();
+            return call.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
-
-    public Response EndTrip(int driverID, int tripID, int token ){
+    public Response EndTrip(@NonNull Credentials credentials){
         Gson gson = new Gson();
         String jsonBody = gson.toJson(dataCollector.getStartingLocation());
 
@@ -68,9 +73,9 @@ public class NetworkManager {
                 .scheme(scheme)
                 .host(baseUrl)
                 .addPathSegment(tripUrl)
-                .addPathSegments(String.valueOf(driverID))
-                .addPathSegments(String.valueOf(tripID))
-                .addQueryParameter("token", String.valueOf(token))
+                .addPathSegments(String.valueOf(credentials.getDriverID()))
+                .addPathSegments(String.valueOf(credentials.getTripID()))
+                .addQueryParameter("token", String.valueOf(credentials.getToken()))
                 .build();
 
         Request request = new Request.Builder()
@@ -82,26 +87,125 @@ public class NetworkManager {
 
         Call call = client.newCall(request);
         try {
-            Response response = call.execute();
-            return response;
-        } catch (Exception e) {
-            e.printStackTrace();
+            return call.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+    }
+    public Response addEventToTrip(Event event, @NonNull Credentials credentials){
+        Gson gson = new Gson();
+        String jsonBody = gson.toJson(event);
+
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(tripUrl)
+                .addPathSegment(String.valueOf(credentials.getDriverID()))
+                .addPathSegment(String.valueOf(credentials.getToken()))
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create(jsonBody, MediaType.parse("application/json")))
+                .build();
+
+        Call call = client.newCall(request);
+        try {
+            return call.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public Trip getCurrentTrip(){
+
         return null;
     }
-
-    public void getTripSummary(int driverID, int tripID, int token){
-
-    }
-
-    public void SignUp(){
+    public void getTripSummary(Credentials credentials){
 
     }
-    public void Login(){
-
-    }
-    public Trip ResponseToTrip(String response){//add error handling
+    public Response SignUp(Account account){
         Gson gson = new Gson();
-        return gson.fromJson(response, Trip.class);
+        String jsonBody = gson.toJson(account);
+
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(authUrl)
+                .addPathSegment("signup")
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create(jsonBody, MediaType.parse("application/json")))
+                .build();
+
+        Call call = client.newCall(request);
+        Response response;
+        try {
+            response = call.execute();
+            return response;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public Response Login(@NonNull Account account) {
+
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(authUrl)
+                .addPathSegment("login")
+                .addQueryParameter("login", account.getUsername())
+                .addQueryParameter("password", account.getPassword())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .post(RequestBody.create("", null))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+             return call.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public Response Logout(@NonNull Credentials credentials){
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(authUrl)
+                .addPathSegment("logout")
+                .addQueryParameter("driverId", String.valueOf(credentials.getDriverID()))
+                .addQueryParameter("token", String.valueOf(credentials.getToken()))
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create("", null))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+    public Trip JsonToTrip(String responseBody){//add error handling
+        Gson gson = new Gson();
+        return gson.fromJson(responseBody, Trip.class);
+    }
+    public String TripToJson(Trip trip){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(trip);
     }
 }

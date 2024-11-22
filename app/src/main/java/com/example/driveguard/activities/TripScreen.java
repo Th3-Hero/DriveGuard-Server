@@ -14,20 +14,18 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
+import com.example.driveguard.objects.Credentials;
 import com.example.driveguard.objects.Trip;
 
 import java.io.IOException;
 
-import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import trip_data.DataCollector;
 
 public class TripScreen extends AppCompatActivity {
 
     private DataCollector dataCollector;
-    private int driverID;
-    private int tripID;
-    private int token;
+    private Credentials credentials;
     private Trip currentTrip;
     private final int START_TRIP_SUCCESS = 201;
     private final int STOP_TRIP_SUCCESS = 200;
@@ -40,8 +38,9 @@ public class TripScreen extends AppCompatActivity {
         //Used to retrieve the driverID and login token from the previous activity
         Bundle extras = getIntent().getExtras();
         if (extras != null){
-            driverID = extras.getInt("driverID");
-            token = extras.getInt("token");
+            int driverID = extras.getInt("driverID");
+            String token = extras.getString("token");
+            credentials = new Credentials(driverID, token);
         }
 
         //defines the toolbar used in the activity
@@ -61,14 +60,16 @@ public class TripScreen extends AppCompatActivity {
                 //start trip here
                 if (!startButton.isChecked()){//for starting trip
                     // 201 means a trip was started successfully
-                    Response response = networkManager.StartTrip(driverID, token, TripScreen.this);
+                    Response response = networkManager.StartTrip(credentials, TripScreen.this);
                     if (response != null && response.code() == START_TRIP_SUCCESS){
                         //more will probably be needed here
-                        networkManager.dataCollector.startDataCollection();
+                        //networkManager.dataCollector.startDataCollection();
+
                         try {
                             assert response.body() != null;
-                            currentTrip =  networkManager.ResponseToTrip(response.body().string());
-                            tripID = currentTrip.getId();
+                            currentTrip =  networkManager.JsonToTrip(response.body().string());
+                            //retrieve the trip ID sent by server
+                            credentials.setTripID(currentTrip.getId());
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -77,10 +78,13 @@ public class TripScreen extends AppCompatActivity {
                         startButton.setChecked(false);
                     }
                 }
+
                 else if(startButton.isChecked()){
-                    Response response = networkManager.EndTrip(driverID, tripID, token);
+                    Response response = networkManager.EndTrip(credentials);
                     if (response != null && response.code() == STOP_TRIP_SUCCESS){
                         networkManager.dataCollector.stopDataCollection();
+
+                        //display trip summary here which is withing response
                     }
                 }
 
