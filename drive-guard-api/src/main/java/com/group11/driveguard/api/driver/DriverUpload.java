@@ -32,6 +32,6 @@ public record DriverUpload(
     @NotBlank(message = "Password cannot be blank")
     @Size(min = 8, max = 64, message = "Password must be between 8 and 64 characters")
     @Pattern(regexp = ".*[A-Z].*", message = "Password must contain at least one uppercase letter")
-    @Pattern(regexp = ".*[^a-zA-Z0-9].*", message = "Password must contain at least one special character")
+    @Pattern(regexp = ".*[^a-zA-Z0-9].*", message = "Password must contain at least one number.")
     String password
 ) { }

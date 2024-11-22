@@ -5,6 +5,7 @@ import com.group11.driveguard.api.docs.returns.MinimalProblemDetail;
 import com.group11.driveguard.api.docs.returns.MinimalValidationDetail;
 import com.group11.driveguard.api.driver.Driver;
 import com.group11.driveguard.api.driver.DriverUpload;
+import com.group11.driveguard.api.driver.Session;
 import com.group11.driveguard.app.services.AuthorizationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -46,7 +47,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
     @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     @ApiResponse(responseCode = "404", description = "Driver not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
-    String loginDriver(
+    Session loginDriver(
         @RequestParam @NotBlank(message = "Username is required") String username,
         @RequestParam @NotBlank(message = "Password is required") String password
     ) {

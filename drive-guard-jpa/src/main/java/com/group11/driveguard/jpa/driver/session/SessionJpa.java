@@ -1,5 +1,6 @@
 package com.group11.driveguard.jpa.driver.session;
 
+import com.group11.driveguard.api.driver.Session;
 import com.group11.driveguard.jpa.driver.DriverJpa;
 import jakarta.persistence.*;
 import lombok.*;
@@ -46,6 +47,10 @@ public class SessionJpa implements Serializable {
 
     public String getToken() {
         return id.getToken();
+    }
+
+    public Session toSession() {
+        return new Session(driver.getId(), id.getToken());
     }
 
     @Override

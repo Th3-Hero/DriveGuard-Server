@@ -2,6 +2,7 @@ package com.group11.driveguard.app.services;
 
 import com.group11.driveguard.api.driver.Driver;
 import com.group11.driveguard.api.driver.DriverUpload;
+import com.group11.driveguard.api.driver.Session;
 import com.group11.driveguard.app.exceptions.CommonErrorMessages;
 import com.group11.driveguard.app.exceptions.InvalidCredentialsException;
 import com.group11.driveguard.jpa.driver.DriverJpa;
@@ -46,7 +47,7 @@ public class AuthorizationService {
         return driverRepository.save(driverJpa).toDriverDto();
     }
 
-    public String loginDriver(String username, String password) {
+    public Session loginDriver(String username, String password) {
         DriverJpa driverJpa = driverRepository.findByUsername(username)
             .orElseThrow(() -> new EntityNotFoundException(CommonErrorMessages.MISSING_DRIVER_WITH_USERNAME.formatted(username)));
 
@@ -54,7 +55,7 @@ public class AuthorizationService {
 
         SessionJpa sessionJpa = SessionJpa.create(generateToken(), driverJpa);
 
-        return sessionRepository.save(sessionJpa).getToken();
+        return sessionRepository.save(sessionJpa).toSession();
     }
 
     public void changePassword(Long driverId, String token, String oldPassword, String newPassword) {
