@@ -49,6 +49,11 @@ public class HomeScreen extends AppCompatActivity {
             Intent intent = new Intent(HomeScreen.this, Settings.class);
             startActivity(intent);
         }
+        else if (id == R.id.profile){
+            Intent intent = new Intent(HomeScreen.this, SignupScreen.class);
+            startActivity(intent);
+        }
         return true;
     }
+
 }

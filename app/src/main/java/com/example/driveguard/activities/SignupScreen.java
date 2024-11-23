@@ -1,9 +1,9 @@
 package com.example.driveguard.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -19,7 +19,6 @@ import java.util.Objects;
 import okhttp3.Response;
 
 public class SignupScreen extends AppCompatActivity {
-
     private NetworkManager networkManager;
 
     @Override
@@ -31,53 +30,60 @@ public class SignupScreen extends AppCompatActivity {
         networkManager = new NetworkManager();
 
         Button signUpButton = findViewById(R.id.buttonSignUp);
-        signUpButton.setOnClickListener(v -> {
+        signUpButton.setOnClickListener(new View.OnClickListener() {
 
-            String firstName = Objects.requireNonNull(((TextInputEditText) findViewById(R.id.editTextFirstName)).getText()).toString();
-            String lastName = Objects.requireNonNull(((TextInputEditText) findViewById(R.id.editTextLastName)).getText()).toString();
-            String username = Objects.requireNonNull(((TextInputEditText) findViewById(R.id.editTextUsername)).getText()).toString();
-            String password = Objects.requireNonNull(((TextInputEditText) findViewById(R.id.editTextPassword)).getText()).toString();
-            String rePassword = Objects.requireNonNull(((TextInputEditText) findViewById(R.id.editTextRePassword)).getText()).toString();
+            @Override
+            public void onClick(View v) {
 
-            if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName) ||
-                    TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
-                Toast.makeText(this, "All fields are required.", Toast.LENGTH_SHORT).show();
-                return;
-            }
+                String firstName = Objects.requireNonNull(((TextInputEditText) findViewById(R.id.editTextFirstName)).getText()).toString();
+                String lastName = Objects.requireNonNull(((TextInputEditText) findViewById(R.id.editTextLastName)).getText()).toString();
+                String username = Objects.requireNonNull(((TextInputEditText) findViewById(R.id.editTextUsername)).getText()).toString();
+                String password = Objects.requireNonNull(((TextInputEditText) findViewById(R.id.editTextPassword)).getText()).toString();
+                String rePassword = Objects.requireNonNull(((TextInputEditText) findViewById(R.id.editTextRePassword)).getText()).toString();
 
-            if (!password.equals(rePassword)) {
-                Toast.makeText(this, "Passwords do not match.", Toast.LENGTH_SHORT).show();
-                return;
-            }
+                if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName) ||
+                        TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+                    Toast.makeText(SignupScreen.this, "All fields are required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-            Account account = new Account(firstName, lastName, username, password);
+                if (!password.equals(rePassword)) {
+                    Toast.makeText(SignupScreen.this, "Passwords do not match.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-            signUpButton.setEnabled(false);
+                Account account = new Account(firstName, lastName, username, password);
 
-            try {
+                signUpButton.setEnabled(false);
+                Response response = null;
 
-                Response response = networkManager.SignUp(account);
-                if (response.isSuccessful()) {
+                try {
 
-                    Toast.makeText(this, "Sign up successful.", Toast.LENGTH_SHORT).show();
+                    networkManager.SignUp(account);
 
-                    Intent intent = new Intent(SignupScreen.this, LoginScreen.class);
-                    startActivity(intent);
-                    finish();
+                } catch (Exception e) {
 
-                } else {
+                    Toast.makeText(SignupScreen.this, "An error occurred: " + response.code(), Toast.LENGTH_LONG).show();
 
-                    Toast.makeText(this, "Error: " + response.message(), Toast.LENGTH_SHORT).show();
+                } finally {
+
+                    signUpButton.setEnabled(true);
 
                 }
 
-            } catch (Exception e) {
+                if (response.isSuccessful()) {
 
-                Toast.makeText(this, "An error occurred: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(SignupScreen.this, "Sign up successful.", Toast.LENGTH_SHORT).show();
 
-            } finally {
+                    Intent intent = new Intent(SignupScreen.this, LoginScreen.class);
+                    startActivity(intent);
+                    //finish();
 
-                signUpButton.setEnabled(true);
+                } else {
+
+                    Toast.makeText(SignupScreen.this, "Error: " + response.message(), Toast.LENGTH_SHORT).show();
+
+                }
 
             }
 
