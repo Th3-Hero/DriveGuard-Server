@@ -11,8 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.objects.Account;
+import com.example.driveguard.objects.Credentials;
 import com.google.android.material.textfield.TextInputEditText;
 import com.example.driveguard.R;
+import com.google.gson.Gson;
 
 import java.util.Objects;
 
@@ -75,9 +77,26 @@ public class SignupScreen extends AppCompatActivity {
 
                     Toast.makeText(SignupScreen.this, "Sign up successful.", Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(SignupScreen.this, LoginScreen.class);
-                    startActivity(intent);
-                    //finish();
+                    Response loginResponse;
+
+                    try {
+                        loginResponse = networkManager.Login(account);
+                    } catch (RuntimeException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    if (loginResponse.isSuccessful()){
+                        Toast.makeText(SignupScreen.this, "Log in successful.", Toast.LENGTH_SHORT).show();
+
+                        Gson gson = new Gson();
+                        Credentials credentials = gson.fromJson(loginResponse.body().toString(), Credentials.class);
+
+                        Intent intent = new Intent(SignupScreen.this, LoginScreen.class);
+                        intent.putExtra("driverID", credentials.getDriverID());
+                        intent.putExtra("token", credentials.getToken());
+                        startActivity(intent);
+                        finish();
+                    }
 
                 } else {
 
