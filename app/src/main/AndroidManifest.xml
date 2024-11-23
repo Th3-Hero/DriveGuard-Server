@@ -36,6 +36,22 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.Settings"/>
+        <activity
+            android:name=".activities.SignupScreen"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.driveguard.SIGNUP" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.LoginScreen"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.driveguard.LOGIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
