@@ -10,9 +10,7 @@ import com.example.driveguard.objects.Credentials;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 import okhttp3.Call;
 import okhttp3.HttpUrl;
@@ -27,16 +25,13 @@ import trip_data.Event;
 public class NetworkManager {
     private OkHttpClient client;
     public DataCollector dataCollector;
-    private final String scheme = "http";
+    private final String scheme = "https";
     private final String baseUrl = "drive-guard-api.the-hero.dev";
     private final String tripUrl = "trip";
     private final String authUrl = "auth";
     private final String driverUrl = "driver";
     private final String drivingContextUrl = "driving-context";
-
-    public NetworkManager(){
-        client = new OkHttpClient();
-    }
+    public NetworkManager(){ client = new OkHttpClient();}
     public Response StartTrip(@NonNull Credentials credentials, Activity activity) {
         dataCollector = new DataCollector(activity);
 
@@ -73,7 +68,7 @@ public class NetworkManager {
                 .scheme(scheme)
                 .host(baseUrl)
                 .addPathSegment(tripUrl)
-                .addPathSegments(String.valueOf(credentials.getDriverID()))
+                .addPathSegments(String.valueOf(credentials.getDriverId()))
                 .addPathSegments(String.valueOf(credentials.getTripID()))
                 .addQueryParameter("token", String.valueOf(credentials.getToken()))
                 .build();
@@ -100,7 +95,7 @@ public class NetworkManager {
                 .scheme(scheme)
                 .host(baseUrl)
                 .addPathSegment(tripUrl)
-                .addPathSegment(String.valueOf(credentials.getDriverID()))
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
                 .addPathSegment(String.valueOf(credentials.getToken()))
                 .build();
 
@@ -129,6 +124,8 @@ public class NetworkManager {
         Gson gson = new Gson();
         String jsonBody = gson.toJson(account);
 
+        System.out.println(jsonBody);
+
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
@@ -136,18 +133,20 @@ public class NetworkManager {
                 .addPathSegment("signup")
                 .build();
 
+        System.out.println(url.toString());
+
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("accept", "*/*")
                 .addHeader("Content-Type", "application/json")
                 .post(RequestBody.create(jsonBody, MediaType.parse("application/json")))
                 .build();
+        System.out.println(request.toString());
 
         Call call = client.newCall(request);
-        Response response;
+
         try {
-            response = call.execute();
-            return response;
+            return call.execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -159,7 +158,7 @@ public class NetworkManager {
                 .host(baseUrl)
                 .addPathSegment(authUrl)
                 .addPathSegment("login")
-                .addQueryParameter("login", account.getUsername())
+                .addQueryParameter("username", account.getUsername())
                 .addQueryParameter("password", account.getPassword())
                 .build();
 
@@ -183,7 +182,7 @@ public class NetworkManager {
                 .host(baseUrl)
                 .addPathSegment(authUrl)
                 .addPathSegment("logout")
-                .addQueryParameter("driverId", String.valueOf(credentials.getDriverID()))
+                .addQueryParameter("driverId", String.valueOf(credentials.getDriverId()))
                 .addQueryParameter("token", String.valueOf(credentials.getToken()))
                 .build();
 

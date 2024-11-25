@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.R;
+import com.example.driveguard.objects.Credentials;
 
 public class HomeScreen extends AppCompatActivity {
 
@@ -30,11 +31,19 @@ public class HomeScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        
+        Credentials credentials = new Credentials();
+        //Used to retrieve the driverID and login token from the previous activity
+        Bundle extras = getIntent().getExtras();
+        if (extras != null){
+            int driverID = extras.getInt("driverID");
+            String token = extras.getString("token");
+            credentials = new Credentials(driverID, token);
+        }
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ButtonDeck.SetUpButtons(HomeScreen.this);
+        ButtonDeck.SetUpButtons(HomeScreen.this, credentials);
 
     }
     @Override

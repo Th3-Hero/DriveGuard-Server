@@ -2,6 +2,7 @@ package com.example.driveguard.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -16,8 +17,10 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.example.driveguard.R;
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.Objects;
 
+import lombok.SneakyThrows;
 import okhttp3.Response;
 
 public class SignupScreen extends AppCompatActivity {
@@ -31,9 +34,13 @@ public class SignupScreen extends AppCompatActivity {
 
         networkManager = new NetworkManager();
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         Button signUpButton = findViewById(R.id.buttonSignUp);
         signUpButton.setOnClickListener(new View.OnClickListener() {
 
+            @SneakyThrows
             @Override
             public void onClick(View v) {
 
@@ -56,22 +63,23 @@ public class SignupScreen extends AppCompatActivity {
 
                 Account account = new Account(firstName, lastName, username, password);
 
-                signUpButton.setEnabled(false);
-                Response response = null;
 
+                networkManager = new NetworkManager();
+                signUpButton.setEnabled(false);
+
+                Response response;
                 try {
 
-                    networkManager.SignUp(account);
+                    response = networkManager.SignUp(account);
 
                 } catch (Exception e) {
+                    Toast.makeText(SignupScreen.this, "An error occurred: " + "response.code()", Toast.LENGTH_LONG).show();
+                    response = null;
+                } //finally {
 
-                    Toast.makeText(SignupScreen.this, "An error occurred: " + response.code(), Toast.LENGTH_LONG).show();
+                //signUpButton.setEnabled(true);
 
-                } finally {
-
-                    signUpButton.setEnabled(true);
-
-                }
+                //}
 
                 if (response.isSuccessful()) {
 
@@ -85,14 +93,16 @@ public class SignupScreen extends AppCompatActivity {
                         throw new RuntimeException(e);
                     }
 
-                    if (loginResponse.isSuccessful()){
+                    if (loginResponse.isSuccessful()) {
                         Toast.makeText(SignupScreen.this, "Log in successful.", Toast.LENGTH_SHORT).show();
 
                         Gson gson = new Gson();
-                        Credentials credentials = gson.fromJson(loginResponse.body().toString(), Credentials.class);
+                        String responseBody = loginResponse.body().string();
 
-                        Intent intent = new Intent(SignupScreen.this, LoginScreen.class);
-                        intent.putExtra("driverID", credentials.getDriverID());
+                        Credentials credentials = gson.fromJson(responseBody, Credentials.class);
+
+                        Intent intent = new Intent(SignupScreen.this, HomeScreen.class);
+                        intent.putExtra("driverID", credentials.getDriverId());
                         intent.putExtra("token", credentials.getToken());
                         startActivity(intent);
                         finish();

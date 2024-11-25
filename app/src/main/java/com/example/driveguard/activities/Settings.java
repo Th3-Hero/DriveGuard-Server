@@ -8,17 +8,31 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.R;
+import com.example.driveguard.objects.Credentials;
 
 public class Settings extends AppCompatActivity {
+
+    Credentials credentials;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
 
+        //Used to retrieve the driverID and login token from the previous activity
+        Bundle extras = getIntent().getExtras();
+        if (extras != null){
+            int driverID = extras.getInt("driverID");
+            String token = extras.getString("token");
+            credentials = new Credentials(driverID, token);
+        }else {
+            credentials = new Credentials();
+        }
+
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ButtonDeck.SetUpButtons(this);
+        ButtonDeck.SetUpButtons(this, credentials);
     }
 
     @Override

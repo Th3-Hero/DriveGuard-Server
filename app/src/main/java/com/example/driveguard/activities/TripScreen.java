@@ -2,6 +2,7 @@ package com.example.driveguard.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,12 +36,17 @@ public class TripScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.trip_screen);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         //Used to retrieve the driverID and login token from the previous activity
         Bundle extras = getIntent().getExtras();
         if (extras != null){
             int driverID = extras.getInt("driverID");
             String token = extras.getString("token");
             credentials = new Credentials(driverID, token);
+        } else {
+            credentials = new Credentials();
         }
 
         //defines the toolbar used in the activity
@@ -48,7 +54,7 @@ public class TripScreen extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //toggle button that is used to stop and start trips
-        final ToggleButton startButton = findViewById(R.id.startButton);
+        ToggleButton startButton = findViewById(R.id.startButton);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +64,7 @@ public class TripScreen extends AppCompatActivity {
                 NetworkManager networkManager = new NetworkManager();
 
                 //start trip here
-                if (!startButton.isChecked()){//for starting trip
+                if (startButton.isChecked()){//for starting trip
                     // 201 means a trip was started successfully
                     Response response = networkManager.StartTrip(credentials, TripScreen.this);
                     if (response != null && response.code() == START_TRIP_SUCCESS){
@@ -79,7 +85,7 @@ public class TripScreen extends AppCompatActivity {
                     }
                 }
 
-                else if(startButton.isChecked()){
+                else if(!startButton.isChecked()){
                     Response response = networkManager.EndTrip(credentials);
                     if (response != null && response.code() == STOP_TRIP_SUCCESS){
                         networkManager.dataCollector.stopDataCollection();
@@ -91,7 +97,7 @@ public class TripScreen extends AppCompatActivity {
             }
         });
 
-        ButtonDeck.SetUpButtons(this);
+        ButtonDeck.SetUpButtons(this, credentials);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
