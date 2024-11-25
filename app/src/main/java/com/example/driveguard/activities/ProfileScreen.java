@@ -59,7 +59,7 @@ public class ProfileScreen extends AppCompatActivity {
         }
 
         loginButton.setOnClickListener(v -> navigateToLogin());
-        loginButton.setOnClickListener(v -> performLogout());
+        logoutButton.setOnClickListener(v -> performLogout());
 
     }
 

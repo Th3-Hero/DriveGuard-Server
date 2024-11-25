@@ -17,16 +17,16 @@ public class Trip implements Serializable {
     private int driverId;
     private String startTime;
     private String endTime;
-    private Location startLocation;
-    private Location endLocation;
+    private ServerLocation startLocation;
+    private ServerLocation endLocation;
     private TripStatus status;
     private int score;
     private int distance;
     private List<Event> drivingEvents;
 
     public Trip(int id, int driverId,String startTime, String endTime,
-                Location startLocation, Location endLocation, TripStatus status,
-                int score, int distance, List<Event> events){
+                ServerLocation startLocation, ServerLocation endLocation,
+                TripStatus status, int score, int distance, List<Event> events){
         this.id = id;
         this.driverId = driverId;
         this.startTime = startTime;

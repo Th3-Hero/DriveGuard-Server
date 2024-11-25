@@ -73,13 +73,10 @@ public class SignupScreen extends AppCompatActivity {
                     response = networkManager.SignUp(account);
 
                 } catch (Exception e) {
-                    Toast.makeText(SignupScreen.this, "An error occurred: " + "response.code()", Toast.LENGTH_LONG).show();
-                    response = null;
-                } //finally {
+                    Toast.makeText(SignupScreen.this, "An error occurred", Toast.LENGTH_LONG).show();
 
-                //signUpButton.setEnabled(true);
-
-                //}
+                    throw new Exception(e);
+                }
 
                 if (response.isSuccessful()) {
 

@@ -1,6 +1,9 @@
 package trip_data;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -9,6 +12,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+
+import androidx.core.app.ActivityCompat;
 
 public class DataCollector {
 
@@ -24,6 +29,7 @@ public class DataCollector {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     }
 
+    @SuppressLint("MissingPermission")
     public Location getStartingLocation()
     {
         return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);

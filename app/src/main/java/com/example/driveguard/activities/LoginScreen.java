@@ -2,6 +2,7 @@ package com.example.driveguard.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -12,10 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
 import com.example.driveguard.objects.Account;
+import com.example.driveguard.objects.Credentials;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
 import java.util.Objects;
 
+import lombok.SneakyThrows;
 import okhttp3.Response;
 
 public class LoginScreen extends AppCompatActivity {
@@ -27,11 +31,15 @@ public class LoginScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_screen);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         networkManager = new NetworkManager();
 
         Button loginButton = findViewById(R.id.buttonLogin);
         loginButton.setOnClickListener(new View.OnClickListener() {
 
+            @SneakyThrows
             @Override
             public void onClick(View v) {
 
@@ -52,16 +60,17 @@ public class LoginScreen extends AppCompatActivity {
 
                 loginButton.setEnabled(false);
 
-                Response response = null;
+                Response response;
 
                 try {
 
-                    networkManager.Login(account);
+                   response = networkManager.Login(account);
 
                 } catch (Exception e){
 
                     Toast.makeText(LoginScreen.this, "An error occurred: " + e.getMessage(), Toast.LENGTH_LONG).show();
 
+                    throw new Exception(e);
                 } finally {
 
                     loginButton.setEnabled(true);
@@ -71,7 +80,14 @@ public class LoginScreen extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     Toast.makeText(LoginScreen.this, "Login successful.", Toast.LENGTH_SHORT).show();
 
+                    Gson gson = new Gson();
+                    String responseBody = response.body().string();
+
+                    Credentials credentials = gson.fromJson(responseBody, Credentials.class);
+
                     Intent intent = new Intent(LoginScreen.this, HomeScreen.class);
+                    intent.putExtra("driverID", credentials.getDriverId());
+                    intent.putExtra("token", credentials.getToken());
                     startActivity(intent);
                     finish();
 

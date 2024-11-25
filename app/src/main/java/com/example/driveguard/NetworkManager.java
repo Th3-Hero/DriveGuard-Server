@@ -1,10 +1,13 @@
 package com.example.driveguard;
 
 import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
 
 import androidx.annotation.NonNull;
 
 import com.example.driveguard.objects.Account;
+import com.example.driveguard.objects.ServerLocation;
 import com.example.driveguard.objects.Trip;
 import com.example.driveguard.objects.Credentials;
 import com.google.gson.Gson;
@@ -32,17 +35,20 @@ public class NetworkManager {
     private final String driverUrl = "driver";
     private final String drivingContextUrl = "driving-context";
     public NetworkManager(){ client = new OkHttpClient();}
-    public Response StartTrip(@NonNull Credentials credentials, Activity activity) {
-        dataCollector = new DataCollector(activity);
-
+    public Response StartTrip(@NonNull Credentials credentials, Context context) {
+        dataCollector = new DataCollector(context);
+        dataCollector.startDataCollection();
         Gson gson = new Gson();
-        String jsonBody = gson.toJson(dataCollector.getStartingLocation()); // give gson the current location
+        Location location = dataCollector.getStartingLocation();
+        ServerLocation serverLocation = new ServerLocation(location.getLatitude(), location.getLongitude());
+        String jsonBody = gson.toJson(serverLocation); // give gson the current location
         //url for the request
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
                 .addPathSegment(tripUrl)
-                .addQueryParameter("token", String.valueOf(credentials.getToken()))
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
+                .addQueryParameter("token", credentials.getToken())
                 .build();
         //building the request
         Request request = new Request.Builder()
@@ -60,16 +66,20 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response EndTrip(@NonNull Credentials credentials){
+    public Response EndTrip(@NonNull Credentials credentials, Context context){
+        dataCollector = new DataCollector(context);
+        dataCollector.startDataCollection();
         Gson gson = new Gson();
-        String jsonBody = gson.toJson(dataCollector.getStartingLocation());
+        Location location = dataCollector.getStartingLocation();
+        ServerLocation serverLocation = new ServerLocation(location.getLatitude(), location.getLongitude());
+        String jsonBody = gson.toJson(serverLocation); // give gson the current location
 
         HttpUrl url =  new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
                 .addPathSegment(tripUrl)
                 .addPathSegments(String.valueOf(credentials.getDriverId()))
-                .addPathSegments(String.valueOf(credentials.getTripID()))
+                .addPathSegments(String.valueOf(credentials.getTripId()))
                 .addQueryParameter("token", String.valueOf(credentials.getToken()))
                 .build();
 

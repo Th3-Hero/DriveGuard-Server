@@ -20,6 +20,7 @@ import com.example.driveguard.objects.Credentials;
 
 public class HomeScreen extends AppCompatActivity {
 
+    private Credentials credentials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +32,7 @@ public class HomeScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Credentials credentials = new Credentials();
+        credentials = new Credentials();
         //Used to retrieve the driverID and login token from the previous activity
         Bundle extras = getIntent().getExtras();
         if (extras != null){
@@ -59,7 +60,16 @@ public class HomeScreen extends AppCompatActivity {
             startActivity(intent);
         }
         else if (id == R.id.profile){
-            Intent intent = new Intent(HomeScreen.this, SignupScreen.class);
+            Intent intent;
+            /*if there were no credentials retrieved we assume the user is logged out and send them
+            to the sign up page*/
+            if (credentials == null) {
+                intent = new Intent(HomeScreen.this, SignupScreen.class);
+            } else {//if there are credentials we send the user to the profile page
+                intent = new Intent(HomeScreen.this, ProfileScreen.class);
+                intent.putExtra("driverID", credentials.getDriverId());
+                intent.putExtra("token", credentials.getToken());
+            }
             startActivity(intent);
         }
         return true;
