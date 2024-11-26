@@ -80,9 +80,11 @@ public class ProfileScreen extends AppCompatActivity {
 
         }
 
+        Response response = null;
+
         try {
 
-            Response response = networkManager.Logout(currentCredentials);
+            response = networkManager.Logout(currentCredentials);
 
             if(response.isSuccessful()) {
 
