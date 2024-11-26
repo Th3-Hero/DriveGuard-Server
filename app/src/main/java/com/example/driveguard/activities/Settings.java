@@ -1,5 +1,7 @@
 package com.example.driveguard.activities;
 
+import static com.example.driveguard.activities.TripScreen.getCredentials;
+
 import android.os.Bundle;
 import android.view.Menu;
 
@@ -12,7 +14,6 @@ import com.example.driveguard.objects.Credentials;
 
 public class Settings extends AppCompatActivity {
 
-    Credentials credentials;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -20,14 +21,7 @@ public class Settings extends AppCompatActivity {
 
         //Used to retrieve the driverID and login token from the previous activity
         Bundle extras = getIntent().getExtras();
-        if (extras != null){
-            int driverID = extras.getInt("driverID");
-            String token = extras.getString("token");
-            credentials = new Credentials(driverID, token);
-        }else {
-            credentials = new Credentials();
-        }
-
+        Credentials credentials = getCredentials(extras);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

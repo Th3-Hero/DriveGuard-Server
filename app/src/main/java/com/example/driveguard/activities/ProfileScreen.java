@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
 import com.example.driveguard.objects.Account;
@@ -18,7 +19,7 @@ import com.example.driveguard.objects.Credentials;
 import okhttp3.Response;
 public class ProfileScreen extends AppCompatActivity {
     private TextView usernameText;
-    private Button loginButton, logoutButton;
+    private Button loginButton, logoutButton, signupButton;
     private NetworkManager networkManager;
     private Credentials currentCredentials;
 
@@ -34,6 +35,7 @@ public class ProfileScreen extends AppCompatActivity {
         usernameText = findViewById(R.id.usernameText);
         loginButton = findViewById(R.id.loginButton);
         logoutButton = findViewById(R.id.logoutButton);
+        signupButton = findViewById(R.id.signupButton);
 
         // Checking credentials
 
@@ -41,6 +43,7 @@ public class ProfileScreen extends AppCompatActivity {
         String username = intent.getStringExtra("username");
         String token = intent.getStringExtra("token");
         int driverId = intent.getIntExtra("driverID", -1);
+        Credentials credentials = new Credentials(driverId, token);
 
         if(username != null && token != null && driverId != -1){
 
@@ -48,19 +51,20 @@ public class ProfileScreen extends AppCompatActivity {
             usernameText.setText(username);
             loginButton.setVisibility(View.GONE);
             logoutButton.setVisibility(View.VISIBLE);
-
+            signupButton.setVisibility(View.GONE);
         } else {
 
             currentCredentials = null;
             usernameText.setText("Guest");
             loginButton.setVisibility(View.VISIBLE);
             logoutButton.setVisibility(View.GONE);
-
+            signupButton.setVisibility(View.VISIBLE);
         }
 
         loginButton.setOnClickListener(v -> navigateToLogin());
         logoutButton.setOnClickListener(v -> performLogout());
-
+        signupButton.setOnClickListener(v -> navigateToSignUp());
+        ButtonDeck.SetUpButtons(this, credentials);
     }
 
     private void navigateToLogin() {
@@ -68,6 +72,11 @@ public class ProfileScreen extends AppCompatActivity {
         Intent intent = new Intent(ProfileScreen.this, LoginScreen.class);
         startActivity(intent);
 
+    }
+
+    private void navigateToSignUp(){
+        Intent intent = new Intent(ProfileScreen.this, SignupScreen.class);
+        startActivity(intent);
     }
 
     @SuppressLint("SetTextI18n")

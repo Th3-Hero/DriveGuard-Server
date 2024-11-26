@@ -4,13 +4,16 @@ import android.location.Location;
 
 import androidx.annotation.NonNull;
 
+import com.example.driveguard.objects.Address;
 import com.example.driveguard.objects.CompletedTrip;
 import com.example.driveguard.objects.CompletedTripAdapter;
 import com.example.driveguard.objects.Credentials;
 import com.example.driveguard.objects.ErrorReport;
+import com.example.driveguard.objects.Road;
 import com.example.driveguard.objects.ServerLocation;
 import com.example.driveguard.objects.ServerLocationPair;
 import com.example.driveguard.objects.Trip;
+import com.example.driveguard.objects.Weather;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -61,5 +64,16 @@ public class GsonUtilities {
         Gson gson = new Gson();
         return gson.fromJson(responseBody, Credentials.class);
     }
-
+    public static Road JsonToRoad(String responseBody){
+        Gson gson = new Gson();
+        return gson.fromJson(responseBody, Road.class);
+    }
+    public static Weather JsonToWeather(String responseBody){
+        Gson gson = new Gson();
+        return gson.fromJson(responseBody, Weather.class);
+    }
+    public static Address JsonToAddress(String responseBody){
+        Gson gson = new Gson();
+        return gson.fromJson(responseBody, Address.class);
+    }
 }

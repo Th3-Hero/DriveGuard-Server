@@ -8,6 +8,21 @@
     android:padding="0dp"
     android:gravity="center">
 
+    <include
+        layout="@layout/button_deck"/>
+
+    <Button
+        android:id="@+id/signupButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="352dp"
+        android:backgroundTint="@color/navy"
+        android:text="Signup"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/loginButton" />
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar2"
         android:layout_width="match_parent"
@@ -16,59 +31,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="Profile"
         app:titleTextColor="@color/white" />
-
-    <Button
-        android:id="@+id/previousTrips"
-        android:layout_width="82dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="118dp"
-        android:layout_marginBottom="28dp"
-        android:background="#3F51B5"
-        android:backgroundTint="#3F51B5"
-        android:text="Prev"
-        app:backgroundTint="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/homeButton"
-        android:layout_width="82dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="28dp"
-        android:background="#3F51B5"
-        android:backgroundTint="#3F51B5"
-        android:text="Home"
-        android:textSize="12sp"
-        app:backgroundTint="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/help"
-        android:layout_width="82dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="28dp"
-        android:background="#3F51B5"
-        android:backgroundTint="#3F51B5"
-        android:text="Help"
-        app:backgroundTint="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/trip"
-        android:layout_width="82dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="118dp"
-        android:layout_marginBottom="28dp"
-        android:background="#3F51B5"
-        android:backgroundTint="#3F51B5"
-        android:text="Trip"
-        app:backgroundTint="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/userIcon"

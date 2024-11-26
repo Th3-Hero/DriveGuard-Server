@@ -17,6 +17,8 @@ public static void SetUpButtons(Activity activity, Credentials credentials){
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, HomeScreen.class);
+                intent.putExtra("driverID", credentials.getDriverId());
+                intent.putExtra("token", credentials.getToken());
                 activity.startActivity(intent);
             }
         });

@@ -2,10 +2,7 @@ package com.example.driveguard;
 
 import static com.example.driveguard.GsonUtilities.LocationToServerLocationJson;
 import static com.example.driveguard.GsonUtilities.ServerLocationPairToJson;
-import static com.example.driveguard.GsonUtilities.ServerLocationToJson;
 
-import android.app.Activity;
-import android.content.Context;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
@@ -13,10 +10,8 @@ import androidx.annotation.NonNull;
 import com.example.driveguard.objects.Account;
 import com.example.driveguard.objects.ServerLocation;
 import com.example.driveguard.objects.ServerLocationPair;
-import com.example.driveguard.objects.Trip;
 import com.example.driveguard.objects.Credentials;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 
@@ -27,10 +22,16 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import trip_data.DataCollector;
 import trip_data.Event;
 
 public class NetworkManager {
+
+    /*
+    Note: every method in this class simply returns the servers response.
+    The response code and body can be handled in the receiving activity(GsonUtilities for the body) or
+    we can a handler for them if we have time.
+     */
+
     private final OkHttpClient client;
     private final String scheme = "https";
     private final String baseUrl = "drive-guard-api.the-hero.dev";
@@ -39,6 +40,13 @@ public class NetworkManager {
     private final String driverUrl = "driver";
     private final String drivingContextUrl = "driving-context";
     public NetworkManager(){ client = new OkHttpClient();}
+
+    /**
+     * Method that starts a new trip with the server
+     * @param credentials for the drivers id and token
+     * @param location takes android location which is formatted for the server in ServerLocation
+     * @return returns the servers response
+     */
     public Response StartTrip(@NonNull Credentials credentials, Location location) {
         /*dataCollector = new DataCollector(context);
         dataCollector.startDataCollection();*/
@@ -68,6 +76,12 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
+    /**
+     * Method that ends an existing trip with the server
+     * @param credentials for the drivers id, token, and trip id
+     * @param location location takes android location which is formatted for the server in ServerLocation
+     * @return returns the servers response
+     */
     public Response EndTrip(@NonNull Credentials credentials, Location location){
 
         String jsonBody = LocationToServerLocationJson(location);
@@ -95,6 +109,12 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
+    /**
+     * Method that adds an event to the server
+     * @param event an event that needs to follow the servers schema
+     * @param credentials for the drivers drivers id, token, and trip id
+     * @return returns the servers response
+     */
     public Response addEventToTrip(Event event, @NonNull Credentials credentials){
         Gson gson = new Gson();
         String jsonBody = gson.toJson(event);
@@ -121,6 +141,12 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * retrieves the drivers current trip. fails if they are not on a trip
+     * @param credentials for the drivers drivers id, token, and trip id
+     * @return if successful returns the current trip in the Trip class schema
+     */
     public Response getCurrentTrip(@NonNull Credentials credentials){
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
@@ -143,6 +169,13 @@ public class NetworkManager {
         }
 
     }
+
+    /**
+     * retrieves a particular trips summary
+     * @param credentials for the drivers drivers id, token, and trip id
+     * @param tripId the id for the trip in question
+     * @return returns the servers response
+     */
     public Response getTripSummary(@NonNull Credentials credentials, int tripId){//used for the summary of a particular trip
 
         HttpUrl url = new HttpUrl.Builder()
@@ -168,6 +201,12 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     *
+     * @param credentials
+     * @return
+     */
     public Response getListOfTrips(@NonNull Credentials credentials){
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)

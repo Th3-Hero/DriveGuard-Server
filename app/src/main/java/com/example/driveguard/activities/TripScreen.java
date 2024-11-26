@@ -21,6 +21,8 @@ import com.example.driveguard.R;
 import com.example.driveguard.objects.Credentials;
 import com.example.driveguard.objects.Trip;
 
+import org.jetbrains.annotations.Contract;
+
 import java.io.IOException;
 
 import okhttp3.Response;
@@ -47,13 +49,7 @@ public class TripScreen extends AppCompatActivity {
 
         //Used to retrieve the driverID and login token from the previous activity
         Bundle extras = getIntent().getExtras();
-        if (extras != null){
-            int driverID = extras.getInt("driverID");
-            String token = extras.getString("token");
-            credentials = new Credentials(driverID, token);
-        } else {
-            credentials = new Credentials();
-        }
+        credentials = getCredentials(extras);
 
         //defines the toolbar used in the activity
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -61,6 +57,8 @@ public class TripScreen extends AppCompatActivity {
 
         //toggle button that is used to stop and start trips
         ToggleButton startButton = findViewById(R.id.startButton);
+
+        ButtonDeck.SetUpButtons(this, credentials);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,8 +105,6 @@ public class TripScreen extends AppCompatActivity {
 
             }
         });
-
-        ButtonDeck.SetUpButtons(this, credentials);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -121,11 +117,22 @@ public class TripScreen extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.settings){
             Intent intent = new Intent(TripScreen.this, Settings.class);
+            intent.putExtra("driverId", credentials.getDriverId());
+            intent.putExtra("token", credentials.getToken());
             startActivity(intent);
         }
         return true;
     }
 
+public static Credentials getCredentials(Bundle extras){
+    if (extras != null){
+        int driverID = extras.getInt("driverID");
+        String token = extras.getString("token");
+        return new Credentials(driverID, token);
+    } else {
+        return new Credentials();
+    }
+}
 
     }
 
