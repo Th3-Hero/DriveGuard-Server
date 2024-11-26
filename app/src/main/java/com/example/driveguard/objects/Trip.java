@@ -1,14 +1,11 @@
 package com.example.driveguard.objects;
 
-import android.location.Location;
-
 import java.io.Serializable;
 import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import trip_data.Event;
 
 @Getter
 @Setter

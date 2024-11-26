@@ -21,12 +21,10 @@ import com.example.driveguard.R;
 import com.example.driveguard.objects.Credentials;
 import com.example.driveguard.objects.Trip;
 
-import org.jetbrains.annotations.Contract;
-
 import java.io.IOException;
 
 import okhttp3.Response;
-import trip_data.DataCollector;
+import com.example.driveguard.DataCollector;
 
 public class TripScreen extends AppCompatActivity {
 

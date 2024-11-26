@@ -1,4 +1,4 @@
-package trip_data;
+package com.example.driveguard.objects;
 
 import android.location.Location;
 
@@ -13,8 +13,10 @@ import android.location.Location;
  */
 public abstract class Event
 {
-    private long timestamp;
-    private Location location;
+    private String eventTime;
+    private ServerLocation location;
+    private EventType eventType;
+    private EventSeverity severity;
 
     /* Method Name: Event
      * Method Author: Brooke Cronin
@@ -25,7 +27,7 @@ public abstract class Event
     public Event(long timestamp, Location location)
     {
         this.timestamp = timestamp;
-        this.location = location;
+        this.location = new ServerLocation(location.getLatitude(), location.getLongitude());
     }
 
     /* Method Name: getTimestamp
@@ -34,9 +36,9 @@ public abstract class Event
      * Parameters: N/A
      * Returns: long (the timestamp of the event)
      */
-    public long getTimestamp()
+    public String getTimestamp()
     {
-        return this.timestamp;
+        return this.eventTime;
     }
 
     /* Method Name: setTimestamp
@@ -45,9 +47,9 @@ public abstract class Event
      * Parameters: long timestamp (the new timestamp of the event)
      * Returns: N/A
      */
-    public void setTimestamp(long timestamp)
+    public void setTimestamp(String timestamp)
     {
-        this.timestamp = timestamp;
+        this.eventTime = timestamp;
     }
 
     /* Method Name: getLocation
@@ -56,7 +58,7 @@ public abstract class Event
      * Parameters: N/A
      * Returns: Location (the location of the event)
      */
-    public Location getLocation()
+    public ServerLocation getLocation()
     {
         return this.location;
     }
@@ -69,7 +71,7 @@ public abstract class Event
      */
     public void setLocation(Location location)
     {
-        this.location = location;
+        this.location = new ServerLocation(location.getLatitude(), location.getLongitude());
     }
 
     /* Method Name: deductPoints
@@ -80,12 +82,4 @@ public abstract class Event
      * Returns: int (the points deducted based on event type)
      */
     public abstract int deductPoints();
-
-    /* Method Name: logEvent
-     * Method Author: Brooke Cronin
-     * Description: Abstract method to log the event details. Must be implemented by subclasses.
-     * Parameters: N/A
-     * Returns: String (the log details of the event)
-     */
-    public abstract String logEvent();
 }

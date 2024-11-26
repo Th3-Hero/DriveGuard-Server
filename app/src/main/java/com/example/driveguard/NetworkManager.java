@@ -22,7 +22,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import trip_data.Event;
+import com.example.driveguard.objects.Event;
 
 public class NetworkManager {
 

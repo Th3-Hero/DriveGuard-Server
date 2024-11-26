@@ -1,6 +1,6 @@
 package com.example.driveguard.objects;
 
-public enum ServerEventSeverity {
+public enum EventSeverity {
     LOW,
     MEDIUM,
     HIGH
