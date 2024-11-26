@@ -191,6 +191,29 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
+    public Response ClearTripHistory(@NonNull Credentials credentials){
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(tripUrl)
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
+                .addQueryParameter("token", credentials.getToken())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .delete(RequestBody.create("", null))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
     public Response SignUp(Account account){
         Gson gson = new Gson();
         String jsonBody = gson.toJson(account);
@@ -270,6 +293,131 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
+    public Response UpdatePassword(@NonNull Credentials credentials, String oldPassword, String newPassword){
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(authUrl)
+                .addPathSegment("password")
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
+                .addQueryParameter("token", credentials.getToken())
+                .addQueryParameter("oldPassword", oldPassword)
+                .addQueryParameter("newPassword", newPassword)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .patch(RequestBody.create("", null))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+    public Response RecoverAccount(@NonNull Account account){
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(driverUrl)
+                .addPathSegment("recover")
+                .addQueryParameter("username", account.getUsername())
+                .addQueryParameter("password", account.getPassword())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .post(RequestBody.create("", null))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+    public Response UpdateUsername(@NonNull Credentials credentials, String username){
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(driverUrl)
+                .addPathSegment("username")
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
+                .addQueryParameter("token", credentials.getToken())
+                .addQueryParameter("username", username)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .patch(RequestBody.create("", null))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+    public Response UpdateName(@NonNull Credentials credentials, String firstName, String lastName){
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(driverUrl)
+                .addPathSegment("name")
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
+                .addQueryParameter("token", credentials.getToken())
+                .addQueryParameter("firstName", firstName)
+                .addQueryParameter("lastName", firstName)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .patch(RequestBody.create("", null))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+    public Response DeleteAccount(@NonNull Credentials credentials, String password){
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(driverUrl)
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
+                .addQueryParameter("token", credentials.getToken())
+                .addQueryParameter("password", password)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .delete(RequestBody.create("", null))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
     public Response getWeatherFromLocation(Location location){
 
         String serverLocation = LocationToServerLocationJson(location);
@@ -296,7 +444,7 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
    }
-   public Response getRoadFromLocation(Location location){
+    public Response getRoadFromLocation(Location location){
         String serverLocation = LocationToServerLocationJson(location);
 
         HttpUrl url = new HttpUrl.Builder()
@@ -321,7 +469,7 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
    }
-   public Response getEstimatedDistance(ServerLocation locationOne, ServerLocation locationTwo){
+    public Response getEstimatedDistance(ServerLocation locationOne, ServerLocation locationTwo){
        ServerLocationPair serverLocationPair = new ServerLocationPair(locationOne,locationTwo);
        String pair = ServerLocationPairToJson(serverLocationPair);
 
@@ -347,7 +495,7 @@ public class NetworkManager {
            throw new RuntimeException(e);
        }
    }
-   public Response getAddress(Location location){
+    public Response getAddress(Location location){
         String serverLocation = LocationToServerLocationJson(location);
 
     HttpUrl url = new HttpUrl.Builder()
