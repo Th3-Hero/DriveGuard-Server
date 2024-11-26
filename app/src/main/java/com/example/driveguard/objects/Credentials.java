@@ -1,22 +1,24 @@
 package com.example.driveguard.objects;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class Credentials {
-    private int driverID;
+    private int driverId;
     private String token;
-    private int tripID;
+    private int tripId;
     public Credentials(int driverID, String token, int tripID){
-        this.driverID = driverID;
+        this.driverId = driverID;
         this.token = token;
-        this.tripID = tripID;
+        this.tripId = tripID;
     }
     public Credentials(int driverID, String token){
-        this.driverID = driverID;
+        this.driverId = driverID;
         this.token = token;
-        this.tripID = -1;
+        this.tripId = -1;
     }
 }

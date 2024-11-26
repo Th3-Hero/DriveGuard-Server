@@ -4,9 +4,11 @@ import java.io.Serializable;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class Account implements Serializable {
     private String firstName;
     private String lastName;

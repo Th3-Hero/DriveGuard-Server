@@ -7,15 +7,18 @@ import android.widget.Button;
 
 import com.example.driveguard.activities.HomeScreen;
 import com.example.driveguard.activities.TripScreen;
+import com.example.driveguard.objects.Credentials;
 
 public class ButtonDeck {
-public static void SetUpButtons(Activity activity){
+public static void SetUpButtons(Activity activity, Credentials credentials){
 
         final Button _homeButton = activity.findViewById(R.id.homeButton);
         _homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, HomeScreen.class);
+                intent.putExtra("driverID", credentials.getDriverId());
+                intent.putExtra("token", credentials.getToken());
                 activity.startActivity(intent);
             }
         });
@@ -25,7 +28,8 @@ public static void SetUpButtons(Activity activity){
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, TripScreen.class);
-
+                intent.putExtra("driverID", credentials.getDriverId());
+                intent.putExtra("token", credentials.getToken());
                 activity.startActivity(intent);
             }
         });
