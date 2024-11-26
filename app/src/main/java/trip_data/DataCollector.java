@@ -29,7 +29,7 @@ public class DataCollector {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission")//quick fix to make it not need to confirm permissions
     public Location getStartingLocation()
     {
         return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);

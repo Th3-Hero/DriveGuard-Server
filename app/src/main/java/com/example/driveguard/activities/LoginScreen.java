@@ -1,5 +1,7 @@
 package com.example.driveguard.activities;
 
+import static com.example.driveguard.GsonUtilities.JsonToCredentials;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -63,8 +65,7 @@ public class LoginScreen extends AppCompatActivity {
                 Response response;
 
                 try {
-
-                   response = networkManager.Login(account);
+                    response = networkManager.Login(account);
 
                 } catch (Exception e){
 
@@ -80,10 +81,8 @@ public class LoginScreen extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     Toast.makeText(LoginScreen.this, "Login successful.", Toast.LENGTH_SHORT).show();
 
-                    Gson gson = new Gson();
-                    String responseBody = response.body().string();
-
-                    Credentials credentials = gson.fromJson(responseBody, Credentials.class);
+                    assert response.body() != null;
+                    Credentials credentials = JsonToCredentials(response.body().string());
 
                     Intent intent = new Intent(LoginScreen.this, HomeScreen.class);
                     intent.putExtra("driverID", credentials.getDriverId());

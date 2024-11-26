@@ -1,5 +1,9 @@
 package com.example.driveguard;
 
+import static com.example.driveguard.GsonUtilities.LocationToServerLocationJson;
+import static com.example.driveguard.GsonUtilities.ServerLocationPairToJson;
+import static com.example.driveguard.GsonUtilities.ServerLocationToJson;
+
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
@@ -8,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.example.driveguard.objects.Account;
 import com.example.driveguard.objects.ServerLocation;
+import com.example.driveguard.objects.ServerLocationPair;
 import com.example.driveguard.objects.Trip;
 import com.example.driveguard.objects.Credentials;
 import com.google.gson.Gson;
@@ -26,8 +31,7 @@ import trip_data.DataCollector;
 import trip_data.Event;
 
 public class NetworkManager {
-    private OkHttpClient client;
-    public DataCollector dataCollector;
+    private final OkHttpClient client;
     private final String scheme = "https";
     private final String baseUrl = "drive-guard-api.the-hero.dev";
     private final String tripUrl = "trip";
@@ -35,13 +39,11 @@ public class NetworkManager {
     private final String driverUrl = "driver";
     private final String drivingContextUrl = "driving-context";
     public NetworkManager(){ client = new OkHttpClient();}
-    public Response StartTrip(@NonNull Credentials credentials, Context context) {
-        dataCollector = new DataCollector(context);
-        dataCollector.startDataCollection();
-        Gson gson = new Gson();
-        Location location = dataCollector.getStartingLocation();
-        ServerLocation serverLocation = new ServerLocation(location.getLatitude(), location.getLongitude());
-        String jsonBody = gson.toJson(serverLocation); // give gson the current location
+    public Response StartTrip(@NonNull Credentials credentials, Location location) {
+        /*dataCollector = new DataCollector(context);
+        dataCollector.startDataCollection();*/
+
+      String jsonBody = LocationToServerLocationJson(location);
         //url for the request
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
@@ -66,13 +68,9 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response EndTrip(@NonNull Credentials credentials, Context context){
-        dataCollector = new DataCollector(context);
-        dataCollector.startDataCollection();
-        Gson gson = new Gson();
-        Location location = dataCollector.getStartingLocation();
-        ServerLocation serverLocation = new ServerLocation(location.getLatitude(), location.getLongitude());
-        String jsonBody = gson.toJson(serverLocation); // give gson the current location
+    public Response EndTrip(@NonNull Credentials credentials, Location location){
+
+        String jsonBody = LocationToServerLocationJson(location);
 
         HttpUrl url =  new HttpUrl.Builder()
                 .scheme(scheme)
@@ -123,12 +121,75 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Trip getCurrentTrip(){
+    public Response getCurrentTrip(@NonNull Credentials credentials){
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
+                .addQueryParameter("token", credentials.getToken())
+                .build();
 
-        return null;
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+           return call.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
-    public void getTripSummary(Credentials credentials){
+    public Response getTripSummary(@NonNull Credentials credentials, int tripId){//used for the summary of a particular trip
 
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(tripUrl)
+                .addPathSegment("current")
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
+                .addPathSegment(String.valueOf(tripId))
+                .addQueryParameter("token", credentials.getToken())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public Response getListOfTrips(@NonNull Credentials credentials){
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(tripUrl)
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
+                .addQueryParameter("token", credentials.getToken())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .get()
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     public Response SignUp(Account account){
         Gson gson = new Gson();
@@ -209,12 +270,106 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Trip JsonToTrip(String responseBody){//add error handling
-        Gson gson = new Gson();
-        return gson.fromJson(responseBody, Trip.class);
+    public Response getWeatherFromLocation(Location location){
+
+        String serverLocation = LocationToServerLocationJson(location);
+
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(drivingContextUrl)
+                .addPathSegment("weather")
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create(serverLocation, MediaType.parse("application/json")))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+   }
+   public Response getRoadFromLocation(Location location){
+        String serverLocation = LocationToServerLocationJson(location);
+
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(drivingContextUrl)
+                .addPathSegment("road")
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create(serverLocation, MediaType.parse("application/json")))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try{
+            return call.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+   }
+   public Response getEstimatedDistance(ServerLocation locationOne, ServerLocation locationTwo){
+       ServerLocationPair serverLocationPair = new ServerLocationPair(locationOne,locationTwo);
+       String pair = ServerLocationPairToJson(serverLocationPair);
+
+       HttpUrl url = new HttpUrl.Builder()
+               .scheme(scheme)
+               .host(baseUrl)
+               .addPathSegment(drivingContextUrl)
+               .addPathSegment("distance")
+               .build();
+
+       Request request = new Request.Builder()
+               .url(url)
+               .addHeader("accept", "*/*")
+               .addHeader("Content-Type", "application/json")
+               .post(RequestBody.create(pair, MediaType.parse("application/json")))
+               .build();
+
+       Call call = client.newCall(request);
+
+       try {
+           return call.execute();
+       } catch (IOException e) {
+           throw new RuntimeException(e);
+       }
+   }
+   public Response getAddress(Location location){
+        String serverLocation = LocationToServerLocationJson(location);
+
+    HttpUrl url = new HttpUrl.Builder()
+            .scheme(scheme)
+            .host(baseUrl)
+            .addPathSegment(drivingContextUrl)
+            .addPathSegment("address")
+            .build();
+
+    Request request = new Request.Builder()
+            .url(url)
+            .addHeader("accept", "*/*")
+            .addHeader("Content-Type", "application/json")
+            .post(RequestBody.create(serverLocation, MediaType.parse("application/json")))
+            .build();
+
+    Call call = client.newCall(request);
+
+    try {
+        return call.execute();
+    } catch (IOException e) {
+        throw new RuntimeException(e);
     }
-    public String TripToJson(Trip trip){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(trip);
-    }
+}
 }

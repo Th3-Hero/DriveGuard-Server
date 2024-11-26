@@ -1,5 +1,7 @@
 package com.example.driveguard.activities;
 
+import static com.example.driveguard.GsonUtilities.JsonToTrip;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -22,9 +24,11 @@ import com.example.driveguard.objects.Trip;
 import java.io.IOException;
 
 import okhttp3.Response;
+import trip_data.DataCollector;
 
 public class TripScreen extends AppCompatActivity {
 
+    private DataCollector dataCollector;
     private Credentials credentials;
     private Trip currentTrip;
     private final int START_TRIP_SUCCESS = 201;
@@ -38,6 +42,8 @@ public class TripScreen extends AppCompatActivity {
         //allows the UI thread to perform network calls. We could make them async if this causes issues
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        dataCollector = new DataCollector(getApplicationContext());
 
         //Used to retrieve the driverID and login token from the previous activity
         Bundle extras = getIntent().getExtras();
@@ -66,37 +72,34 @@ public class TripScreen extends AppCompatActivity {
                 //start trip here
                 if (startButton.isChecked()){//for starting trip
                     // 201 means a trip was started successfully
-                    Response response = networkManager.StartTrip(credentials, getApplicationContext());
+                    Response response = networkManager.StartTrip(credentials, dataCollector.getStartingLocation());
                     if (response != null && response.code() == START_TRIP_SUCCESS){
-                        //more will probably be needed here
                         //networkManager.dataCollector.startDataCollection();
                         Toast.makeText(TripScreen.this, "Trip Successfully started!", Toast.LENGTH_LONG).show();
+
                         try {
                             assert response.body() != null;
-                            currentTrip =  networkManager.JsonToTrip(response.body().string());
-                            //retrieve the trip ID sent by server
-                            credentials.setTripId(currentTrip.getId());
+                            currentTrip =  JsonToTrip(response.body().string());
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
+                        //retrieve the trip ID sent by server
+                            credentials.setTripId(currentTrip.getId());
+
 
                         //BROOKE you can add all your trip stuff here
 
                     }
-                    else{//set button back to unchecked. Add error message later
-                        /*credentials.setTripId(1000);
-                        Response response1 = networkManager.EndTrip(credentials, getApplicationContext());
-                        if (response1.isSuccessful()){
-                            Toast.makeText(TripScreen.this, "Trip successfully ended!", Toast.LENGTH_LONG).show();
-                        }*/
+                    else{//set button back to unchecked
+
                         startButton.setChecked(false);
                     }
                 }
 
                 else if(!startButton.isChecked()){
-                    Response response = networkManager.EndTrip(credentials, getApplicationContext());
+                    Response response = networkManager.EndTrip(credentials, dataCollector.getStartingLocation());
                     if (response != null && response.code() == STOP_TRIP_SUCCESS){
-                        networkManager.dataCollector.stopDataCollection();
+                        //networkManager.dataCollector.stopDataCollection();
                         Toast.makeText(TripScreen.this, "Trip successfully ended!", Toast.LENGTH_LONG).show();
                         //display trip summary here which is withing response
                     }
