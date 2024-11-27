@@ -22,7 +22,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import com.example.driveguard.objects.Event;
+import com.example.driveguard.objects.DrivingEvent;
 
 public class NetworkManager {
 
@@ -115,7 +115,7 @@ public class NetworkManager {
      * @param credentials for the drivers drivers id, token, and trip id
      * @return returns the servers response
      */
-    public Response addEventToTrip(Event event, @NonNull Credentials credentials){
+    public Response addEventToTrip(DrivingEvent event, @NonNull Credentials credentials){
         Gson gson = new Gson();
         String jsonBody = gson.toJson(event);
 

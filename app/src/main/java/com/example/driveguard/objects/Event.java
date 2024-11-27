@@ -24,9 +24,9 @@ public abstract class Event
      * Parameters: long timestamp (the time of the event), Location location (the location of the event)
      * Returns: N/A
      */
-    public Event(long timestamp, Location location)
+    public Event(String timestamp, android.location.Location location)
     {
-        this.timestamp = timestamp;
+        this.eventTime = timestamp;
         this.location = new ServerLocation(location.getLatitude(), location.getLongitude());
     }
 
@@ -69,7 +69,7 @@ public abstract class Event
      * Parameters: Location location (the new location of the event)
      * Returns: N/A
      */
-    public void setLocation(Location location)
+    public void setLocation(android.location.Location location)
     {
         this.location = new ServerLocation(location.getLatitude(), location.getLongitude());
     }

@@ -1,5 +1,18 @@
 package com.example.driveguard;
 
+import com.example.driveguard.objects.Credentials;
+import com.example.driveguard.objects.DrivingEvent;
+import com.example.driveguard.objects.Event;
+import com.example.driveguard.objects.EventSeverity;
+import com.example.driveguard.objects.EventType;
+import com.example.driveguard.objects.HardAccelerateEvent;
+import com.example.driveguard.objects.HardBrakeEvent;
+import com.example.driveguard.objects.HardCorneringEvent;
+import com.example.driveguard.objects.ServerLocation;
+import com.example.driveguard.objects.SpeedingEvent;
+
+import okhttp3.Response;
+
 /* Class Name: DataClassifier
  * Class Author: Brooke Cronin
  * Date: November 14, 2024
@@ -13,10 +26,6 @@ public class DataClassifier
 {
 
     private float postedSpeedLimit;
-    private List<SpeedEvent> speedEvents;
-    private List<AccelerateEvent> accelerateEvents;
-    private List<BrakeEvent> brakeEvents;
-    private List<TurningEvent> turningEvents;
 
     /* Method Name: DataClassifier
      * Method Author: Brooke Cronin
@@ -27,10 +36,6 @@ public class DataClassifier
     public DataClassifier(float postedSpeedLimit)
     {
         this.postedSpeedLimit = postedSpeedLimit;
-        this.speedEvents = new ArrayList<>();
-        this.accelerateEvents = new ArrayList<>();
-        this.brakeEvents = new ArrayList<>();
-        this.turningEvents = new ArrayList<>();
     }
 
     /* Method Name: classifyData
@@ -40,81 +45,37 @@ public class DataClassifier
      *             long timestamp (time of event)
      * Returns: N/A
      */
-    public void classifyData(float speed, float gForce, float turningRate, long timestamp)
+    public void classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, Credentials credentials, android.location.Location location)
     {
         // Classify Speed Event
         if (speed > this.postedSpeedLimit)
         {
-            SpeedEvent speedEvent = new SpeedEvent(speed, timestamp, this.postedSpeedLimit);
+            SpeedingEvent speedEvent = new SpeedingEvent(speed, timestamp, location, networkManager);
             if (speedEvent.isSpeeding())
             {
-                this.speedEvents.add(speedEvent);
+                networkManager.addEventToTrip(new DrivingEvent(timestamp, new ServerLocation(location.getLatitude(), location.getLongitude()), EventType.SPEEDING, EventSeverity.LOW, speedEvent.deductPoints()), credentials);
             }
         }
 
         // Classify Acceleration Event
-        AccelerateEvent accelerateEvent = new AccelerateEvent(gForce, timestamp);
+        HardAccelerateEvent accelerateEvent = new HardAccelerateEvent(gForce, timestamp, location);
         if (accelerateEvent.isHarshAcceleration())
         {
-            this.accelerateEvents.add(accelerateEvent);
+            networkManager.addEventToTrip(new DrivingEvent(timestamp, new ServerLocation(location.getLatitude(), location.getLongitude()), EventType.HARD_ACCELERATION, EventSeverity.LOW, accelerateEvent.deductPoints()), credentials);
         }
 
         // Classify Braking Event
-        BrakeEvent brakeEvent = new BrakeEvent(gForce, timestamp);
+        HardBrakeEvent brakeEvent = new HardBrakeEvent(gForce, timestamp, location);
         if (brakeEvent.isHarshBraking())
         {
-            this.brakeEvents.add(brakeEvent);
+            networkManager.addEventToTrip(new DrivingEvent(timestamp, new ServerLocation(location.getLatitude(), location.getLongitude()), EventType.HARD_BRAKING, EventSeverity.LOW, brakeEvent.deductPoints()), credentials);
         }
 
         // Classify Turning Event
-        TurningEvent turningEvent = new TurningEvent(turningRate, timestamp);
+        HardCorneringEvent turningEvent = new HardCorneringEvent(turningRate, timestamp, location);
         if (turningEvent.isAggressiveTurn())
         {
-            this.turningEvents.add(turningEvent);
+            networkManager.addEventToTrip(new DrivingEvent(timestamp, new ServerLocation(location.getLatitude(), location.getLongitude()), EventType.HARD_CORNERING, EventSeverity.LOW, turningEvent.deductPoints()), credentials);
         }
-    }
-
-    /* Method Name: getSpeedEvents
-     * Method Author: Brooke Cronin
-     * Description: Returns the list of speed events.
-     * Parameters: N/A
-     * Returns: List<SpeedEvent> (the list of speed events)
-     */
-    public List<SpeedEvent> getSpeedEvents()
-    {
-        return this.speedEvents;
-    }
-
-    /* Method Name: getAccelerateEvents
-     * Method Author: Brooke Cronin
-     * Description: Returns the list of acceleration events.
-     * Parameters: N/A
-     * Returns: List<AccelerateEvent> (the list of acceleration events)
-     */
-    public List<AccelerateEvent> getAccelerateEvents()
-    {
-        return this.accelerateEvents;
-    }
-
-    /* Method Name: getBrakeEvents
-     * Method Author: Brooke Cronin
-     * Description: Returns the list of braking events.
-     * Parameters: N/A
-     * Returns: List<BrakeEvent> (the list of braking events)
-     */
-    public List<BrakeEvent> getBrakeEvents()
-    {
-        return this.brakeEvents;
-    }
-
-    /* Method Name: getTurningEvents
-     * Method Author: Brooke Cronin
-     * Description: Returns the list of turning events.
-     * Parameters: N/A
-     * Returns: List<TurningEvent> (the list of turning events)
-     */
-    public List<TurningEvent> getTurningEvents()
-    {
-        return this.turningEvents;
     }
 }

@@ -85,6 +85,9 @@ public class TripScreen extends AppCompatActivity {
 
                         //BROOKE you can add all your trip stuff here
 
+//                        run an async loop to check for events every 25 millisecond
+//                        look at timeline from javafx
+
                     }
                     else{//set button back to unchecked
 

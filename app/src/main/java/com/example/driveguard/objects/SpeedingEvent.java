@@ -23,7 +23,7 @@ public class SpeedingEvent extends Event
      *             float postedSpeedLimit (the speed limit for the event location), Location location (the event location)
      * Returns: N/A
      */
-    public SpeedingEvent(float speed, long timestamp, Location location, NetworkManager networkManager)
+    public SpeedingEvent(float speed, String timestamp, android.location.Location location, NetworkManager networkManager)
     {
         super(timestamp, new ServerLocation(location.getLatitude(), location.getLongitude()));
         this.speed = speed;

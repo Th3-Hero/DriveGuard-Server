@@ -22,7 +22,7 @@ public class HardCorneringEvent extends Event
      *             Location location (the location of the event)
      * Returns: N/A
      */
-    public HardCorneringEvent(float turningRate, long timestamp, Location location)
+    public HardCorneringEvent(float turningRate, String timestamp, android.location.Location location)
     {
         super(timestamp, location);
         this.turningRate = turningRate;

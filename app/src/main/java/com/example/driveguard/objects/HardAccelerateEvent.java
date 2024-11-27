@@ -22,7 +22,7 @@ public class HardAccelerateEvent extends Event
      *             Location location (the location of the event)
      * Returns: N/A
      */
-    public HardAccelerateEvent(float gForce, long timestamp, Location location)
+    public HardAccelerateEvent(float gForce, String timestamp, android.location.Location location)
     {
         super(timestamp, location);
         this.gForce = gForce;
