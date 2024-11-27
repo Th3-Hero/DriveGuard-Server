@@ -1,5 +1,7 @@
 package com.example.driveguard.activities;
 
+import static com.example.driveguard.activities.TripScreen.getCredentials;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,7 +31,7 @@ public class ProfileScreen extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_screen);
-
+        Credentials credentials = getCredentials(getIntent().getExtras());
         networkManager = new NetworkManager();
 
         usernameText = findViewById(R.id.usernameText);
@@ -39,16 +41,9 @@ public class ProfileScreen extends AppCompatActivity {
 
         // Checking credentials
 
-        Intent intent = getIntent();
-        String username = intent.getStringExtra("username");
-        String token = intent.getStringExtra("token");
-        int driverId = intent.getIntExtra("driverID", -1);
-        Credentials credentials = new Credentials(driverId, token);
+        if(credentials.getToken() != null && credentials.getDriverId() != -1){
 
-        if(username != null && token != null && driverId != -1){
-
-            currentCredentials = new Credentials(driverId, token, -1);
-            usernameText.setText(username);
+//          usernameText.setText(username);
             loginButton.setVisibility(View.GONE);
             logoutButton.setVisibility(View.VISIBLE);
             signupButton.setVisibility(View.GONE);

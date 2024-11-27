@@ -4,49 +4,38 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 
 import com.example.driveguard.R;
 import com.example.driveguard.objects.Trip;
 
-public class ScoreScreen extends AppCompatActivity {
+import java.util.Objects;
 
-    // once trip is finished, call the scoring from trip.java
-    // call the score as a dialogue box, once clicked it disappears
-    // that trip will be passed to the trip history which then displays it as an item (includes start time, end time, start location and end location)
+import trip_data.Event;
 
+// once trip is finished, call the scoring from trip.java
+// call the score as a dialogue box, once clicked it disappears
+// that trip will be passed to the trip history which then displays it as an item (includes start time, end time, start location and end location)
+
+public class ScoreScreen extends DialogFragment {
     private Trip trip;
 
-   @Override
-    protected void onCreate(Bundle savedInstanceState) {
+   public void setTrip(Trip trip) {
 
-       super.onCreate(savedInstanceState);
-
-       if(trip != null) {
-
-           showTripSumDialog(trip);
-
-       } else {
-
-           finish();
-
-       }
+       this.trip = trip;
 
    }
 
     @SuppressLint({"InflateParams", "SetTextI18n"})
-    private void showTripSumDialog(Trip trip) {
+    public View onCreateView(LayoutInflater inflater, View container, Bundle savedInstanceState) {
 
-       View dialogView = LayoutInflater.from(this).inflate(R.layout.score_screen, null);
-
-       AlertDialog.Builder builder = new AlertDialog.Builder(this);
-       builder.setView(dialogView);
+       View dialogView = inflater.inflate(R.layout.score_screen, (ViewGroup) container, false);
 
        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) LinearLayout deductionsLayout = dialogView.findViewById(R.id.linearLayoutDeductions);
 
@@ -69,19 +58,16 @@ public class ScoreScreen extends AppCompatActivity {
         } else {
 
             startLocationTextView.setText("N/A");
-            Toast.makeText(ScoreScreen.this,"Start location not available.", Toast.LENGTH_SHORT).show();
 
         }
 
         if(trip.getEndLocation() != null) {
 
             endLocationTextView.setText("Lat: " + trip.getEndLocation().getLatitude() + ", Lng: " + trip.getEndLocation().getLongitude());
-            Toast.makeText(ScoreScreen.this, "End location not available.", Toast.LENGTH_SHORT).show();
 
         } else {
 
             endLocationTextView.setText("N/A");
-            Toast.makeText(ScoreScreen.this,"End location not available.", Toast.LENGTH_SHORT).show();
 
         }
 
@@ -91,24 +77,37 @@ public class ScoreScreen extends AppCompatActivity {
 
        if(trip.getDrivingEvents() != null && !trip.getDrivingEvents().isEmpty()) {
 
-           for(int i = 0; i < trip.getDrivingEvents().size(); i++) {
+           for(Event event : trip.getDrivingEvents()) {
 
-               TextView deductionTextView = new TextView(this);
-               deductionTextView.setText("- " + trip.getDrivingEvents().get(i));
+               TextView deductionTextView = new TextView(getActivity());
+               deductionTextView.setText("- " + event);
                deductionsLayout.addView(deductionTextView);
 
            }
 
        } else {
 
-           TextView perfectDriving = new TextView(this);
+           TextView perfectDriving = new TextView(getActivity());
            perfectDriving.setText("No deductions for this trip.");
            deductionsLayout.addView(perfectDriving);
 
        }
 
-       AlertDialog dialog = builder.create();
-       dialog.show();
+       return dialogView;
+
+   }
+
+   @Override
+    public void onStart() {
+
+       super.onStart();
+
+       AlertDialog dialog = (AlertDialog) getDialog();
+       if(dialog != null) {
+
+           Objects.requireNonNull(dialog.getWindow()).setLayout(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+       }
 
    }
 
