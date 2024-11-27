@@ -45,7 +45,7 @@ public class NetworkManager {
      * Method that starts a new trip with the server
      * @param credentials for the drivers id and token
      * @param location takes android location which is formatted for the server in ServerLocation
-     * @return returns the servers response
+     * @return if successful body contains a partial Trip object to be parsed
      */
     public Response StartTrip(@NonNull Credentials credentials, Location location) {
         /*dataCollector = new DataCollector(context);
@@ -80,7 +80,7 @@ public class NetworkManager {
      * Method that ends an existing trip with the server
      * @param credentials for the drivers id, token, and trip id
      * @param location location takes android location which is formatted for the server in ServerLocation
-     * @return returns the servers response
+     * @return if successful will return the full Trip object to be parsed
      */
     public Response EndTrip(@NonNull Credentials credentials, Location location){
 
@@ -113,7 +113,7 @@ public class NetworkManager {
      * Method that adds an event to the server
      * @param event an event that needs to follow the servers schema
      * @param credentials for the drivers drivers id, token, and trip id
-     * @return returns the servers response
+     * @return if successful body is empty but code will be successful
      */
     public Response addEventToTrip(Event event, @NonNull Credentials credentials){
         Gson gson = new Gson();
@@ -174,7 +174,7 @@ public class NetworkManager {
      * retrieves a particular trips summary
      * @param credentials for the drivers drivers id, token, and trip id
      * @param tripId the id for the trip in question
-     * @return returns the servers response
+     * @return if successful will contain a full Trip object to be parsed
      */
     public Response getTripSummary(@NonNull Credentials credentials, int tripId){//used for the summary of a particular trip
 
@@ -203,9 +203,9 @@ public class NetworkManager {
     }
 
     /**
-     *
-     * @param credentials
-     * @return
+     * retrieves a drivers list of previous trips
+     * @param credentials for the drivers id, and token
+     * @return if successful the body will contain a list of CompletedTrip objects to be parsed
      */
     public Response getListOfTrips(@NonNull Credentials credentials){
         HttpUrl url = new HttpUrl.Builder()

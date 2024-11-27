@@ -8,20 +8,21 @@
     <include layout="@layout/button_deck" />
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/toolbar"
         android:background="@color/navy"
-        app:layout_constraintTop_toTopOf="parent"
+        app:titleTextColor="@color/white"
         app:title="Trip Controls"
-        app:titleTextColor="@color/white" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <ToggleButton
         android:id="@+id/startButton"
-        android:layout_width="246dp"
-        android:layout_height="152dp"
+        android:layout_width="249dp"
+        android:layout_height="149dp"
         android:layout_marginStart="82dp"
-        android:layout_marginTop="204dp"
+        android:layout_marginTop="116dp"
         android:layout_marginEnd="83dp"
         android:background="@drawable/trip_button_toggle"
         android:checked="false"
@@ -30,10 +31,8 @@
         android:textOn="Stop Trip"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
