@@ -14,6 +14,7 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.NetworkManager;
@@ -99,7 +100,15 @@ public class TripScreen extends AppCompatActivity {
                     if (response != null && response.code() == STOP_TRIP_SUCCESS){
                         //networkManager.dataCollector.stopDataCollection();
                         Toast.makeText(TripScreen.this, "Trip successfully ended!", Toast.LENGTH_LONG).show();
-                        //display trip summary here which is withing response
+
+                        // Score screen ic called - Stephan
+
+                        ScoreScreen scoreScreen = new ScoreScreen();
+
+                        scoreScreen.setTrip(currentTrip);
+
+                        scoreScreen.show(getSupportFragmentManager(), "ScoreScreenDialog");
+
                     }
                 }
 

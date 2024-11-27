@@ -67,18 +67,19 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTripHistoryLabel"
-        app:layout_constraintVertical_bias="0.075" />
+        app:layout_constraintVertical_bias="0.075"/>
 
     <Button
-        android:id="@+id/goToSignup"
+        android:id="@+id/goToSuggestions"
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_marginStart="106dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="104dp"
         android:layout_marginEnd="106dp"
         android:backgroundTint="@color/navy"
         android:text="Suggestions"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recyclerViewTripHistory" />
 

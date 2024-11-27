@@ -2,13 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:padding="16dp">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbarDriverScore"
+        android:id="@+id/toolbarTripHistoryScore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/navy"
@@ -17,33 +16,80 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
-        android:id="@+id/textViewDriverScore"
+        android:id="@+id/textViewHistoryDriverScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textSize="100dp"
+        android:textSize="100sp"
         android:textColor="@color/navy"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarDriverScore"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarTripHistoryScore"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp" />
 
     <TextView
-        android:id="@+id/textViewScoreLabel"
+        android:id="@+id/textViewHistoryScoreLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:text="Your Score for This Trip"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDriverScore" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewHistoryDriverScore" />
 
     <TextView
-        android:id="@+id/textViewDeductions"
+        android:id="@+id/textViewHistoryAttributes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="128dp"
+        android:layout_marginTop="72dp"
+        android:text="Attributes: "
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewHistoryScoreLabel" />
+
+    <LinearLayout
+        android:id="@+id/linearLayoutHistoryAttributes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewHistoryAttributes">
+
+        <TextView
+            android:id="@+id/distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distance: "
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Duration: "
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tripLength"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trip Length: "
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewHistoryDeductions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="124dp"
@@ -53,81 +99,20 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewScoreLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutHistoryAttributes" />
 
     <LinearLayout
-        android:id="@+id/linearLayoutDeductions"
+        android:id="@+id/linearLayoutHistoryDeductions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDeductions"
+        app:layout_constraintTop_toBottomOf="@+id/textViewHistoryDeductions"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp">
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textViewAttributes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="120dp"
-        android:text="Attributes: "
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayoutDeductions" />
 
-    <LinearLayout
-        android:id="@+id/linearLayoutAttributes"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="32dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewAttributes">
-
-        <!-- Predefined rows -->
-        <TextView
-            android:id="@+id/startTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start Time: "
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/endTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="End Time: "
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/startLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start Location: "
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/endLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="End Location: "
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/distance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Distance: "
-            android:textSize="16sp" />
-
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
