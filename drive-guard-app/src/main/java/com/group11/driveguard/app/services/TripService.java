@@ -171,7 +171,12 @@ public class TripService {
 
 
     private int calculateTripScore(List<DrivingEventJpa> drivingEvents) {
-        // TODO: For Brooke to implement
+        int score = 100;
+
+        for (DrivingEventJpa event : drivingEvents) {
+            score -= event.getPointsDeducted(); // won't work until server and client code are together.
+        }
+
         return 5;
     }
 }
