@@ -22,9 +22,9 @@ public class HardAccelerateEvent extends Event
      *             Location location (the location of the event)
      * Returns: N/A
      */
-    public HardAccelerateEvent(float gForce, String timestamp, android.location.Location location)
+    public HardAccelerateEvent(float gForce, String timestamp, android.location.Location location, Weather weather)
     {
-        super(timestamp, location);
+        super(timestamp, location, weather);
         this.gForce = gForce;
     }
 
@@ -61,7 +61,7 @@ public class HardAccelerateEvent extends Event
     {
         if (isHarshAcceleration())
         {
-            return (int) (this.gForce * 10);
+            return (int) (this.gForce * 10 + this.getWeatherDeduction());
         }
         return 0;
     }

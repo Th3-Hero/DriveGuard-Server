@@ -22,9 +22,9 @@ public class HardCorneringEvent extends Event
      *             Location location (the location of the event)
      * Returns: N/A
      */
-    public HardCorneringEvent(float turningRate, String timestamp, android.location.Location location)
+    public HardCorneringEvent(float turningRate, String timestamp, android.location.Location location, Weather weather)
     {
-        super(timestamp, location);
+        super(timestamp, location, weather);
         this.turningRate = turningRate;
     }
 
@@ -61,7 +61,7 @@ public class HardCorneringEvent extends Event
     {
         if (isAggressiveTurn())
         {
-            return (int) (this.turningRate * 0.5);
+            return (int) (this.turningRate * 0.5 + this.getWeatherDeduction());
         }
         return 0;
     }

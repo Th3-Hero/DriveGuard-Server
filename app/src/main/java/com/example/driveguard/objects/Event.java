@@ -2,6 +2,7 @@ package com.example.driveguard.objects;
 
 import android.location.Location;
 
+
 /* Class Name: Event
  * Class Author: Brooke Cronin
  * Date: November 14, 2024
@@ -17,6 +18,9 @@ public abstract class Event
     private ServerLocation location;
     private EventType eventType;
     private EventSeverity severity;
+    private Weather weather;
+    private int weatherDeduction;
+
 
     /* Method Name: Event
      * Method Author: Brooke Cronin
@@ -24,10 +28,30 @@ public abstract class Event
      * Parameters: long timestamp (the time of the event), Location location (the location of the event)
      * Returns: N/A
      */
-    public Event(String timestamp, android.location.Location location)
+    public Event(String timestamp, android.location.Location location, Weather weather)
     {
         this.eventTime = timestamp;
         this.location = new ServerLocation(location.getLatitude(), location.getLongitude());
+        this.weather = weather;
+        int weatherDeduction = this.getWeather().getWeatherSeverity().ordinal() + 1;
+        if (this.getWeather().getWeatherType() == WeatherType.CLEAR || this.getWeather().getWeatherType() == WeatherType.UNKNOWN)
+        {
+            weatherDeduction = 0;
+        }
+        else if (this.getWeather().getWeatherType() == WeatherType.FOG || this.getWeather().getWeatherType() == WeatherType.DRIZZLE || this.getWeather().getWeatherType() == WeatherType.SNOW)
+        {
+            weatherDeduction += 1;
+        }
+        else if (this.getWeather().getWeatherType() == WeatherType.RAIN)
+        {
+            weatherDeduction += 2;
+        }
+        else if (this.getWeather().getWeatherType() == WeatherType.FREEZING_RAIN || this.getWeather().getWeatherType() == WeatherType.FREEZING_DRIZZLE || this.getWeather().getWeatherType() == WeatherType.THUNDERSTORM)
+        {
+            weatherDeduction += 4;
+        }
+        this.weatherDeduction = weatherDeduction;
+
     }
 
     /* Method Name: getTimestamp
@@ -72,6 +96,18 @@ public abstract class Event
     public void setLocation(android.location.Location location)
     {
         this.location = new ServerLocation(location.getLatitude(), location.getLongitude());
+    }
+
+    public Weather getWeather() {
+        return this.weather;
+    }
+
+    public void setWeather(Weather weather) {
+        this.weather = weather;
+    }
+
+    public int getWeatherDeduction() {
+        return this.weatherDeduction;
     }
 
     /* Method Name: deductPoints

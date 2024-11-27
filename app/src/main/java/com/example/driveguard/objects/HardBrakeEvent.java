@@ -22,9 +22,9 @@ public class HardBrakeEvent extends Event
      *             Location location (the location of the event)
      * Returns: N/A
      */
-    public HardBrakeEvent(float gForce, String timestamp, android.location.Location location)
+    public HardBrakeEvent(float gForce, String timestamp, android.location.Location location, Weather weather)
     {
-        super(timestamp, location);
+        super(timestamp, location, weather);
         this.gForce = gForce;
     }
 
@@ -61,7 +61,7 @@ public class HardBrakeEvent extends Event
     {
         if (isHarshBraking())
         {
-            return (int) (this.getGForce() * 10);
+            return (int) (this.getGForce() * 10 + this.getWeatherDeduction());
         }
         return 0;
     }

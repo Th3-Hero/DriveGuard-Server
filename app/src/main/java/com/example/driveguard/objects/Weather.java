@@ -7,4 +7,36 @@ public class Weather implements Serializable {
     private boolean isDay;
     private WeatherType weatherType;
     private WeatherSeverity weatherSeverity;
+
+    public String getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public boolean isDay() {
+        return isDay;
+    }
+
+    public void setDay(boolean isDay) {
+        this.isDay = isDay;
+    }
+
+    public WeatherType getWeatherType() {
+        return weatherType;
+    }
+
+    public void setWeatherType(WeatherType weatherType) {
+        this.weatherType = weatherType;
+    }
+
+    public WeatherSeverity getWeatherSeverity() {
+        return weatherSeverity;
+    }
+
+    public void setWeatherSeverity(WeatherSeverity weatherSeverity) {
+        this.weatherSeverity = weatherSeverity;
+    }
 }

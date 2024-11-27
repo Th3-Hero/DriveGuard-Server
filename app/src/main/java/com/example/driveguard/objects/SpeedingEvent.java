@@ -1,6 +1,11 @@
 package com.example.driveguard.objects;
 
 import com.example.driveguard.NetworkManager;
+import com.google.gson.Gson;
+
+import java.io.IOException;
+
+import okhttp3.Response;
 
 /* Class Name: SpeedEvent
  * Class Author: Brooke Cronin
@@ -15,6 +20,7 @@ public class SpeedingEvent extends Event
 {
     private float speed;
     private float postedSpeedLimit;
+    private float postedSpeedLimitAllowance;
 
     /* Method Name: SpeedEvent
      * Method Author: Brooke Cronin
@@ -23,11 +29,24 @@ public class SpeedingEvent extends Event
      *             float postedSpeedLimit (the speed limit for the event location), Location location (the event location)
      * Returns: N/A
      */
-    public SpeedingEvent(float speed, String timestamp, android.location.Location location, NetworkManager networkManager)
+    public SpeedingEvent(float speed, String timestamp, android.location.Location location, NetworkManager networkManager, Weather weather)
     {
-        super(timestamp, new ServerLocation(location.getLatitude(), location.getLongitude()));
+        super(timestamp, location, weather);
         this.speed = speed;
-        this.postedSpeedLimit = networkManager.getRoadFromLocation(location).speedLimit;
+        try {
+            // Make the network call and parse the response
+            Response response = networkManager.getRoadFromLocation(location);
+            if (response.isSuccessful() && response.body() != null) {
+                String jsonResponse = response.body().string();
+                Gson gson = new Gson();
+                Road roadData = gson.fromJson(jsonResponse, Road.class);
+                this.postedSpeedLimit = roadData.getSpeedLimit();
+            } else {
+                throw new IOException("Failed to fetch speed limit. Response: " + response);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error fetching road data", e);
+        }
         this.postedSpeedLimitAllowance = this.postedSpeedLimit + 10;
     }
 
@@ -86,7 +105,7 @@ public class SpeedingEvent extends Event
     {
         if (isSpeeding())
         {
-            return (int) ((this.getSpeed() - this.getPostedSpeedLimitAllowance()) / 5);
+            return (int) ((this.getSpeed() - this.getPostedSpeedLimitAllowance()) / 5 + this.getWeatherDeduction());
         }
         return 0;
     }
