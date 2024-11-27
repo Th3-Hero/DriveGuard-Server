@@ -33,5 +33,9 @@ public record DrivingEvent(
 
     @Schema(description = "The severity of the weather.")
     @NonNull
-    WeatherType.WeatherSeverity weatherSeverity
+    WeatherType.WeatherSeverity weatherSeverity,
+
+    @Schema(description = "The number of points deducted from the driver's score for the infraction.")
+    @NonNull
+    Integer pointsDeducted
 ) { }

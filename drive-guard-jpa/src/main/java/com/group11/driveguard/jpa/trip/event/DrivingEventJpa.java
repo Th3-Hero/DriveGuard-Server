@@ -64,6 +64,10 @@ public class DrivingEventJpa implements Serializable {
     @Column
     private WeatherType.WeatherSeverity weatherSeverity;
 
+    @NonNull
+    @Column
+    private Integer pointsDeducted;
+
     public static DrivingEventJpa create(DrivingEventUpload drivingEventUpload, Weather weather, LocationJpa location, TripJpa trip) {
         return DrivingEventJpa.builder()
             .trip(trip)
@@ -73,6 +77,7 @@ public class DrivingEventJpa implements Serializable {
             .severity(drivingEventUpload.severity())
             .weatherType(weather.getWeatherType())
             .weatherSeverity(weather.getWeatherSeverity())
+            .pointsDeducted(drivingEventUpload.pointsDeducted())
             .build();
     }
 
@@ -83,7 +88,8 @@ public class DrivingEventJpa implements Serializable {
             eventType,
             severity,
             weatherType,
-            weatherSeverity
+            weatherSeverity,
+            pointsDeducted
         );
     }
 

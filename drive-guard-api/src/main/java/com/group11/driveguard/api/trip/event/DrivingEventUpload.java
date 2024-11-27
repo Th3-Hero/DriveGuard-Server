@@ -27,5 +27,9 @@ public record DrivingEventUpload(
 
     @Schema(description = "The severity of the event.")
     @NotNull
-    EventType.Severity severity
+    EventType.Severity severity,
+
+    @Schema(description = "Points deducted from the driver's score for the infraction.")
+    @NotNull
+    Integer pointsDeducted
 ) { }
