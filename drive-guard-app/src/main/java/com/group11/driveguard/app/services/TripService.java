@@ -177,6 +177,6 @@ public class TripService {
             score -= event.getPointsDeducted(); // won't work until server and client code are together.
         }
 
-        return 5;
+        return 0;
     }
 }
