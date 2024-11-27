@@ -59,10 +59,9 @@ dependencies {
     androidTestImplementation libs.ui.test.junit4
     debugImplementation libs.ui.tooling
     debugImplementation libs.ui.test.manifest
-
     implementation libs.okhttp
-
     implementation libs.gson
+    implementation libs.picasso
     testImplementation "org.mockito:mockito-core:3.+"
 
     compileOnly 'org.projectlombok:lombok:1.18.30'

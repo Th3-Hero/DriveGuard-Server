@@ -1,14 +1,21 @@
 package com.example.driveguard.activities;
 
+import static com.example.driveguard.activities.TripScreen.getCredentials;
+
+import android.app.UiModeManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -17,6 +24,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.R;
 import com.example.driveguard.objects.Credentials;
+import com.squareup.picasso.Picasso;
 
 public class HomeScreen extends AppCompatActivity {
 
@@ -32,14 +40,23 @@ public class HomeScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        credentials = new Credentials();
+
+        ImageView imageView = findViewById(R.id.weather);
+        Picasso.get()
+                .load("https://openweathermap.org/img/wn/10d@2x.png")
+                .into(imageView);
+
+        boolean darkMode = false;
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);
+        darkMode = preferences.getBoolean("darkMode", false);
+
+        if (darkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
         //Used to retrieve the driverID and login token from the previous activity
         Bundle extras = getIntent().getExtras();
-        if (extras != null){
-            int driverID = extras.getInt("driverID");
-            String token = extras.getString("token");
-            credentials = new Credentials(driverID, token);
-        }
+        credentials = getCredentials(extras);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
