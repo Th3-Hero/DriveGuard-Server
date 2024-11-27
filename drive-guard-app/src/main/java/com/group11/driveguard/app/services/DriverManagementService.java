@@ -21,6 +21,15 @@ public class DriverManagementService {
     private final AuthorizationService authorizationService;
     private final SchedulingService schedulingService;
 
+    public Driver getDriverById(Long driverId, String token) {
+        DriverJpa driverJpa = driverRepository.findById(driverId)
+            .orElseThrow(() -> new EntityNotFoundException(CommonErrorMessages.MISSING_DRIVER_WITH_ID.formatted(driverId)));
+
+        authorizationService.validateSession(driverId, token);
+
+        return driverJpa.toDriverDto();
+    }
+
     public Driver updateName(Long driverId, String token, String firstName, String lastName) {
         DriverJpa driverJpa = driverRepository.findById(driverId)
             .orElseThrow(() -> new EntityNotFoundException(CommonErrorMessages.MISSING_DRIVER_WITH_ID.formatted(driverId)));
@@ -77,6 +86,5 @@ public class DriverManagementService {
         driverJpa.setDeleted(false);
         return driverRepository.save(driverJpa).toDriverDto();
     }
-
 
 }

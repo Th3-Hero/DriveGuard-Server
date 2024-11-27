@@ -32,6 +32,19 @@ public class DriverController {
         return e.getMessage();
     }
 
+    @GetMapping("/{driverId}")
+    @Operation(summary = "Get a Driver by ID")
+    @ApiResponse(responseCode = "200", description = "Driver found")
+    @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    @ApiResponse(responseCode = "404", description = "Driver not found", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
+    Driver getDriverById(
+        @PathVariable @NotNull(message = "Driver ID is required") Long driverId,
+        @RequestParam @NotBlank(message = "Token is required") String token
+    ) {
+        return driverManagementService.getDriverById(driverId, token);
+    }
+
     @PatchMapping("/name/{driverId}")
     @Operation(summary = "Update the name of the Driver")
     @ApiResponse(responseCode = "200", description = "Name updated successfully")
