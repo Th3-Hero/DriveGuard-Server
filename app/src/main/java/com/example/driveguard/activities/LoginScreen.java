@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
 import com.example.driveguard.objects.Account;
@@ -40,6 +41,8 @@ public class LoginScreen extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
         networkManager = new NetworkManager(getApplicationContext());
+
+        ButtonDeck.SetUpButtons(this);
 
         Button loginButton = findViewById(R.id.buttonLogin);
         loginButton.setOnClickListener(new View.OnClickListener() {

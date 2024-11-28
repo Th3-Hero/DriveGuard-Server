@@ -1,15 +1,16 @@
 package com.example.driveguard.activities;
 
 import static com.example.driveguard.GsonUtilities.JsonToWeather;
-import static com.example.driveguard.Utilities.LoadCredentials;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,24 +25,25 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.DataCollector;
+import com.example.driveguard.GsonUtilities;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
-import com.example.driveguard.objects.Credentials;
 import com.example.driveguard.objects.Driver;
 import com.example.driveguard.objects.Weather;
 import com.squareup.picasso.Picasso;
+
+import java.time.LocalDateTime;
 
 import lombok.SneakyThrows;
 import okhttp3.Response;
 
 public class HomeScreen extends AppCompatActivity {
 
-    private Credentials credentials;
-
     private ImageView weatherIcon;
     private TextView welcomeMessage;
     private TextView username;
     private TextView score;
+    private TextView scoreMessage;
     private NetworkManager networkManager;
     private DataCollector dataCollector;
     private Weather weather;
@@ -66,17 +68,9 @@ public class HomeScreen extends AppCompatActivity {
         dataCollector = new DataCollector(getApplicationContext());
         networkManager = new NetworkManager(getApplicationContext());
 
-        Response response = networkManager.getWeatherFromLocation(dataCollector.getStartingLocation());
-
-        if (response.isSuccessful()){
-            assert response.body() != null;
-            weather = JsonToWeather(response.body().string());
-            weatherIcon = findViewById(R.id.weather);
-            Picasso.get()
-                    .load(weather.getIconUrl())
-                    .into(weatherIcon);
-        }
-
+        LoadWeatherIcon(networkManager);
+        LoadTimeMessage();
+        LoadDriver(networkManager);
 
         boolean darkMode = false;
         SharedPreferences preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);
@@ -86,19 +80,10 @@ public class HomeScreen extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
 
-
-        //Used to retrieve the driverID and login token from the previous activity
-
-        //if there were no credentials received from the previous activity we then try retrieve them from the file
-
-        credentials = LoadCredentials(getApplicationContext());
-
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ButtonDeck.SetUpButtons(HomeScreen.this);
-
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,5 +104,54 @@ public class HomeScreen extends AppCompatActivity {
         }
         return true;
     }
-
+    @SneakyThrows
+    public void LoadWeatherIcon(@NonNull NetworkManager networkManager){
+        Response weatherRes = networkManager.getWeatherFromLocation(dataCollector.getStartingLocation());
+        if (weatherRes.isSuccessful()){
+            assert weatherRes.body() != null;
+            weather = JsonToWeather(weatherRes.body().string());
+            weatherIcon = findViewById(R.id.weather);
+            Picasso.get()
+                    .load(weather.getIconUrl())
+                    .placeholder(R.drawable.icon_sun)
+                    .into(weatherIcon);
+        }
+    }
+    public void LoadTimeMessage(){
+        welcomeMessage = findViewById(R.id.greeting);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LocalDateTime current = LocalDateTime.now();
+            if (current.getHour() < 4){
+                welcomeMessage.setText(R.string.good_evening);
+            } else if (current.getHour() < 12) {
+                welcomeMessage.setText(R.string.good_morning);
+            } else if (current.getHour() < 18) {
+                welcomeMessage.setText(R.string.good_afternoon);
+            } else {
+                welcomeMessage.setText(R.string.good_evening);
+            }
+        } else{
+            welcomeMessage.setText(R.string.good_day);
+        }
+    }
+    @SneakyThrows
+    public void LoadDriver(@NonNull NetworkManager networkManager){
+        Response response = networkManager.getDriver();
+        username = findViewById(R.id.username);
+        score = findViewById(R.id.score);
+        scoreMessage = findViewById(R.id.score_message);
+        if (response!= null && response.isSuccessful()){
+            assert response.body() != null;
+            Driver driver = GsonUtilities.JsonToDriver(response.body().string());
+            if (driver != null){
+                username.setText(driver.getUsername());
+                score.setText(String.valueOf(driver.getOverallScore()));
+            }
+        }
+        else {
+            username.setText(R.string.guest);
+            score.setVisibility(View.INVISIBLE);
+            scoreMessage.setVisibility(View.INVISIBLE);
+        }
+    }
 }

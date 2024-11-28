@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.Utilities;
 import com.example.driveguard.objects.Account;
@@ -37,6 +38,8 @@ public class SignupScreen extends AppCompatActivity {
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        ButtonDeck.SetUpButtons(this);
 
         Button signUpButton = findViewById(R.id.buttonSignUp);
         signUpButton.setOnClickListener(new View.OnClickListener() {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="primary_button" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:background">@drawable/rounded_button</item>
+        <item name="backgroundTint">@null</item>
+    </style>
+</resources>

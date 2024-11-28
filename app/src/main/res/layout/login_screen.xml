@@ -4,24 +4,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor">
 
-    <androidx.appcompat.widget.Toolbar
+    <!--<androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/navy"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:titleTextColor="@color/white" />
+        app:titleTextColor="@color/white" />-->
+
+    <include layout="@layout/button_deck"/>
 
     <Button
+        style="@style/primary_button"
         android:id="@+id/buttonLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="76dp"
-        android:backgroundTint="@color/navy"
-        android:text="Login"
+        android:text="@string/login"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +35,8 @@
         android:layout_width="394dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:hint="Password"
+        android:hint="@string/password"
+        android:textColorHint="@color/textColorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.47"
         android:layout_marginStart="16dp"
@@ -44,7 +48,8 @@
             android:id="@+id/editTextPasswordLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textColorHint="@color/textColorSecondary" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -52,7 +57,8 @@
         android:layout_width="394dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
-        android:hint="Username"
+        android:hint="@string/Username"
+        android:textColorHint="@color/textColorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.47"
         android:layout_marginStart="16dp"
@@ -64,7 +70,8 @@
             android:id="@+id/editTextUsernameLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="text"
+            android:textColorHint="@color/textColorSecondary" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.Toolbar
@@ -74,6 +81,6 @@
         android:background="@color/navy"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Login"
-        app:titleTextColor="@color/white"
+        app:titleTextColor="@color/textColorPrimary"
         tools:layout_editor_absoluteX="0dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

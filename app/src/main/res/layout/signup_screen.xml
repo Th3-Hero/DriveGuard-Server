@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <include layout="@layout/button_deck"/>
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar2"
         android:layout_width="match_parent"
@@ -14,21 +16,21 @@
         app:title="Sign Up"
         app:titleTextColor="@color/textColorPrimary" />
 
-    <androidx.appcompat.widget.Toolbar
+   <!-- <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/navy"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:titleTextColor="@color/white" />
+        app:titleTextColor="@color/white" />-->
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputUsername"
         android:layout_width="394dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:hint="Username"
+        android:hint="@string/Username"
         android:textColorHint="@color/textColorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
@@ -40,7 +42,8 @@
             android:id="@+id/editTextUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="text"
+            android:textColorHint="@color/textColorSecondary"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -49,6 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="Password"
+        android:textColorHint="@color/textColorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
@@ -59,7 +63,8 @@
             android:id="@+id/editTextPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textColorHint="@color/textColorSecondary"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -68,6 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="Re-Enter Password"
+        android:textColorHint="@color/textColorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
@@ -78,7 +84,8 @@
             android:id="@+id/editTextRePassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textColorHint="@color/textColorSecondary"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -87,6 +94,7 @@
         android:layout_height="62dp"
         android:layout_marginTop="8dp"
         android:hint="Last Name"
+        android:textColorHint="@color/textColorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
@@ -97,7 +105,8 @@
             android:id="@+id/editTextLastName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="text"
+            android:textColorHint="@color/textColorSecondary"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -106,6 +115,7 @@
         android:layout_height="60dp"
         android:layout_marginTop="16dp"
         android:hint="First Name"
+        android:textColorHint="@color/textColorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
@@ -116,22 +126,23 @@
             android:id="@+id/editTextFirstName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="text"
+            android:textColorHint="@color/textColorSecondary"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
+        style="@style/primary_button"
         android:id="@+id/buttonSignUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
-        android:backgroundTint="@color/navy"
-        android:text="Sign Up"
+        android:layout_marginBottom="100dp"
+        android:text="@string/signup"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <NumberPicker
+    <!--<NumberPicker
         android:id="@+id/agePicker"
         android:layout_width="63dp"
         android:layout_height="148dp"
@@ -141,9 +152,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.112"
         app:layout_constraintStart_toEndOf="@+id/labelAge"
-        app:layout_constraintTop_toBottomOf="@+id/textInputRePassword" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputRePassword" />-->
 
-    <TextView
+   <!-- <TextView
         android:id="@+id/labelAge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -152,6 +163,6 @@
         android:text="Age"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputRePassword" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputRePassword" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
