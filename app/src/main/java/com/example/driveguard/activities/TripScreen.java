@@ -38,7 +38,6 @@ public class TripScreen extends AppCompatActivity {
     private DataCollector dataCollector;
 
     private DataClassifier dataClassifier;
-    private Credentials credentials;
     private Trip currentTrip;
     private final int START_TRIP_SUCCESS = 201;
     private final int STOP_TRIP_SUCCESS = 200;
@@ -53,10 +52,6 @@ public class TripScreen extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
         dataCollector = new DataCollector(getApplicationContext());
-
-        //Used to retrieve the driverID and login token from the previous activity
-        Bundle extras = getIntent().getExtras();
-        credentials = getCredentialsFromExtras(extras);
 
         //defines the toolbar used in the activity
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -103,7 +98,7 @@ public class TripScreen extends AppCompatActivity {
                             throw new RuntimeException(e);
                         }
                         //retrieve the trip ID sent by server
-                            credentials.setTripId(currentTrip.getId());
+                            //credentials.setTripId(currentTrip.getId());
 
                         Utilities.SaveTripID(getApplicationContext(), currentTrip.getId());
 
@@ -141,11 +136,9 @@ public class TripScreen extends AppCompatActivity {
 
                 else if(!startButton.isChecked()){
                     Response response = networkManager.EndTrip(dataCollector.getStartingLocation());
-                    if (response != null && response.code() == STOP_TRIP_SUCCESS){
-                        //networkManager.dataCollector.stopDataCollection();
-                } else if (!startButton.isChecked()) { // For ending trip
-                    Response response = networkManager.EndTrip(credentials, dataCollector.getStartingLocation());
                     if (response != null && response.code() == STOP_TRIP_SUCCESS) {
+                        //networkManager.dataCollector.stopDataCollection();
+
                         Toast.makeText(TripScreen.this, "Trip successfully ended!", Toast.LENGTH_LONG).show();
 
                         // Stop the async loop
@@ -158,13 +151,12 @@ public class TripScreen extends AppCompatActivity {
                         scoreScreen.setTrip(currentTrip);
 
                         scoreScreen.show(getSupportFragmentManager(), "ScoreScreenDialog");
-
+                    }
                     }
                 }
+            });
+        }
 
-            }
-        });
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu,menu);
@@ -176,22 +168,16 @@ public class TripScreen extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.settings){
             Intent intent = new Intent(TripScreen.this, Settings.class);
-            intent.putExtra("driverId", credentials.getDriverId());
-            intent.putExtra("token", credentials.getToken());
+            startActivity(intent);
+        }
+        else if (id == R.id.profile){
+            Intent intent;
+            intent = new Intent(this, ProfileScreen.class);
             startActivity(intent);
         }
         return true;
     }
 
-    public static Credentials getCredentials(Bundle extras){
-        if (extras != null){
-            int driverID = extras.getInt("driverID");
-            String token = extras.getString("token");
-            return new Credentials(driverID, token);
-        } else {
-            return new Credentials();
-        }
-    }
     // Method to check for driving events
     private void checkForEvents() {
         // Get current data from the DataCollector
@@ -202,7 +188,7 @@ public class TripScreen extends AppCompatActivity {
         String timestamp = String.valueOf(System.currentTimeMillis()); // Current timestamp
 
         // Use NetworkManager for additional data retrieval
-        NetworkManager networkManager = new NetworkManager();
+        NetworkManager networkManager = new NetworkManager(getApplicationContext());
         int postedSpeedLimit = 0; // getting the posted speed limit from the current road
         try {
             // Make the API call to fetch road data
@@ -228,9 +214,10 @@ public class TripScreen extends AppCompatActivity {
         dataClassifier = new DataClassifier(postedSpeedLimit);
 
         // Classify the data for events
-        dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, credentials, location);
+        dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, location);
     }
-
 }
+
+
 
 

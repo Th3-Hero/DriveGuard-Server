@@ -9,7 +9,7 @@
 
     <item android:title="@string/profile"
         android:id="@+id/profile"
-        android:icon="@drawable/icon_profiles"
+        android:icon="@drawable/icon_profile_toolbar"
         app:showAsAction="ifRoom"/>
 
     <item android:title="@string/settings"
