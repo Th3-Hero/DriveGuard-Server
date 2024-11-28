@@ -6,7 +6,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class Credentials {
     private int driverId;
     private String token;
@@ -19,6 +18,11 @@ public class Credentials {
     public Credentials(int driverID, String token){
         this.driverId = driverID;
         this.token = token;
+        this.tripId = -1;
+    }
+    public Credentials(){
+        this.driverId = -1;
+        this.token = "";
         this.tripId = -1;
     }
 }

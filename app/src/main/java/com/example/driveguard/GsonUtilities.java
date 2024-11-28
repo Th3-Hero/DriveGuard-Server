@@ -8,6 +8,7 @@ import com.example.driveguard.objects.Address;
 import com.example.driveguard.objects.CompletedTrip;
 import com.example.driveguard.objects.CompletedTripAdapter;
 import com.example.driveguard.objects.Credentials;
+import com.example.driveguard.objects.Driver;
 import com.example.driveguard.objects.ErrorReport;
 import com.example.driveguard.objects.Road;
 import com.example.driveguard.objects.ServerLocation;
@@ -75,5 +76,9 @@ public class GsonUtilities {
     public static Address JsonToAddress(String responseBody){
         Gson gson = new Gson();
         return gson.fromJson(responseBody, Address.class);
+    }
+    public static Driver JsonToDriver(String responseBody){
+        Gson gson = new Gson();
+        return gson.fromJson(responseBody, Driver.class);
     }
 }

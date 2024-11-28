@@ -2,7 +2,9 @@ package com.example.driveguard.activities;
 
 import static com.example.driveguard.GsonUtilities.JsonToCredentials;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.text.TextUtils;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.driveguard.NetworkManager;
@@ -36,7 +39,7 @@ public class LoginScreen extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        networkManager = new NetworkManager();
+        networkManager = new NetworkManager(getApplicationContext());
 
         Button loginButton = findViewById(R.id.buttonLogin);
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -84,20 +87,23 @@ public class LoginScreen extends AppCompatActivity {
                     assert response.body() != null;
                     Credentials credentials = JsonToCredentials(response.body().string());
 
+                    SaveCredentials(credentials);
+
                     Intent intent = new Intent(LoginScreen.this, HomeScreen.class);
-                    intent.putExtra("driverID", credentials.getDriverId());
-                    intent.putExtra("token", credentials.getToken());
                     startActivity(intent);
                     finish();
 
                 } else {
                     Toast.makeText(LoginScreen.this, "Error: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
-
             }
-
         });
-
     }
-
+public void SaveCredentials(@NonNull Credentials credentials){
+    SharedPreferences preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);
+    SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt("driverId", credentials.getDriverId());
+            editor.putString("token", credentials.getToken());
+            editor.apply();
+}
 }

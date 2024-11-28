@@ -11,9 +11,8 @@ import android.widget.TextView;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.driveguard.R;
+import com.example.driveguard.objects.Event;
 import com.example.driveguard.objects.Trip;
-
-import trip_data.Event;
 
 // once trip is finished, call the scoring from trip.java
 // call the score as a dialogue box, once clicked it disappears

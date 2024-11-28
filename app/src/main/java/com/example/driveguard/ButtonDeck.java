@@ -6,20 +6,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
+
+import com.example.driveguard.activities.HistoryScreen;
 import com.example.driveguard.activities.HomeScreen;
 import com.example.driveguard.activities.TripScreen;
 import com.example.driveguard.objects.Credentials;
 
 public class ButtonDeck {
-public static void SetUpButtons(Activity activity, Credentials credentials){
+public static void SetUpButtons(@NonNull Activity activity){
 
-        final ImageButton _homeButton = activity.findViewById(R.id.homeButton);
-        _homeButton.setOnClickListener(new View.OnClickListener() {
+        ImageButton homeButton = activity.findViewById(R.id.homeButton);
+        homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, HomeScreen.class);
-                intent.putExtra("driverID", credentials.getDriverId());
-                intent.putExtra("token", credentials.getToken());
                 activity.startActivity(intent);
             }
         });
@@ -29,14 +30,21 @@ public static void SetUpButtons(Activity activity, Credentials credentials){
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, TripScreen.class);
-                intent.putExtra("driverID", credentials.getDriverId());
-                intent.putExtra("token", credentials.getToken());
                 activity.startActivity(intent);
             }
         });
 
-    }
-    public static void ToggleButtons(Activity activity){
+        final ImageButton historyButton = activity.findViewById(R.id.previousTrips);
+        historyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, HistoryScreen.class);
+                activity.startActivity(intent);
+            }
+        });
+
+}
+    public static void ToggleButtons(@NonNull Activity activity){
         ImageButton home = activity.findViewById(R.id.homeButton);
         ImageButton previousTrips = activity.findViewById(R.id.previousTrips);
         ImageButton trip = activity.findViewById(R.id.trip);

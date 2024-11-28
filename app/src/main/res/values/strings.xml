@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">DriveGuard</string>
-    <string name="title_activity_start_trip">start_trip</string>
-    <string name="preferences_file">preferences</string>
+    <string name="title_activity_start_trip">Start Trip</string>
+    <string name="preferences_file" translatable="false">preferences</string>
+    <string name="notifications">Notifications</string>
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="data_collection">Data Collection</string>
 </resources>

@@ -16,7 +16,7 @@ import com.example.driveguard.R;
 import com.example.driveguard.objects.CompletedTrip;
 import com.example.driveguard.objects.Trip;
 
-import trip_data.Event;
+import com.example.driveguard.objects.Event;
 
 public class CompletedTripDialog extends DialogFragment {
 

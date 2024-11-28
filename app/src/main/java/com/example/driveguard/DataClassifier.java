@@ -1,5 +1,7 @@
 package com.example.driveguard;
 
+import android.content.Context;
+
 import com.example.driveguard.objects.Credentials;
 import com.example.driveguard.objects.DrivingEvent;
 import com.example.driveguard.objects.EventSeverity;
@@ -48,7 +50,7 @@ public class DataClassifier
      *             long timestamp (time of event)
      * Returns: N/A
      */
-    public void classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, Credentials credentials, android.location.Location location)
+    public void classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, android.location.Location location)
     {
         try {
             // Get the weather data as a Response object
@@ -78,8 +80,7 @@ public class DataClassifier
                                     EventType.SPEEDING,
                                     EventSeverity.LOW,
                                     speedEvent.deductPoints()
-                            ),
-                            credentials
+                            )
                     );
                 }
                 // Classify Acceleration Event
@@ -93,8 +94,7 @@ public class DataClassifier
                                     EventType.HARD_ACCELERATION,
                                     EventSeverity.LOW,
                                     accelerateEvent.deductPoints()
-                            ),
-                            credentials
+                            )
                     );
                 }
 
@@ -109,8 +109,7 @@ public class DataClassifier
                                     EventType.HARD_BRAKING,
                                     EventSeverity.LOW,
                                     brakeEvent.deductPoints()
-                            ),
-                            credentials
+                            )
                     );
                 }
 
@@ -125,8 +124,7 @@ public class DataClassifier
                                     EventType.HARD_CORNERING,
                                     EventSeverity.LOW,
                                     turningEvent.deductPoints()
-                            ),
-                            credentials
+                            )
                     );
                 }
             }

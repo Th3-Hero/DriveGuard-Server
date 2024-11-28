@@ -35,7 +35,7 @@ public class HistoryScreen extends AppCompatActivity {
         recyclerViewTripHistory = findViewById(R.id.recyclerViewTripHistory);
         recyclerViewTripHistory.setLayoutManager(new LinearLayoutManager(this));
 
-        networkManager = new NetworkManager();
+        networkManager = new NetworkManager(getApplicationContext());
 
         Credentials credentials = getCredentialsforHistory();
         getTripHistory(credentials);
@@ -46,7 +46,7 @@ public class HistoryScreen extends AppCompatActivity {
 
         try{
 
-            Response response = networkManager.getListOfTrips(credentials);
+            Response response = networkManager.getListOfTrips();
 
             if(response.isSuccessful()) {
 

@@ -1,13 +1,15 @@
 package com.example.driveguard.activities;
 
-import static com.example.driveguard.activities.TripScreen.getCredentials;
+import static com.example.driveguard.Utilities.getCredentialsFromExtras;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
@@ -27,20 +29,16 @@ public class Settings extends AppCompatActivity {
         setContentView(R.layout.settings);
 
         preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);
-        boolean darkMode = preferences.getBoolean("darkMode", false);
-
         SwitchCompat switchCompat = findViewById(R.id.darkMode);
-
         //Used to retrieve the driverID and login token from the previous activity
-        Bundle extras = getIntent().getExtras();
-        Credentials credentials = getCredentials(extras);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ButtonDeck.SetUpButtons(this, credentials);
+        ButtonDeck.SetUpButtons(this);
 
         switchCompat.setOnCheckedChangeListener(null);
+        boolean darkMode = preferences.getBoolean("darkMode", false);
         switchCompat.setChecked(darkMode);
 
         switchCompat.setOnCheckedChangeListener((buttonView, isChecked) ->  {
@@ -50,7 +48,6 @@ public class Settings extends AppCompatActivity {
                 if (isChecked){
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 } else {
-
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
             }
@@ -61,5 +58,19 @@ public class Settings extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu,menu);
         return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        int id = item.getItemId();
+        if (id == R.id.settings){
+            Intent intent = new Intent(this, Settings.class);
+            startActivity(intent);
+        }
+        else if (id == R.id.profile){
+            Intent intent;
+            intent = new Intent(this, ProfileScreen.class);
+            startActivity(intent);
+        }
+        return true;
     }
 }

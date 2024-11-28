@@ -1,6 +1,7 @@
 package com.example.driveguard.activities;
 
 import static com.example.driveguard.GsonUtilities.JsonToTrip;
+import static com.example.driveguard.Utilities.getCredentialsFromExtras;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,16 +15,17 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
 
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
+import com.example.driveguard.Utilities;
 import com.example.driveguard.objects.Credentials;
 import com.example.driveguard.objects.Trip;
 
 import java.io.IOException;
 
+import lombok.SneakyThrows;
 import okhttp3.Response;
 import com.example.driveguard.DataCollector;
 
@@ -48,7 +50,7 @@ public class TripScreen extends AppCompatActivity {
 
         //Used to retrieve the driverID and login token from the previous activity
         Bundle extras = getIntent().getExtras();
-        credentials = getCredentials(extras);
+        credentials = getCredentialsFromExtras(extras);
 
         //defines the toolbar used in the activity
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -57,19 +59,20 @@ public class TripScreen extends AppCompatActivity {
         //toggle button that is used to stop and start trips
         ToggleButton startButton = findViewById(R.id.startButton);
 
-        ButtonDeck.SetUpButtons(this, credentials);
+        ButtonDeck.SetUpButtons(this);
 
         startButton.setOnClickListener(new View.OnClickListener() {
+            @SneakyThrows
             @Override
             public void onClick(View v) {
                 ButtonDeck.ToggleButtons(TripScreen.this);
 
-                NetworkManager networkManager = new NetworkManager();
+                NetworkManager networkManager = new NetworkManager(getApplicationContext());
 
                 //start trip here
                 if (startButton.isChecked()){//for starting trip
                     // 201 means a trip was started successfully
-                    Response response = networkManager.StartTrip(credentials, dataCollector.getStartingLocation());
+                    Response response = networkManager.StartTrip(dataCollector.getStartingLocation());
                     if (response != null && response.code() == START_TRIP_SUCCESS){
                         //networkManager.dataCollector.startDataCollection();
                         Toast.makeText(TripScreen.this, "Trip Successfully started!", Toast.LENGTH_LONG).show();
@@ -81,23 +84,42 @@ public class TripScreen extends AppCompatActivity {
                             throw new RuntimeException(e);
                         }
                         //retrieve the trip ID sent by server
-                            credentials.setTripId(currentTrip.getId());
+                            //credentials.setTripId(currentTrip.getId());
 
+                        Utilities.SaveTripID(getApplicationContext(), currentTrip.getId());
 
                         //BROOKE you can add all your trip stuff here
 
 //                        run an async loop to check for events every 25 millisecond
 //                        look at timeline from javafx
 
-                    }
-                    else{//set button back to unchecked
+                    } else {
+                        assert response != null;
+                        if (response.code() == 409) {//code 409 means a trip is already underway if this is the case call to end it
+                            Response tripResponse = networkManager.getCurrentTrip();
 
-                        startButton.setChecked(false);
+                            if (tripResponse.isSuccessful()){
+                                assert tripResponse.body() != null;
+                                Trip current = JsonToTrip(tripResponse.body().string());
+                                Utilities.SaveTripID(getApplicationContext(), current.getId());
+                            }
+
+                            Response endResponse = networkManager.EndTrip(dataCollector.getStartingLocation());
+
+                            if (endResponse.isSuccessful()){
+                                Toast.makeText(TripScreen.this, "ERROR: cancelling previous trip", Toast.LENGTH_LONG).show();
+                            }
+                            startButton.setChecked(false);
+                        }
+                        else{//set button back to unchecked
+                            Toast.makeText(TripScreen.this, "ERROR: " + response.code(), Toast.LENGTH_LONG).show();
+                            startButton.setChecked(false);
+                        }
                     }
                 }
 
                 else if(!startButton.isChecked()){
-                    Response response = networkManager.EndTrip(credentials, dataCollector.getStartingLocation());
+                    Response response = networkManager.EndTrip(dataCollector.getStartingLocation());
                     if (response != null && response.code() == STOP_TRIP_SUCCESS){
                         //networkManager.dataCollector.stopDataCollection();
                         Toast.makeText(TripScreen.this, "Trip successfully ended!", Toast.LENGTH_LONG).show();
@@ -133,16 +155,5 @@ public class TripScreen extends AppCompatActivity {
         }
         return true;
     }
-
-public static Credentials getCredentials(Bundle extras){
-    if (extras != null){
-        int driverID = extras.getInt("driverID");
-        String token = extras.getString("token");
-        return new Credentials(driverID, token);
-    } else {
-        return new Credentials();
-    }
 }
-
-    }
 

@@ -5,44 +5,99 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
     tools:context=".activities.HomeScreen">
 
-    <include layout="@layout/button_deck"/>
+    <include
+        android:id="@+id/include"
+        layout="@layout/button_deck"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:background="@color/navy"
-        app:titleTextColor="@color/white"
-        app:title="Dashboard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        app:title="Dashboard"
+        app:titleTextColor="@color/textColorPrimary" />
+
+    <TextView
+        android:id="@+id/avg_score"
+        android:layout_width="222dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="220dp"
+        android:text="Your Average Score: "
+        android:textColor="@color/textColorSecondary"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
 
         android:id="@+id/imageView"
-        android:layout_width="307dp"
-        android:layout_height="518dp"
+        android:layout_width="288dp"
+        android:layout_height="337dp"
         android:layout_marginStart="48dp"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="228dp"
         android:layout_marginEnd="49dp"
+        android:layout_marginBottom="317dp"
         android:backgroundTint="@color/navy"
         android:src="@drawable/driver_guard_logo"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="79dp"
+        android:layout_height="54dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginBottom="220dp"
+        android:text="88"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="208dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="132dp"
+        android:text="CoolCat"
+        android:textSize="34sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/greeting"
+        android:layout_width="208dp"
+        android:layout_height="59dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="88dp"
+        android:text="Good Evening "
+        android:textColor="@color/textColorSecondary"
+        android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/weather"
         android:layout_width="135dp"
-        android:layout_height="108dp"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="668dp"
-        android:layout_marginEnd="148dp"
+        android:layout_height="114dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="60dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/car_icon" />
+        app:srcCompat="@drawable/icon_car" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,12 +1,13 @@
 package com.example.driveguard.activities;
 
-import static com.example.driveguard.activities.TripScreen.getCredentials;
+import static com.example.driveguard.GsonUtilities.JsonToWeather;
+import static com.example.driveguard.Utilities.LoadCredentials;
 
-import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -22,14 +23,31 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.driveguard.ButtonDeck;
+import com.example.driveguard.DataCollector;
+import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
 import com.example.driveguard.objects.Credentials;
+import com.example.driveguard.objects.Driver;
+import com.example.driveguard.objects.Weather;
 import com.squareup.picasso.Picasso;
+
+import lombok.SneakyThrows;
+import okhttp3.Response;
 
 public class HomeScreen extends AppCompatActivity {
 
     private Credentials credentials;
 
+    private ImageView weatherIcon;
+    private TextView welcomeMessage;
+    private TextView username;
+    private TextView score;
+    private NetworkManager networkManager;
+    private DataCollector dataCollector;
+    private Weather weather;
+    private Driver driver;
+
+    @SneakyThrows
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +59,24 @@ public class HomeScreen extends AppCompatActivity {
             return insets;
         });
 
-        ImageView imageView = findViewById(R.id.weather);
-        Picasso.get()
-                .load("https://openweathermap.org/img/wn/10d@2x.png")
-                .into(imageView);
+        //allows the UI thread to perform network calls. We could make them async if this causes issues
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        dataCollector = new DataCollector(getApplicationContext());
+        networkManager = new NetworkManager(getApplicationContext());
+
+        Response response = networkManager.getWeatherFromLocation(dataCollector.getStartingLocation());
+
+        if (response.isSuccessful()){
+            assert response.body() != null;
+            weather = JsonToWeather(response.body().string());
+            weatherIcon = findViewById(R.id.weather);
+            Picasso.get()
+                    .load(weather.getIconUrl())
+                    .into(weatherIcon);
+        }
+
 
         boolean darkMode = false;
         SharedPreferences preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);
@@ -54,14 +86,18 @@ public class HomeScreen extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
 
+
         //Used to retrieve the driverID and login token from the previous activity
-        Bundle extras = getIntent().getExtras();
-        credentials = getCredentials(extras);
+
+        //if there were no credentials received from the previous activity we then try retrieve them from the file
+
+        credentials = LoadCredentials(getApplicationContext());
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ButtonDeck.SetUpButtons(HomeScreen.this, credentials);
+        ButtonDeck.SetUpButtons(HomeScreen.this);
 
     }
     @Override
@@ -78,15 +114,7 @@ public class HomeScreen extends AppCompatActivity {
         }
         else if (id == R.id.profile){
             Intent intent;
-            /*if there were no credentials retrieved we assume the user is logged out and send them
-            to the sign up page*/
-            if (credentials == null) {
-                intent = new Intent(HomeScreen.this, SignupScreen.class);
-            } else {//if there are credentials we send the user to the profile page
-                intent = new Intent(HomeScreen.this, ProfileScreen.class);
-                intent.putExtra("driverID", credentials.getDriverId());
-                intent.putExtra("token", credentials.getToken());
-            }
+            intent = new Intent(HomeScreen.this, ProfileScreen.class);
             startActivity(intent);
         }
         return true;

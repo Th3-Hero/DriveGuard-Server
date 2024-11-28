@@ -12,6 +12,7 @@ public class Weather implements Serializable {
     private boolean isDay;
     private WeatherType weatherType;
     private WeatherSeverity weatherSeverity;
+    private String iconUrl;
 
     public String getTimeStamp() {
         return timeStamp;

@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<item android:title="Notifications"
-    android:id="@+id/notifications"
-    android:icon="@drawable/notification_icon"
-    app:showAsAction="ifRoom"/>
-
-    <item android:title="Profile"
-        android:id="@+id/profile"
-        android:icon="@drawable/profile_icon"
+    <item android:title="@string/notifications"
+        android:id="@+id/notifications"
+        android:icon="@drawable/icon_notification"
         app:showAsAction="ifRoom"/>
 
-    <item android:title="Settings"
+    <item android:title="@string/profile"
+        android:id="@+id/profile"
+        android:icon="@drawable/icon_profiles"
+        app:showAsAction="ifRoom"/>
+
+    <item android:title="@string/settings"
         android:id="@+id/settings"
-        android:icon="@drawable/settings_icon"
+        android:icon="@drawable/icon_settings"
         app:showAsAction="ifRoom"/>
 
 

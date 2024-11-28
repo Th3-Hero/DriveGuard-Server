@@ -28,7 +28,7 @@ public class GsonUtilsTests {
             assert logInResponse.body() != null;
             Credentials credentials = JsonToCredentials(logInResponse.body().string());
 
-            Response tripResponse = networkManager.getListOfTrips(credentials);
+            Response tripResponse = networkManager.getListOfTrips();
 
             if (tripResponse.isSuccessful()){
                 System.out.println("Retrieved trips");

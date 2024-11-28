@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.driveguard.NetworkManager;
+import com.example.driveguard.Utilities;
 import com.example.driveguard.objects.Account;
 import com.example.driveguard.objects.Credentials;
 import com.google.android.material.textfield.TextInputEditText;
@@ -32,7 +33,7 @@ public class SignupScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup_screen);
 
-        networkManager = new NetworkManager();
+        networkManager = new NetworkManager(getApplicationContext());
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -64,8 +65,8 @@ public class SignupScreen extends AppCompatActivity {
                 Account account = new Account(firstName, lastName, username, password);
 
 
-                networkManager = new NetworkManager();
-                signUpButton.setEnabled(false);
+                networkManager = new NetworkManager(getApplicationContext());
+                //signUpButton.setEnabled(false);
 
                 Response response;
                 try {
@@ -98,9 +99,9 @@ public class SignupScreen extends AppCompatActivity {
 
                         Credentials credentials = gson.fromJson(responseBody, Credentials.class);
 
+                        Utilities.SaveCredentials(getApplicationContext(), credentials);
+
                         Intent intent = new Intent(SignupScreen.this, HomeScreen.class);
-                        intent.putExtra("driverID", credentials.getDriverId());
-                        intent.putExtra("token", credentials.getToken());
                         startActivity(intent);
                         finish();
                     }

@@ -15,7 +15,8 @@
         android:layout_marginTop="136dp"
         android:layout_marginEnd="57dp"
         android:scrollbarSize="8sp"
-        android:text="Dark Mode"
+        android:text="@string/dark_mode"
+        android:textColor="@color/textColorSecondary"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +30,8 @@
         android:layout_marginTop="228dp"
         android:layout_marginEnd="57dp"
         android:scrollbarSize="8sp"
-        android:text="Notifications"
+        android:text="@string/notifications"
+        android:textColor="@color/textColorSecondary"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +45,8 @@
         android:layout_marginTop="320dp"
         android:layout_marginEnd="57dp"
         android:scrollbarSize="8sp"
-        android:text="Data Collection"
+        android:text="@string/data_collection"
+        android:textColor="@color/textColorSecondary"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,10 +58,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/navy"
+        android:background="@color/primaryColor"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Settings"
-        app:titleTextColor="@color/white" />
+        app:titleTextColor="@color/textColorSecondary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

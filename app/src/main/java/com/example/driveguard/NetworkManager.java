@@ -3,6 +3,7 @@ package com.example.driveguard;
 import static com.example.driveguard.GsonUtilities.LocationToServerLocationJson;
 import static com.example.driveguard.GsonUtilities.ServerLocationPairToJson;
 
+import android.content.Context;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
@@ -33,13 +34,17 @@ public class NetworkManager {
      */
 
     private final OkHttpClient client;
+    private final Context context;
     private final String scheme = "https";
     private final String baseUrl = "drive-guard-api.the-hero.dev";
     private final String tripUrl = "trip";
     private final String authUrl = "auth";
     private final String driverUrl = "driver";
     private final String drivingContextUrl = "driving-context";
-    public NetworkManager(){ client = new OkHttpClient();}
+    public NetworkManager(Context context){
+        client = new OkHttpClient();
+        this.context = context;
+    }
 
     /**
      * Method that starts a new trip with the server
@@ -47,9 +52,11 @@ public class NetworkManager {
      * @param location takes android location which is formatted for the server in ServerLocation
      * @return if successful body contains a partial Trip object to be parsed
      */
-    public Response StartTrip(@NonNull Credentials credentials, Location location) {
-        /*dataCollector = new DataCollector(context);
-        dataCollector.startDataCollection();*/
+    public Response StartTrip(Location location) {
+        Credentials credentials = Utilities.LoadCredentials(context);
+        if (credentials.getDriverId() == -1){
+            return null;
+        }
 
       String jsonBody = LocationToServerLocationJson(location);
         //url for the request
@@ -82,7 +89,8 @@ public class NetworkManager {
      * @param location location takes android location which is formatted for the server in ServerLocation
      * @return if successful will return the full Trip object to be parsed
      */
-    public Response EndTrip(@NonNull Credentials credentials, Location location){
+    public Response EndTrip(Location location){
+        Credentials credentials = Utilities.LoadCredentials(context);
 
         String jsonBody = LocationToServerLocationJson(location);
 
@@ -115,7 +123,9 @@ public class NetworkManager {
      * @param credentials for the drivers drivers id, token, and trip id
      * @return if successful body is empty but code will be successful
      */
-    public Response addEventToTrip(DrivingEvent event, @NonNull Credentials credentials){
+    public Response addEventToTrip(DrivingEvent event){
+        Credentials credentials = Utilities.LoadCredentials(context);
+
         Gson gson = new Gson();
         String jsonBody = gson.toJson(event);
 
@@ -147,16 +157,21 @@ public class NetworkManager {
      * @param credentials for the drivers drivers id, token, and trip id
      * @return if successful returns the current trip in the Trip class schema
      */
-    public Response getCurrentTrip(@NonNull Credentials credentials){
+    public Response getCurrentTrip(){
+        Credentials credentials = Utilities.LoadCredentials(context);
+
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
+                .addPathSegment(tripUrl)
+                .addPathSegment("current")
                 .addPathSegment(String.valueOf(credentials.getDriverId()))
                 .addQueryParameter("token", credentials.getToken())
                 .build();
 
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("accept", "*/*")
                 .get()
                 .build();
 
@@ -176,7 +191,8 @@ public class NetworkManager {
      * @param tripId the id for the trip in question
      * @return if successful will contain a full Trip object to be parsed
      */
-    public Response getTripSummary(@NonNull Credentials credentials, int tripId){//used for the summary of a particular trip
+    public Response getTripSummary(int tripId){//used for the summary of a particular trip
+        Credentials credentials = Utilities.LoadCredentials(context);
 
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
@@ -207,7 +223,9 @@ public class NetworkManager {
      * @param credentials for the drivers id, and token
      * @return if successful the body will contain a list of CompletedTrip objects to be parsed
      */
-    public Response getListOfTrips(@NonNull Credentials credentials){
+    public Response getListOfTrips(){
+        Credentials credentials = Utilities.LoadCredentials(context);
+
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
@@ -230,7 +248,9 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response ClearTripHistory(@NonNull Credentials credentials){
+    public Response ClearTripHistory(){
+        Credentials credentials = Utilities.LoadCredentials(context);
+
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
@@ -309,7 +329,12 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response Logout(@NonNull Credentials credentials){
+    public Response Logout(){
+        Credentials credentials = Utilities.LoadCredentials(context);
+        if (credentials.getDriverId() == -1){
+            return null;
+        }
+
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
@@ -319,9 +344,11 @@ public class NetworkManager {
                 .addQueryParameter("token", String.valueOf(credentials.getToken()))
                 .build();
 
+        RequestBody emptyBody = RequestBody.create(null, new byte[0]);
+
         Request request = new Request.Builder()
                 .url(url)
-                .post(RequestBody.create("", null))
+                .post(emptyBody)
                 .build();
 
         Call call = client.newCall(request);
@@ -332,7 +359,9 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response UpdatePassword(@NonNull Credentials credentials, String oldPassword, String newPassword){
+    public Response UpdatePassword(String oldPassword, String newPassword){
+        Credentials credentials = Utilities.LoadCredentials(context);
+
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
@@ -382,7 +411,9 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response UpdateUsername(@NonNull Credentials credentials, String username){
+    public Response UpdateUsername(String username){
+        Credentials credentials = Utilities.LoadCredentials(context);
+
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
@@ -407,7 +438,9 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response UpdateName(@NonNull Credentials credentials, String firstName, String lastName){
+    public Response UpdateName(String firstName, String lastName){
+        Credentials credentials = Utilities.LoadCredentials(context);
+
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
@@ -433,7 +466,37 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response DeleteAccount(@NonNull Credentials credentials, String password){
+    public Response getDriver(){
+        Credentials credentials = Utilities.LoadCredentials(context);
+        if (credentials.getDriverId() == -1){
+            return null;
+        }
+
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(driverUrl)
+                .addPathSegment(String.valueOf(credentials.getDriverId()))
+                .addQueryParameter("token", credentials.getToken())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .get()
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+    public Response DeleteAccount(String password){
+        Credentials credentials = Utilities.LoadCredentials(context);
+
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
@@ -559,4 +622,5 @@ public class NetworkManager {
         throw new RuntimeException(e);
     }
 }
+
 }

@@ -12,7 +12,7 @@
         android:background="@color/navy"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Sign Up"
-        app:titleTextColor="@color/white" />
+        app:titleTextColor="@color/textColorPrimary" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar4"
@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="Username"
+        android:textColorHint="@color/textColorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
