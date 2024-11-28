@@ -1,4 +1,4 @@
-package trip_data;
+package com.example.driveguard.objects;
 
 import android.location.Location;
 
@@ -22,9 +22,9 @@ public class HardAccelerateEvent extends Event
      *             Location location (the location of the event)
      * Returns: N/A
      */
-    public HardAccelerateEvent(float gForce, long timestamp, Location location)
+    public HardAccelerateEvent(float gForce, String timestamp, android.location.Location location, Weather weather)
     {
-        super(timestamp, location);
+        super(timestamp, location, weather);
         this.gForce = gForce;
     }
 
@@ -61,23 +61,8 @@ public class HardAccelerateEvent extends Event
     {
         if (isHarshAcceleration())
         {
-            return (int) (this.gForce * 10);
+            return (int) (this.gForce * 10 + this.getWeatherDeduction());
         }
         return 0;
-    }
-
-    /* Method Name: logEvent
-     * Method Author: Brooke Cronin
-     * Description: Logs the details of the hard acceleration event, including timestamp, location, and g-force.
-     * Parameters: N/A
-     * Returns: String (formatted details of the hard acceleration event)
-     */
-    @Override
-    public String logEvent()
-    {
-        return "Event Type: Hard Accelerating" + "\nTimestamp: " + this.getTimestamp() +
-                "\nLocation: " + this.getLocation() +
-                "\nNumber of Points Deducted: " + this.deductPoints() +
-                "\nCar G-Force (m/s^2): " + this.getGForce();
     }
 }

@@ -1,4 +1,4 @@
-package trip_data;
+package com.example.driveguard.objects;
 
 import android.location.Location;
 
@@ -11,7 +11,7 @@ import android.location.Location;
  *              It includes methods to check if the turn is aggressive, calculate point deductions,
  *              and log event details.
  */
-public class TurningEvent extends Event
+public class HardCorneringEvent extends Event
 {
     private float turningRate;
 
@@ -22,9 +22,9 @@ public class TurningEvent extends Event
      *             Location location (the location of the event)
      * Returns: N/A
      */
-    public TurningEvent(float turningRate, long timestamp, Location location)
+    public HardCorneringEvent(float turningRate, String timestamp, android.location.Location location, Weather weather)
     {
-        super(timestamp, location);
+        super(timestamp, location, weather);
         this.turningRate = turningRate;
     }
 
@@ -61,23 +61,9 @@ public class TurningEvent extends Event
     {
         if (isAggressiveTurn())
         {
-            return (int) (this.turningRate * 0.5);
+            return (int) (this.turningRate * 0.5 + this.getWeatherDeduction());
         }
         return 0;
     }
 
-    /* Method Name: logEvent
-     * Method Author: Brooke Cronin
-     * Description: Logs the details of the turning event, including timestamp, location, and turning rate.
-     * Parameters: N/A
-     * Returns: String (formatted details of the turning event)
-     */
-    @Override
-    public String logEvent()
-    {
-        return "Event Type: Hard Turning" + "\nTimestamp: " + this.getTimestamp() +
-                "\nLocation: " + this.getLocation() +
-                "\nNumber of Points Deducted: " + this.deductPoints() +
-                "\nCar Turning Rate (degrees/s): " + this.getTurningRate();
-    }
 }

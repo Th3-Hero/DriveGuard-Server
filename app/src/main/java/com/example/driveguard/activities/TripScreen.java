@@ -22,12 +22,10 @@ import com.example.driveguard.R;
 import com.example.driveguard.objects.Credentials;
 import com.example.driveguard.objects.Trip;
 
-import org.jetbrains.annotations.Contract;
-
 import java.io.IOException;
 
 import okhttp3.Response;
-import trip_data.DataCollector;
+import com.example.driveguard.DataCollector;
 
 public class TripScreen extends AppCompatActivity {
 
@@ -87,6 +85,9 @@ public class TripScreen extends AppCompatActivity {
 
 
                         //BROOKE you can add all your trip stuff here
+
+//                        run an async loop to check for events every 25 millisecond
+//                        look at timeline from javafx
 
                     }
                     else{//set button back to unchecked

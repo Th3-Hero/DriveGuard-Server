@@ -10,7 +10,6 @@ import android.app.Activity;
 
 import com.example.driveguard.objects.Account;
 import com.example.driveguard.objects.Credentials;
-import com.example.driveguard.objects.ErrorReport;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -19,7 +18,6 @@ import org.junit.Test;
 import java.io.IOException;
 
 import okhttp3.Response;
-import trip_data.DataCollector;
 
 public class NetworkTests {
 
