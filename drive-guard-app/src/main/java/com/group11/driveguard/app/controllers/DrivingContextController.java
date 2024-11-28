@@ -1,5 +1,6 @@
 package com.group11.driveguard.app.controllers;
 
+import com.group11.driveguard.api.docs.returns.MinimalProblemDetail;
 import com.group11.driveguard.api.docs.returns.MinimalValidationDetail;
 import com.group11.driveguard.api.map.Address;
 import com.group11.driveguard.api.map.Location;
@@ -66,6 +67,7 @@ public class DrivingContextController {
     @Operation(summary = "Get weather from coordinates")
     @ApiResponse(responseCode = "200", description = "Weather found")
     @ApiResponse(responseCode = "400", description = "Invalid fields provided", content = {@Content(schema = @Schema(implementation = MinimalValidationDetail.class))})
+    @ApiResponse(responseCode = "500", description = "Error getting weather", content = {@Content(schema = @Schema(implementation = MinimalProblemDetail.class))})
     Weather getWeatherFromCoordinates(
         @RequestBody @NotNull(message = "Location is required") @Valid Location location
     ) {

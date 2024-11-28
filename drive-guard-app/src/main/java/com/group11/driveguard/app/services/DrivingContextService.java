@@ -6,6 +6,7 @@ import com.group11.driveguard.api.map.LocationPair;
 import com.group11.driveguard.api.map.Road;
 import com.group11.driveguard.api.weather.CurrentWeather;
 import com.group11.driveguard.api.weather.Weather;
+import com.group11.driveguard.api.weather.WeatherError;
 import com.group11.driveguard.app.exceptions.UnexpectedMapApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -69,16 +71,23 @@ public class DrivingContextService {
         final var response = restClient.get()
             .uri(uri)
             .accept(MediaType.APPLICATION_JSON)
-            .retrieve()
-            .onStatus(
-                HttpStatusCode::isError,
-                (clientRequest, clientResponse) -> {
-                    throw new UnexpectedMapApiException("Error getting weather from coordinates. Status: %s\nStatus Text: %s".formatted(clientResponse.getStatusCode(), clientResponse.getStatusText()));
+            .exchange((clientRequest, clientResponse) -> {
+                if (clientResponse.getStatusCode().isError()) {
+                    WeatherError error = clientResponse.bodyTo(WeatherError.class);
+                    if (error != null && error.error()) {
+                        log.error("Error getting weather from coordinates. Status Code: %s\n Message %s\n Reason: %s".formatted(
+                            clientResponse.getStatusCode(),
+                            clientResponse.getStatusText(),
+                            error.reason()
+                        ));
+                        throw new UnexpectedMapApiException("Error getting weather from coordinates. Reason: %s".formatted(error.reason()));
+                    }
                 }
-            )
-            .body(CurrentWeather.class);
+                return Objects.requireNonNull(clientResponse.bodyTo(CurrentWeather.class));
+            });
 
-        if (response == null || response.current() == null) {
+        if (response.current() == null) {
+            log.error("Error getting weather from coordinates. Current weather is null.");
             throw new UnexpectedMapApiException("Error getting weather from coordinates. Current weather is null.");
         }
 

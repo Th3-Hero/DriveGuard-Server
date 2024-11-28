@@ -4,6 +4,7 @@ import com.group11.driveguard.api.error.ProblemDetailFactory;
 import com.group11.driveguard.api.error.ValidationDetail;
 import com.group11.driveguard.api.error.ValidationProcessor;
 import com.group11.driveguard.app.exceptions.InvalidCredentialsException;
+import com.group11.driveguard.app.exceptions.UnexpectedMapApiException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -39,6 +40,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ProblemDetail invalidCredentialsException(InvalidCredentialsException e) {
         // We could throw a 403 Forbidden here, but 401 Unauthorized hides the existence of the resource
         return ProblemDetailFactory.createProblemDetail(HttpStatus.UNAUTHORIZED, e);
+    }
+
+    @ExceptionHandler(UnexpectedMapApiException.class)
+    public ProblemDetail unexpectedMapApiException(UnexpectedMapApiException e) {
+        return ProblemDetailFactory.createProblemDetail(HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
