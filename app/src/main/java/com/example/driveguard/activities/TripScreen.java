@@ -2,6 +2,8 @@ package com.example.driveguard.activities;
 
 import static com.example.driveguard.GsonUtilities.JsonToTrip;
 
+import java.util.HashMap;
+import java.util.Map;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,7 +27,6 @@ import com.example.driveguard.objects.Road;
 import com.example.driveguard.objects.Trip;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import okhttp3.Response;
@@ -43,18 +44,36 @@ public class TripScreen extends AppCompatActivity {
     private final int START_TRIP_SUCCESS = 201;
     private final int STOP_TRIP_SUCCESS = 200;
 
-    private Date timeLastChecked = new Date();
+    private Map<String, Boolean> eventHasBeenDetected = new HashMap<>();
 
+    public Map<String, Boolean> getEventHasBeenDetected() {
+        return eventHasBeenDetected;
+    }
+
+    public void setEventHasBeenDetected(Map<String, Boolean> eventHasBeenDetected) {
+        this.eventHasBeenDetected = eventHasBeenDetected;
+    }
+
+    private Date timeLastChecked30Min = new Date();
     // Getter
-    public Date getTimeLastChecked() {
-        return timeLastChecked;
+    public Date getTimeLastChecked30Min() {
+        return timeLastChecked30Min;
     }
 
     // Setter
-    public void setTimeLastChecked(Date timeLastChecked) {
-        this.timeLastChecked = timeLastChecked;
+    public void setTimeLastChecked30Min(Date timeLastChecked30Min) {
+        this.timeLastChecked30Min = timeLastChecked30Min;
+    }
+    private Date timeLastChecked15Sec = new Date();
+
+
+    public Date getTimeLastChecked15Sec() {
+        return timeLastChecked15Sec;
     }
 
+    public void setTimeLastChecked15Sec(Date timeLastChecked15Sec) {
+        this.timeLastChecked15Sec = timeLastChecked15Sec;
+    }
 
     private Weather currentWeather;
 
@@ -195,9 +214,17 @@ public class TripScreen extends AppCompatActivity {
         android.location.Location location = dataCollector.getStartingLocation(); // Current location
         String timestamp = String.valueOf(System.currentTimeMillis()); // Current timestamp
 
+        if(this.getTimeLastChecked15Sec().getTime() >= this.getTimeLastChecked15Sec().getTime() + 15 * 1000)
+        {
+            this.getEventHasBeenDetected().put("speed", false);
+            this.getEventHasBeenDetected().put("accelerate", false);
+            this.getEventHasBeenDetected().put("brake", false);
+            this.getEventHasBeenDetected().put("turn", false);
+        }
+
         // Use NetworkManager for additional data retrieval
         NetworkManager networkManager = new NetworkManager();
-        if(this.getTimeLastChecked().getTime() >= this.getTimeLastChecked().getTime() + 30 * 60 * 1000)
+        if(this.getTimeLastChecked30Min().getTime() >= this.getTimeLastChecked30Min().getTime() + 30 * 60 * 1000)
         {
             try {
                 // Get the weather data as a Response object
@@ -241,11 +268,29 @@ public class TripScreen extends AppCompatActivity {
                 // Handle exceptions
                 System.err.println("Error fetching road data: " + e.getMessage());
             }
-            this.setTimeLastChecked(new Date());
+            this.setTimeLastChecked30Min(new Date());
         }
         dataClassifier = new DataClassifier(this.getPostedSpeedLimit());
+
+        if (!this.getEventHasBeenDetected().containsKey("speed"))
+        {
+            this.getEventHasBeenDetected().put("speed", false);
+        }
+        if (!this.getEventHasBeenDetected().containsKey("accelerate"))
+        {
+            this.getEventHasBeenDetected().put("accelerate", false);
+        }
+        if (!this.getEventHasBeenDetected().containsKey("brake"))
+        {
+            this.getEventHasBeenDetected().put("brake", false);
+        }
+        if (!this.getEventHasBeenDetected().containsKey("turn"))
+        {
+            this.getEventHasBeenDetected().put("turn", false);
+        }
+
         // Classify the data for events
-        dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, credentials, location, this.getCurrentWeather());
+        this.setEventHasBeenDetected(dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, credentials, location, this.getCurrentWeather(), this.getEventHasBeenDetected()));
     }
 
 }
