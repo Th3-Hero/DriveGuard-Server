@@ -73,6 +73,8 @@ public class DrivingContextService {
             .accept(MediaType.APPLICATION_JSON)
             .exchange((clientRequest, clientResponse) -> {
                 if (clientResponse.getStatusCode().isError()) {
+                    log.error("URI: {}", uri);
+                    log.error("Response Body: {}", clientResponse.bodyTo(String.class));
                     WeatherError error = clientResponse.bodyTo(WeatherError.class);
                     if (error != null && error.error()) {
                         log.error("Error getting weather from coordinates. Status Code: %s\n Message %s\n Reason: %s".formatted(
