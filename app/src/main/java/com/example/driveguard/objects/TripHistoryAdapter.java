@@ -15,7 +15,7 @@ import java.util.List;
 
 public class TripHistoryAdapter extends RecyclerView.Adapter<TripHistoryAdapter.TripHistoryViewHolder> {
 
-    private List<CompletedTrip> completedTrips;
+    private final List<CompletedTrip> completedTrips;
 
     public TripHistoryAdapter(List<CompletedTrip> completedTrips) {
 
