@@ -174,9 +174,9 @@ public class TripService {
         int score = 100;
 
         for (DrivingEventJpa event : drivingEvents) {
-            score -= event.getPointsDeducted(); // won't work until server and client code are together.
+            score -= event.getPointsDeducted();
         }
 
-        return 0;
+        return Math.max(score, 0); // to make sure the score isn't negative
     }
 }
