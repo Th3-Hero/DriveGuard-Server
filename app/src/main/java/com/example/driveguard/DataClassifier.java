@@ -48,97 +48,96 @@ public class DataClassifier
      *             long timestamp (time of event)
      * Returns: N/A
      */
-    public void classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, Credentials credentials, android.location.Location location)
+    public void classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, Credentials credentials, android.location.Location location, Weather currentWeather)
     {
-        try {
-            // Get the weather data as a Response object
-            Response response = networkManager.getWeatherFromLocation(location);
-
-            // Check if the response is successful
-            if (!response.isSuccessful()) {
-                throw new IOException("Failed to fetch weather data. HTTP Code: " + response.code());
-            }
-
-            // Deserialize the response body into a Weather object
-            String responseBody = null;
-            if (response.body() != null) {
-                responseBody = response.body().string();
-            }
-            Gson gson = new Gson();
-            Weather currentWeather = gson.fromJson(responseBody, Weather.class);
-
-            // Classify speed event
-            if (speed > this.postedSpeedLimit) {
-                SpeedingEvent speedEvent = new SpeedingEvent(speed, timestamp, location, networkManager, currentWeather);
-                if (speedEvent.isSpeeding()) {
-                    networkManager.addEventToTrip(
-                            new DrivingEvent(
-                                    timestamp,
-                                    new ServerLocation(location.getLatitude(), location.getLongitude()),
-                                    EventType.SPEEDING,
-                                    EventSeverity.LOW,
-                                    speedEvent.deductPoints()
-                            ),
-                            credentials
-                    );
-                }
-                // Classify Acceleration Event
-                HardAccelerateEvent accelerateEvent = new HardAccelerateEvent(gForce, timestamp, location, currentWeather);
-                if (accelerateEvent.isHarshAcceleration())
-                {
-                    networkManager.addEventToTrip(
-                            new DrivingEvent(
-                                    timestamp,
-                                    new ServerLocation(location.getLatitude(), location.getLongitude()),
-                                    EventType.HARD_ACCELERATION,
-                                    EventSeverity.LOW,
-                                    accelerateEvent.deductPoints()
-                            ),
-                            credentials
-                    );
-                }
-
-                // Classify Braking Event
-                HardBrakeEvent brakeEvent = new HardBrakeEvent(gForce, timestamp, location, currentWeather);
-                if (brakeEvent.isHarshBraking())
-                {
-                    networkManager.addEventToTrip(
-                            new DrivingEvent(
-                                    timestamp,
-                                    new ServerLocation(location.getLatitude(), location.getLongitude()),
-                                    EventType.HARD_BRAKING,
-                                    EventSeverity.LOW,
-                                    brakeEvent.deductPoints()
-                            ),
-                            credentials
-                    );
-                }
-
-                // Classify Turning Event
-                HardCorneringEvent turningEvent = new HardCorneringEvent(turningRate, timestamp, location, currentWeather);
-                if (turningEvent.isAggressiveTurn())
-                {
-                    networkManager.addEventToTrip(
-                            new DrivingEvent(
-                                    timestamp,
-                                    new ServerLocation(location.getLatitude(), location.getLongitude()),
-                                    EventType.HARD_CORNERING,
-                                    EventSeverity.LOW,
-                                    turningEvent.deductPoints()
-                            ),
-                            credentials
-                    );
+        // Classify and handle Speeding Event
+        if (speed > this.postedSpeedLimit) {
+            SpeedingEvent speedEvent = new SpeedingEvent(speed, timestamp, location, networkManager, currentWeather);
+            if (speedEvent.isSpeeding()) {
+                Response eventResponse = networkManager.addEventToTrip(
+                        new DrivingEvent(
+                                timestamp,
+                                new ServerLocation(location.getLatitude(), location.getLongitude()),
+                                EventType.SPEEDING,
+                                EventSeverity.LOW,
+                                speedEvent.deductPoints()
+                        ),
+                        credentials
+                );
+                try {
+                    if (!eventResponse.isSuccessful()) {
+                        System.err.println("Failed to add Speeding Event. HTTP Code: " + eventResponse.code());
+                    }
+                } finally {
+                    eventResponse.close(); // Ensure response resources are released
                 }
             }
-
-            // Add other classifications as needed (acceleration, braking, turning)
-
-        } catch (IOException e) {
-            System.err.println("Error retrieving or processing weather data: " + e.getMessage());
-            throw new RuntimeException(e);
-
         }
 
+        // Classify and handle Hard Acceleration Event
+        HardAccelerateEvent accelerateEvent = new HardAccelerateEvent(gForce, timestamp, location, currentWeather);
+        if (accelerateEvent.isHarshAcceleration()) {
+            Response eventResponse = networkManager.addEventToTrip(
+                    new DrivingEvent(
+                            timestamp,
+                            new ServerLocation(location.getLatitude(), location.getLongitude()),
+                            EventType.HARD_ACCELERATION,
+                            EventSeverity.LOW,
+                            accelerateEvent.deductPoints()
+                    ),
+                    credentials
+            );
+            try {
+                if (!eventResponse.isSuccessful()) {
+                    System.err.println("Failed to add Hard Acceleration Event. HTTP Code: " + eventResponse.code());
+                }
+            } finally {
+                eventResponse.close(); // Ensure response resources are released
+            }
+        }
 
+        // Classify and handle Hard Braking Event
+        HardBrakeEvent brakeEvent = new HardBrakeEvent(gForce, timestamp, location, currentWeather);
+        if (brakeEvent.isHarshBraking()) {
+            Response eventResponse = networkManager.addEventToTrip(
+                    new DrivingEvent(
+                            timestamp,
+                            new ServerLocation(location.getLatitude(), location.getLongitude()),
+                            EventType.HARD_BRAKING,
+                            EventSeverity.LOW,
+                            brakeEvent.deductPoints()
+                    ),
+                    credentials
+            );
+            try {
+                if (!eventResponse.isSuccessful()) {
+                    System.err.println("Failed to add Hard Braking Event. HTTP Code: " + eventResponse.code());
+                }
+            } finally {
+                eventResponse.close(); // Ensure response resources are released
+            }
+        }
+
+        // Classify and handle Hard Turning Event
+        HardCorneringEvent turningEvent = new HardCorneringEvent(turningRate, timestamp, location, currentWeather);
+        if (turningEvent.isAggressiveTurn()) {
+            Response eventResponse = networkManager.addEventToTrip(
+                    new DrivingEvent(
+                            timestamp,
+                            new ServerLocation(location.getLatitude(), location.getLongitude()),
+                            EventType.HARD_CORNERING,
+                            EventSeverity.LOW,
+                            turningEvent.deductPoints()
+                    ),
+                    credentials
+            );
+            try {
+                if (!eventResponse.isSuccessful()) {
+                    System.err.println("Failed to add Hard Turning Event. HTTP Code: " + eventResponse.code());
+                }
+            } finally {
+                eventResponse.close(); // Ensure response resources are released
+            }
+        }
     }
 }
