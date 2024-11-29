@@ -66,10 +66,7 @@ public class SignupScreen extends AppCompatActivity {
                 }
 
                 Account account = new Account(firstName, lastName, username, password);
-
-
                 networkManager = new NetworkManager(getApplicationContext());
-                //signUpButton.setEnabled(false);
 
                 Response response;
                 try {

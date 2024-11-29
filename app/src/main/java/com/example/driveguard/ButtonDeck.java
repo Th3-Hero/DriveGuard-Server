@@ -3,7 +3,6 @@ package com.example.driveguard;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 import com.example.driveguard.activities.HistoryScreen;
 import com.example.driveguard.activities.HomeScreen;
 import com.example.driveguard.activities.TripScreen;
-import com.example.driveguard.objects.Credentials;
 
 public class ButtonDeck {
 public static void SetUpButtons(@NonNull Activity activity){
@@ -20,8 +18,10 @@ public static void SetUpButtons(@NonNull Activity activity){
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(activity, HomeScreen.class);
-                activity.startActivity(intent);
+                if (activity.getClass() != HomeScreen.class) {
+                    Intent intent = new Intent(activity, HomeScreen.class);
+                    activity.startActivity(intent);
+                }
             }
         });
 
@@ -29,8 +29,10 @@ public static void SetUpButtons(@NonNull Activity activity){
         tripButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(activity, TripScreen.class);
-                activity.startActivity(intent);
+                if (activity.getClass() != TripScreen.class) {
+                    Intent intent = new Intent(activity, TripScreen.class);
+                    activity.startActivity(intent);
+                }
             }
         });
 
@@ -38,11 +40,12 @@ public static void SetUpButtons(@NonNull Activity activity){
         historyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(activity, HistoryScreen.class);
-                activity.startActivity(intent);
+                if (activity.getClass() != HistoryScreen.class) {
+                    Intent intent = new Intent(activity, HistoryScreen.class);
+                    activity.startActivity(intent);
+                }
             }
         });
-
 }
     public static void ToggleButtons(@NonNull Activity activity){
         ImageButton home = activity.findViewById(R.id.homeButton);

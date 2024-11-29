@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="green">#008000</color>
+    <color name="red">#FF0000</color>
+    <color name="navy">#3F51B5</color>
+    <color name="darkGrey">#3b3b3b</color>
+
+    <color name="primaryColor">#3F51B5</color>
+    <color name="backgroundColor">#141414</color>
+    <color name="iconColor">#c0c0c0</color>
+    <color name="profileIconColor">#FFFFFFFF</color>
+    <color name="textColorPrimary">#c0c0c0</color>
+    <color name="textColorSecondary">#FFFFFFFF</color>
+</resources>

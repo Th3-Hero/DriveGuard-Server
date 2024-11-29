@@ -48,8 +48,7 @@
             android:id="@+id/editTextPasswordLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:textColorHint="@color/textColorSecondary" />
+            android:inputType="textPassword"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout

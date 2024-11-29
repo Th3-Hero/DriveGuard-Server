@@ -52,7 +52,7 @@ public class NetworkManager {
      * @param location takes android location which is formatted for the server in ServerLocation
      * @return if successful body contains a partial Trip object to be parsed
      */
-    public Response StartTrip(Location location) {
+    public Response StartTrip(@NonNull Location location) {
         Credentials credentials = Utilities.LoadCredentials(context);
         if (credentials.getDriverId() == -1){
             return null;
@@ -89,7 +89,7 @@ public class NetworkManager {
      * @param location location takes android location which is formatted for the server in ServerLocation
      * @return if successful will return the full Trip object to be parsed
      */
-    public Response EndTrip(Location location){
+    public Response EndTrip(@NonNull Location location){
         Credentials credentials = Utilities.LoadCredentials(context);
 
         String jsonBody = LocationToServerLocationJson(location);
@@ -123,7 +123,7 @@ public class NetworkManager {
      * @param credentials for the drivers drivers id, token, and trip id
      * @return if successful body is empty but code will be successful
      */
-    public Response addEventToTrip(DrivingEvent event){
+    public Response addEventToTrip(@NonNull DrivingEvent event){
         Credentials credentials = Utilities.LoadCredentials(context);
 
         Gson gson = new Gson();
@@ -134,7 +134,8 @@ public class NetworkManager {
                 .host(baseUrl)
                 .addPathSegment(tripUrl)
                 .addPathSegment(String.valueOf(credentials.getDriverId()))
-                .addPathSegment(String.valueOf(credentials.getToken()))
+                .addPathSegment(String.valueOf(credentials.getTripId()))
+                .addQueryParameter("token", credentials.getToken())
                 .build();
 
         Request request = new Request.Builder()
@@ -273,7 +274,7 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response SignUp(Account account){
+    public Response SignUp(@NonNull Account account){
         Gson gson = new Gson();
         String jsonBody = gson.toJson(account);
 
@@ -359,7 +360,7 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response UpdatePassword(String oldPassword, String newPassword){
+    public Response UpdatePassword(@NonNull String oldPassword, @NonNull String newPassword){
         Credentials credentials = Utilities.LoadCredentials(context);
 
         HttpUrl url = new HttpUrl.Builder()
@@ -388,6 +389,7 @@ public class NetworkManager {
         }
     }
     public Response RecoverAccount(@NonNull Account account){
+
         HttpUrl url = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(baseUrl)
@@ -411,7 +413,8 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response UpdateUsername(String username){
+    public Response UpdateUsername(@NonNull String username){
+
         Credentials credentials = Utilities.LoadCredentials(context);
 
         HttpUrl url = new HttpUrl.Builder()
@@ -438,7 +441,8 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response UpdateName(String firstName, String lastName){
+    public Response UpdateName(@NonNull String firstName,@NonNull String lastName){
+
         Credentials credentials = Utilities.LoadCredentials(context);
 
         HttpUrl url = new HttpUrl.Builder()
@@ -449,7 +453,7 @@ public class NetworkManager {
                 .addPathSegment(String.valueOf(credentials.getDriverId()))
                 .addQueryParameter("token", credentials.getToken())
                 .addQueryParameter("firstName", firstName)
-                .addQueryParameter("lastName", firstName)
+                .addQueryParameter("lastName", lastName)
                 .build();
 
         Request request = new Request.Builder()
@@ -494,7 +498,8 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response DeleteAccount(String password){
+    public Response DeleteAccount(@NonNull String password){
+
         Credentials credentials = Utilities.LoadCredentials(context);
 
         HttpUrl url = new HttpUrl.Builder()
@@ -520,7 +525,7 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
     }
-    public Response getWeatherFromLocation(Location location){
+    public Response getWeatherFromLocation(@NonNull Location location){
 
         String serverLocation = LocationToServerLocationJson(location);
 
@@ -546,7 +551,8 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
    }
-    public Response getRoadFromLocation(Location location){
+    public Response getRoadFromLocation(@NonNull Location location){
+
         String serverLocation = LocationToServerLocationJson(location);
 
         HttpUrl url = new HttpUrl.Builder()
@@ -571,7 +577,8 @@ public class NetworkManager {
             throw new RuntimeException(e);
         }
    }
-    public Response getEstimatedDistance(ServerLocation locationOne, ServerLocation locationTwo){
+    public Response getEstimatedDistance(@NonNull ServerLocation locationOne, @NonNull ServerLocation locationTwo){
+
        ServerLocationPair serverLocationPair = new ServerLocationPair(locationOne,locationTwo);
        String pair = ServerLocationPairToJson(serverLocationPair);
 
@@ -597,7 +604,8 @@ public class NetworkManager {
            throw new RuntimeException(e);
        }
    }
-    public Response getAddress(Location location){
+    public Response getAddress(@NonNull Location location){
+
         String serverLocation = LocationToServerLocationJson(location);
 
     HttpUrl url = new HttpUrl.Builder()
