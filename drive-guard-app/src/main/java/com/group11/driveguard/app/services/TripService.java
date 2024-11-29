@@ -104,6 +104,9 @@ public class TripService {
         TripJpa tripJpa = tripRepository.findById(tripId)
             .orElseThrow(() -> new EntityNotFoundException(TRIP_NOT_FOUND.formatted(tripId)));
 
+        DriverJpa driver = driverRepository.findById(driverId)
+            .orElseThrow(() -> new EntityNotFoundException("Driver %s not found".formatted(driverId)));
+
         if (!tripJpa.getStatus().equals(TripStatus.IN_PROGRESS)) {
             throw new IllegalStateException("Trip %s is already complete".formatted(tripId));
         }
@@ -116,12 +119,15 @@ public class TripService {
         double tripDistance = drivingContextService.getDistanceBetweenCoordinates(tripJpa.getStartLocation().toDto(), endLocation);
         int tripScore = calculateTripScore(tripJpa.getDrivingEvents());
 
-
         TripSummaryJpa tripSummaryJpa = tripSummaryRepository.save(TripSummaryJpa.create(tripJpa, tripScore, tripDistance));
-
         tripJpa.setTripSummaryJpa(tripSummaryJpa);
+        
+        tripJpa = tripRepository.save(tripJpa);
 
-        return tripRepository.save(tripJpa).toCompletedTripDto();
+        driver.setOverallScore(calculateOverallScore(driver.getTrips()));
+        driverRepository.save(driver);
+
+        return tripJpa.toCompletedTripDto();
     }
 
     public CompletedTrip getTripSummary(Long driverId, Long tripId, String token) {
@@ -169,7 +175,6 @@ public class TripService {
         tripRepository.deleteAll(trips);
     }
 
-
     private int calculateTripScore(List<DrivingEventJpa> drivingEvents) {
         int score = 100;
 
@@ -178,5 +183,16 @@ public class TripService {
         }
 
         return Math.max(score, 0); // to make sure the score isn't negative
+    }
+
+    private int calculateOverallScore(List<TripJpa> trips) {
+        List<Integer> scores = trips.stream()
+            .map(trip -> trip.getTripSummaryJpa().getScore())
+            .toList();
+
+        return (int) Math.round(scores.stream()
+            .mapToInt(Integer::intValue)
+            .average()
+            .orElse(0.0));
     }
 }
