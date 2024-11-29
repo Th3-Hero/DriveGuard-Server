@@ -1,7 +1,5 @@
 package com.example.driveguard.activities;
 
-import static com.example.driveguard.Utilities.getCredentialsFromExtras;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,7 +15,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.R;
-import com.example.driveguard.objects.Credentials;
 
 public class Settings extends AppCompatActivity {
     private SharedPreferences preferences;
@@ -26,7 +23,7 @@ public class Settings extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings);
+        setContentView(R.layout.screen_settings);
 
         preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);
         SwitchCompat switchCompat = findViewById(R.id.darkMode);

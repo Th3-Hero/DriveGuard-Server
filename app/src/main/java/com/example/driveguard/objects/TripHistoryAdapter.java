@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,10 +39,9 @@ public class TripHistoryAdapter extends RecyclerView.Adapter<TripHistoryAdapter.
 
         CompletedTrip trip = completedTrips.get(position);
 
-        holder.scoreTextView.setText(trip.getScore());
-        holder.distanceTextView.setText(trip.getDistanceKM() + " km");
-        holder.durationTextView.setText(trip.getDuration());
-        holder.tripLengthTextView.setText(trip.getTripLength().getFormattedTime());
+        holder.scoreTextView.setText(String.valueOf(trip.getScore()));
+        holder.distanceTextView.setText(String.valueOf(trip.getDistanceKM()) + " km");
+        holder.tripLengthTextView.setText(trip.getDuration().getFormattedTime());
 
     }
 
@@ -54,15 +54,16 @@ public class TripHistoryAdapter extends RecyclerView.Adapter<TripHistoryAdapter.
 
     public static class TripHistoryViewHolder extends RecyclerView.ViewHolder {
 
-        TextView scoreTextView, distanceTextView, durationTextView, tripLengthTextView;
-
+        TextView scoreTextView, distanceTextView, tripLengthTextView;
+        LinearLayout linearLayoutHistoryAttributes;
         public TripHistoryViewHolder(View itemView) {
 
             super(itemView);
             scoreTextView = itemView.findViewById(R.id.textViewHistoryDriverScore);
             distanceTextView = itemView.findViewById(R.id.distance);
-            durationTextView = itemView.findViewById(R.id.duration);
             tripLengthTextView = itemView.findViewById(R.id.tripLength);
+
+            linearLayoutHistoryAttributes = itemView.findViewById(R.id.linearLayoutHistoryAttributes);
 
         }
 

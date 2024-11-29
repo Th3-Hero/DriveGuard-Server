@@ -3,6 +3,7 @@ package com.example.driveguard.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.os.StrictMode;
 import android.widget.Toast;
 
@@ -31,7 +32,6 @@ public class HistoryScreen extends AppCompatActivity {
     private NetworkManager networkManager;
     private TripHistoryAdapter tripHistoryAdapter;
 
-    @SneakyThrows
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 

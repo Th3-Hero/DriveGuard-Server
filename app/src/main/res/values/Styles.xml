@@ -2,7 +2,7 @@
 <resources>
     <style name="primary_button" parent="Widget.AppCompat.Button">
         <item name="android:textColor">@color/textColorPrimary</item>
-        <item name="android:background">@drawable/rounded_button</item>
+        <item name="android:background">@drawable/button_rounded</item>
         <item name="backgroundTint">@null</item>
     </style>
 </resources>

@@ -2,6 +2,7 @@ package com.example.driveguard;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import com.example.driveguard.activities.HistoryScreen;
 import com.example.driveguard.activities.HomeScreen;
 import com.example.driveguard.activities.TripScreen;
+import com.example.driveguard.objects.TripHistoryAdapter;
 
 public class ButtonDeck {
 public static void SetUpButtons(@NonNull Activity activity){
@@ -56,5 +58,21 @@ public static void SetUpButtons(@NonNull Activity activity){
         previousTrips.setEnabled(!previousTrips.isEnabled());
         trip.setEnabled(!trip.isEnabled());
         help.setEnabled(!help.isEnabled());
+    }
+    public static void TintButton(@NonNull Activity activity){
+        ImageButton home = activity.findViewById(R.id.homeButton);
+        ImageButton previousTrips = activity.findViewById(R.id.previousTrips);
+        ImageButton trip = activity.findViewById(R.id.trip);
+        ImageButton help = activity.findViewById(R.id.help);
+        if (activity.getClass() == HomeScreen.class){
+            home.setColorFilter(R.color.black, PorterDuff.Mode.SRC_ATOP);
+        }
+        else if (activity.getClass() == TripScreen.class){
+            home.setColorFilter(R.color.black, PorterDuff.Mode.SRC_ATOP);
+        }
+        else if (activity.getClass() == HistoryScreen.class){
+            home.setColorFilter(R.color.black, PorterDuff.Mode.SRC_ATOP);
+        }
+
     }
 }

@@ -74,13 +74,6 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Duration: "
-            android:textSize="16sp" />
-
-        <TextView
             android:id="@+id/tripLength"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

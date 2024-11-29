@@ -39,7 +39,7 @@ public class ProfileScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.profile_screen);
+        setContentView(R.layout.screen_profile);
 
         Credentials credentials = Utilities.LoadCredentials(getApplicationContext());
 

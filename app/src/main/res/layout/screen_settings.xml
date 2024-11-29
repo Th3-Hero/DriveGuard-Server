@@ -61,7 +61,7 @@
         android:background="@color/primaryColor"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Settings"
-        app:titleTextColor="@color/textColorSecondary" />
+        app:titleTextColor="@color/textColorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

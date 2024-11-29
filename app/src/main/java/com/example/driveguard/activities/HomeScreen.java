@@ -54,7 +54,7 @@ public class HomeScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.home_screen);
+        setContentView(R.layout.screen_home);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -84,6 +84,7 @@ public class HomeScreen extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         ButtonDeck.SetUpButtons(HomeScreen.this);
+        ButtonDeck.TintButton(this);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -107,7 +108,7 @@ public class HomeScreen extends AppCompatActivity {
     @SneakyThrows
     public void LoadWeatherIcon(@NonNull NetworkManager networkManager){
         Response weatherRes = networkManager.getWeatherFromLocation(dataCollector.getStartingLocation());
-        if (weatherRes.isSuccessful()){
+        if (weatherRes != null && weatherRes.isSuccessful()){
             assert weatherRes.body() != null;
             weather = JsonToWeather(weatherRes.body().string());
             weatherIcon = findViewById(R.id.weather);
@@ -122,7 +123,7 @@ public class HomeScreen extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             LocalDateTime current = LocalDateTime.now();
             if (current.getHour() < 4){
-                welcomeMessage.setText(R.string.good_evening);
+                welcomeMessage.setText(R.string.go_sleep);
             } else if (current.getHour() < 12) {
                 welcomeMessage.setText(R.string.good_morning);
             } else if (current.getHour() < 18) {

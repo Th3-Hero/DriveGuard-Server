@@ -44,7 +44,6 @@ public class CompletedTripDialog extends DialogFragment {
 
         TextView scoreTextView = dialogView.findViewById(R.id.textViewHistoryDriverScore);
         TextView distanceTextView = dialogView.findViewById(R.id.distance);
-        TextView durationTextView = dialogView.findViewById(R.id.duration);
         TextView tripLengthTextView = dialogView.findViewById(R.id.tripLength);
 
         LinearLayout deductionsHistoryLayout = dialogView.findViewById(R.id.linearLayoutHistoryDeductions);
@@ -53,8 +52,7 @@ public class CompletedTripDialog extends DialogFragment {
 
             scoreTextView.setText(completedTrip.getScore());
             distanceTextView.setText(completedTrip.getDistanceKM() + " km");
-            durationTextView.setText(completedTrip.getDuration());
-            tripLengthTextView.setText(completedTrip.getTripLength().getFormattedTime());
+            tripLengthTextView.setText(completedTrip.getDuration().getFormattedTime());
 
         }
 

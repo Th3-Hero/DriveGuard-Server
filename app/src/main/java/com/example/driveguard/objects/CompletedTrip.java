@@ -16,6 +16,5 @@ public class CompletedTrip implements Serializable {
     private int driverId;
     private int score;
     private double distanceKM;
-    private String duration;
-    private TripLength tripLength;
+    private TripLength duration;
 }

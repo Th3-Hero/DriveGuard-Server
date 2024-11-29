@@ -36,7 +36,7 @@ public class CompletedTripAdapter extends TypeAdapter<CompletedTrip> {
                     trip.setDistanceKM(in.nextDouble());
                     break;
                 case "duration":
-                    trip.setTripLength(readDuration(in));
+                    trip.setDuration(readDuration(in));
                     break;
             }
         }

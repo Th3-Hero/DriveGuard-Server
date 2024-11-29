@@ -3,6 +3,7 @@ package com.example.driveguard.activities;
 import static com.example.driveguard.GsonUtilities.JsonToTrip;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -20,12 +21,15 @@ import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.DataClassifier;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
+import com.example.driveguard.Utilities;
 import com.example.driveguard.objects.Credentials;
 import com.example.driveguard.objects.Road;
 import com.example.driveguard.objects.Trip;
 
 import java.io.IOException;
+import java.util.Date;
 
+import lombok.SneakyThrows;
 import okhttp3.Response;
 import com.example.driveguard.DataCollector;
 import com.example.driveguard.objects.Weather;
@@ -34,9 +38,8 @@ import com.google.gson.Gson;
 public class TripScreen extends AppCompatActivity {
 
     private DataCollector dataCollector;
-
+    private NetworkManager networkManager;
     private DataClassifier dataClassifier;
-    private Credentials credentials;
     private Trip currentTrip;
     private final int START_TRIP_SUCCESS = 201;
     private final int STOP_TRIP_SUCCESS = 200;
@@ -47,36 +50,27 @@ public class TripScreen extends AppCompatActivity {
     public Date getTimeLastChecked() {
         return timeLastChecked;
     }
-
     // Setter
     public void setTimeLastChecked(Date timeLastChecked) {
         this.timeLastChecked = timeLastChecked;
     }
-
-
     private Weather currentWeather;
-
     private int postedSpeedLimit;
-
     // Getter for currentWeather
-    public Weather getCurrentWeather() {
-        return currentWeather;
-    }
-
+    public Weather getCurrentWeather() { return currentWeather;}
     // Setter for currentWeather
     public void setCurrentWeather(Weather currentWeather) {
         this.currentWeather = currentWeather;
     }
-
     // Getter for postedSpeedLimit
     public int getPostedSpeedLimit() {
         return postedSpeedLimit;
     }
-
     // Setter for postedSpeedLimit
     public void setPostedSpeedLimit(int postedSpeedLimit) {
         this.postedSpeedLimit = postedSpeedLimit;
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +81,11 @@ public class TripScreen extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
         dataCollector = new DataCollector(getApplicationContext());
+
+        NetworkManager networkManager = new NetworkManager(getApplicationContext());
+
+        RequestWeather(dataCollector.getStartingLocation());
+        RequestRoad(dataCollector.getStartingLocation());
 
         //defines the toolbar used in the activity
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -119,10 +118,10 @@ public class TripScreen extends AppCompatActivity {
                 NetworkManager networkManager = new NetworkManager(getApplicationContext());
 
                 //start trip here
-                if (startButton.isChecked()){//for starting trip
+                if (startButton.isChecked()) {//for starting trip
                     // 201 means a trip was started successfully
                     Response response = networkManager.StartTrip(dataCollector.getStartingLocation());
-                    if (response != null && response.code() == START_TRIP_SUCCESS){
+                    if (response != null && response.code() == START_TRIP_SUCCESS) {
                         //networkManager.dataCollector.startDataCollection();
                         Toast.makeText(TripScreen.this, "Trip Successfully started!", Toast.LENGTH_LONG).show();
 
@@ -133,17 +132,35 @@ public class TripScreen extends AppCompatActivity {
                             throw new RuntimeException(e);
                         }
 
-                        // Retrieve the trip ID sent by the server
-                        credentials.setTripId(currentTrip.getId());
+                        Utilities.SaveTripID(getApplicationContext(), currentTrip.getId());
 
                         // Start the async loop
                         handler.postDelayed(runnable, 25);
 
-                    } else { // Set button back to unchecked
-                        startButton.setChecked(false);
+                    } else {
+                        assert response != null;
+                        if (response.code() == 409) {//code 409 means a trip is already underway if this is the case call to end it
+                            Response tripResponse = networkManager.getCurrentTrip();
+
+                            if (tripResponse.isSuccessful()) {
+                                assert tripResponse.body() != null;
+                                Trip current = JsonToTrip(tripResponse.body().string());
+                                Utilities.SaveTripID(getApplicationContext(), current.getId());
+                            }
+
+                            Response endResponse = networkManager.EndTrip(dataCollector.getStartingLocation());
+
+                            if (endResponse.isSuccessful()) {
+                                Toast.makeText(TripScreen.this, "ERROR: cancelling previous trip", Toast.LENGTH_LONG).show();
+                            }
+                            startButton.setChecked(false);
+                        } else { // Set button back to unchecked
+                            Toast.makeText(TripScreen.this, "ERROR: " + response.code(), Toast.LENGTH_LONG).show();
+                            startButton.setChecked(false);
+                        }
                     }
                 } else if (!startButton.isChecked()) { // For ending trip
-                    Response response = networkManager.EndTrip(credentials, dataCollector.getStartingLocation());
+                    Response response = networkManager.EndTrip(dataCollector.getStartingLocation());
                     if (response != null && response.code() == STOP_TRIP_SUCCESS) {
                         //networkManager.dataCollector.stopDataCollection();
 
@@ -196,56 +213,85 @@ public class TripScreen extends AppCompatActivity {
         String timestamp = String.valueOf(System.currentTimeMillis()); // Current timestamp
 
         // Use NetworkManager for additional data retrieval
-        NetworkManager networkManager = new NetworkManager();
+        NetworkManager networkManager = new NetworkManager(getApplicationContext());
         if(this.getTimeLastChecked().getTime() >= this.getTimeLastChecked().getTime() + 30 * 60 * 1000)
         {
-            try {
-                // Get the weather data as a Response object
-                Response weatherResponse = networkManager.getWeatherFromLocation(location);
-
-                // Check if the response is successful
-                if (!weatherResponse.isSuccessful()) {
-                    throw new IOException("Failed to fetch weather data. HTTP Code: " + weatherResponse.code());
-                }
-
-                // Deserialize the response body into a Weather object
-                String weatherResponseBody = null;
-                if (weatherResponse.body() != null) {
-                    weatherResponseBody = weatherResponse.body().string();
-                }
-                Gson gson = new Gson();
-                this.setCurrentWeather(gson.fromJson(weatherResponseBody, Weather.class));
-
-            } catch (IOException e) {
-                System.err.println("Error retrieving or processing weather data: " + e.getMessage());
-                throw new RuntimeException(e);
-            }
-            try {
-                // Make the API call to fetch road data
-                Response response = networkManager.getRoadFromLocation(location);
-
-                // Check if the response is successful
-                if (response.isSuccessful() && response.body() != null) {
-                    // Parse the response body into a Road object
-                    String responseBody = response.body().string();
-                    Gson gson = new Gson();
-                    Road road = gson.fromJson(responseBody, Road.class);
-
-                    // Return the speed limit
-                    this.setPostedSpeedLimit(road.getSpeedLimit());
-                } else {
-                    // Log error or handle unsuccessful response
-                    System.err.println("Failed to fetch road data. HTTP Code: " + response.code());
-                }
-            } catch (IOException e) {
-                // Handle exceptions
-                System.err.println("Error fetching road data: " + e.getMessage());
-            }
+                RequestWeather(location);
+                RequestRoad(location);
+//            try {
+//                // Make the API call to fetch road data
+//                Response response = networkManager.getRoadFromLocation(location);
+//
+//                // Check if the response is successful
+//                if (response.isSuccessful() && response.body() != null) {
+//                    // Parse the response body into a Road object
+//                    String responseBody = response.body().string();
+//                    Gson gson = new Gson();
+//                    Road road = gson.fromJson(responseBody, Road.class);
+//
+//                    // Return the speed limit
+//                    this.setPostedSpeedLimit(road.getSpeedLimit());
+//                } else {
+//                    // Log error or handle unsuccessful response
+//                    System.err.println("Failed to fetch road data. HTTP Code: " + response.code());
+//                }
+//            } catch (IOException e) {
+//                // Handle exceptions
+//                System.err.println("Error fetching road data: " + e.getMessage());
+//            }
             this.setTimeLastChecked(new Date());
         }
         dataClassifier = new DataClassifier(this.getPostedSpeedLimit());
         // Classify the data for events
-        dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, credentials, location, this.getCurrentWeather());
+        dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, location, this.getCurrentWeather());
+    }
+
+    public void RequestWeather(Location location){
+        networkManager = new NetworkManager(getApplicationContext());
+        try {
+            // Get the weather data as a Response object
+            Response weatherResponse = networkManager.getWeatherFromLocation(location);
+
+            // Check if the response is successful
+            if (!weatherResponse.isSuccessful()) {
+                throw new IOException("Failed to fetch weather data. HTTP Code: " + weatherResponse.code());
+            }
+
+            // Deserialize the response body into a Weather object
+            String weatherResponseBody = null;
+            if (weatherResponse.body() != null) {
+                weatherResponseBody = weatherResponse.body().string();
+            }
+            Gson gson = new Gson();
+            this.setCurrentWeather(gson.fromJson(weatherResponseBody, Weather.class));
+
+        } catch (IOException e) {
+            System.err.println("Error retrieving or processing weather data: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+    public void RequestRoad(Location location){
+        try {
+            // Make the API call to fetch road data
+            Response response = networkManager.getRoadFromLocation(location);
+
+            // Check if the response is successful
+            if (response.isSuccessful() && response.body() != null) {
+                // Parse the response body into a Road object
+                String responseBody = response.body().string();
+                Gson gson = new Gson();
+                Road road = gson.fromJson(responseBody, Road.class);
+
+                // Return the speed limit
+                this.setPostedSpeedLimit(road.getSpeedLimit());
+            } else {
+                // Log error or handle unsuccessful response
+                System.err.println("Failed to fetch road data. HTTP Code: " + response.code());
+            }
+        } catch (IOException e) {
+            // Handle exceptions
+            System.err.println("Error fetching road data: " + e.getMessage());
+        }
     }
 
 }
