@@ -85,7 +85,7 @@ public class NetworkManager {
     }
     /**
      * Method that ends an existing trip with the server
-     * @param credentials for the drivers id, token, and trip id
+    * @param credentials for the drivers id, token, and trip id
      * @param location location takes android location which is formatted for the server in ServerLocation
      * @return if successful will return the full Trip object to be parsed
      */

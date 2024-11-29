@@ -1,6 +1,7 @@
 package com.example.driveguard.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -29,7 +30,7 @@ import okhttp3.Response;
 public class ProfileScreen extends AppCompatActivity {
     private Driver driver;
     private TextView usernameText;
-    private Button loginButton, logoutButton, signupButton;
+    private Button loginButton, logoutButton, signupButton, changeUsernameButton, changePasswordButton;
     private NetworkManager networkManager;
     private Credentials credentials;
 
@@ -54,6 +55,9 @@ public class ProfileScreen extends AppCompatActivity {
         logoutButton = findViewById(R.id.logoutButton);
         signupButton = findViewById(R.id.signupButton);
 
+        changeUsernameButton = findViewById(R.id.changeUsernameButton);
+        changePasswordButton = findViewById(R.id.changePasswordButton);
+
         Response driverResponse;
         if (credentials.getDriverId() != -1){
             driverResponse = networkManager.getDriver();
@@ -71,6 +75,9 @@ public class ProfileScreen extends AppCompatActivity {
             loginButton.setVisibility(View.GONE);
             logoutButton.setVisibility(View.VISIBLE);
             signupButton.setVisibility(View.GONE);
+            changeUsernameButton.setVisibility(View.VISIBLE);
+            changePasswordButton.setVisibility(View.VISIBLE);
+
         } else {
 
             //currentCredentials = null;
@@ -78,11 +85,105 @@ public class ProfileScreen extends AppCompatActivity {
             loginButton.setVisibility(View.VISIBLE);
             logoutButton.setVisibility(View.GONE);
             signupButton.setVisibility(View.VISIBLE);
+            changeUsernameButton.setVisibility(View.GONE);
+            changePasswordButton.setVisibility(View.GONE);
         }
 
         loginButton.setOnClickListener(v -> navigateToLogin());
         logoutButton.setOnClickListener(v -> performLogout(credentials));
         signupButton.setOnClickListener(v -> navigateToSignUp());
+
+        changeUsernameButton.setOnClickListener(v -> showChangeUsernameDialog());
+        changePasswordButton.setOnClickListener(v -> showChangePasswordDialog());
+
+    }
+
+    private void showChangeUsernameDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_change_username, null);
+
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+
+        TextView newUsernameInput = view.findViewById(R.id.newUsernameInput);
+        Button cancelButton = view.findViewById(R.id.cancelButton);
+        Button okButton = view.findViewById(R.id.okButton);
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+        okButton.setOnClickListener(v -> {
+
+            String newUsername = newUsernameInput.getText().toString().trim();
+            if (newUsername.isEmpty()) {
+
+                Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_SHORT).show();
+                return;
+
+            }
+
+            Response response = networkManager.UpdateUsername(newUsername);
+
+            if(response.isSuccessful()) {
+
+                Toast.makeText(this, "Username updated successfully", Toast.LENGTH_SHORT).show();
+                usernameText.setText(newUsername);
+                dialog.dismiss();
+
+            } else {
+
+                Toast.makeText(this, "Failed to update username: " + response.message(), Toast.LENGTH_SHORT).show();
+
+            }
+
+        });
+
+        dialog.show();
+
+    }
+
+    private void showChangePasswordDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_change_password, null);
+
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+
+        TextView oldPasswordInput = view.findViewById(R.id.oldPasswordInput);
+        TextView newPasswordInput = view.findViewById(R.id.newPasswordInput);
+        Button cancelButton = view.findViewById(R.id.cancelButton);
+        Button okButton = view.findViewById(R.id.okButton);
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+        okButton.setOnClickListener(v -> {
+
+            String oldPassword = oldPasswordInput.getText().toString().trim();
+            String newPassword = newPasswordInput.getText().toString().trim();
+
+            if(oldPassword.isEmpty() || newPassword.isEmpty()) {
+
+                Toast.makeText(this, "Passwords cannot be empty", Toast.LENGTH_SHORT).show();
+                return;
+
+            }
+
+            Response response = networkManager.UpdatePassword(oldPassword, newPassword);
+
+            if(response.isSuccessful()) {
+
+                Toast.makeText(this, "Password updated successfully", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+
+            } else {
+
+                Toast.makeText(this, "Failed to update password", Toast.LENGTH_SHORT).show();
+
+            }
+
+        });
+
+        dialog.show();
+
     }
 
     private void navigateToLogin() {
