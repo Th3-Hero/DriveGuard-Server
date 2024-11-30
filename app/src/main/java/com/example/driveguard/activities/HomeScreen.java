@@ -5,6 +5,7 @@ import static com.example.driveguard.GsonUtilities.JsonToWeather;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,12 +15,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.Manifest;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -27,6 +32,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.DataCollector;
 import com.example.driveguard.GsonUtilities;
+//import com.example.driveguard.Manifest;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
 import com.example.driveguard.objects.Driver;
@@ -49,6 +55,7 @@ public class HomeScreen extends AppCompatActivity {
     private DataCollector dataCollector;
     private Weather weather;
     private Driver driver;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
     @SneakyThrows
     @Override
@@ -61,19 +68,25 @@ public class HomeScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        //allows the UI thread to perform network calls. We could make them async if this causes issues
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         dataCollector = new DataCollector(getApplicationContext());
         networkManager = new NetworkManager(getApplicationContext());
 
-        //dataCollector.startDataCollection();
-
-        LoadWeatherIcon(networkManager);
-        LoadTimeMessage();
-        LoadDriver(networkManager);
+        // Check if location permission is granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Request the location permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            LoadWeatherIcon(networkManager);
+            LoadTimeMessage();
+            LoadDriver(networkManager);
+        }
+        //allows the UI thread to perform network calls. We could make them async if this causes issues
 
         boolean darkMode = false;
         SharedPreferences preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);
@@ -168,5 +181,24 @@ public class HomeScreen extends AppCompatActivity {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("darkMode", false);
         editor.apply();
+    }
+    // Handle the permission request result
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission was granted
+                Toast.makeText(this, "Location permission approved", Toast.LENGTH_SHORT).show();
+                LoadWeatherIcon(networkManager);
+            } else {
+                // Permission was denied
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Functionality will be limited", Toast.LENGTH_SHORT).show();
+            }
+            LoadTimeMessage();
+            LoadDriver(networkManager);
+        }
     }
 }

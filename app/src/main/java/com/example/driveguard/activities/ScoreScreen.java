@@ -25,11 +25,11 @@ import java.util.Objects;
 public class ScoreScreen extends DialogFragment {
     private Trip trip;
 
-   public void setTrip(Trip trip) {
+    public void setTrip(Trip trip) {
 
        this.trip = trip;
 
-   }
+    }
 
     @SuppressLint("SetTextI18n")
     @Nullable
