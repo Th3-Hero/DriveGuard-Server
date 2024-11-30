@@ -199,7 +199,6 @@ public class NetworkManager {
                 .scheme(scheme)
                 .host(baseUrl)
                 .addPathSegment(tripUrl)
-                .addPathSegment("current")
                 .addPathSegment(String.valueOf(credentials.getDriverId()))
                 .addPathSegment(String.valueOf(tripId))
                 .addQueryParameter("token", credentials.getToken())

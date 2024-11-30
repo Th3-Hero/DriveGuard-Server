@@ -68,6 +68,8 @@ public class HomeScreen extends AppCompatActivity {
         dataCollector = new DataCollector(getApplicationContext());
         networkManager = new NetworkManager(getApplicationContext());
 
+        //dataCollector.startDataCollection();
+
         LoadWeatherIcon(networkManager);
         LoadTimeMessage();
         LoadDriver(networkManager);
