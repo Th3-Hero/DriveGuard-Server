@@ -2,6 +2,7 @@ package com.example.driveguard;
 
 import static com.example.driveguard.GsonUtilities.LocationToServerLocationJson;
 import static com.example.driveguard.GsonUtilities.ServerLocationPairToJson;
+import static com.example.driveguard.GsonUtilities.ServerLocationToJson;
 
 import android.content.Context;
 import android.location.Location;
@@ -629,5 +630,31 @@ public class NetworkManager {
         throw new RuntimeException(e);
     }
 }
+    public Response getAddress(@NonNull ServerLocation location){
+
+        String serverLocation = ServerLocationToJson(location);
+
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(baseUrl)
+                .addPathSegment(drivingContextUrl)
+                .addPathSegment("address")
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "*/*")
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create(serverLocation, MediaType.parse("application/json")))
+                .build();
+
+        Call call = client.newCall(request);
+
+        try {
+            return call.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

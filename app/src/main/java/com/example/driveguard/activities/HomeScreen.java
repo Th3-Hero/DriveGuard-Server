@@ -45,7 +45,6 @@ import lombok.SneakyThrows;
 import okhttp3.Response;
 
 public class HomeScreen extends AppCompatActivity {
-
     private ImageView weatherIcon;
     private TextView welcomeMessage;
     private TextView username;
