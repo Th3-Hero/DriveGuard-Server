@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.driveguard.R;
+import com.example.driveguard.objects.DrivingEvent;
 import com.example.driveguard.objects.Event;
 import com.example.driveguard.objects.Trip;
 
@@ -80,7 +81,7 @@ public class ScoreScreen extends DialogFragment {
 
             if(trip.getDrivingEvents() != null && !trip.getDrivingEvents().isEmpty()) {
 
-                for(Event event : trip.getDrivingEvents()) {
+                for(DrivingEvent event : trip.getDrivingEvents()) {
 
                     TextView deductionTextView = new TextView(getActivity());
                     deductionTextView.setText("- " + event);

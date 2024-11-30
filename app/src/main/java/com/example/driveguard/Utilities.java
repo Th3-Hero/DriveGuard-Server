@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.driveguard.objects.Credentials;
 
@@ -45,5 +46,15 @@ public class Utilities {
         editor.remove("token");
         editor.remove("tripId");
         editor.apply();
+    }
+    public static void applyDarkModeIfNeeded(SharedPreferences preferences) {
+        boolean darkMode = preferences.getBoolean("darkMode", false);
+        int currentMode = AppCompatDelegate.getDefaultNightMode();
+
+        if (darkMode && currentMode != AppCompatDelegate.MODE_NIGHT_YES) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else if (!darkMode && currentMode != AppCompatDelegate.MODE_NIGHT_NO) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
     }
 }

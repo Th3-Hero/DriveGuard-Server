@@ -3,6 +3,7 @@ package com.example.driveguard.activities;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
@@ -14,6 +15,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.GsonUtilities;
@@ -41,14 +44,14 @@ public class ProfileScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_profile);
 
-        Credentials credentials = Utilities.LoadCredentials(getApplicationContext());
-
         networkManager = new NetworkManager(getApplicationContext());
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         ButtonDeck.SetUpButtons(ProfileScreen.this);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         usernameText = findViewById(R.id.usernameText);
         loginButton = findViewById(R.id.loginButton);
@@ -58,18 +61,17 @@ public class ProfileScreen extends AppCompatActivity {
         changeUsernameButton = findViewById(R.id.changeUsernameButton);
         changePasswordButton = findViewById(R.id.changePasswordButton);
 
-        Response driverResponse;
-        if (credentials.getDriverId() != -1){
-            driverResponse = networkManager.getDriver();
+        Response driverResponse = networkManager.getDriver();
 
-            if (driverResponse.isSuccessful()){
-                assert driverResponse.body() != null;
-                driver = GsonUtilities.JsonToDriver(driverResponse.body().string());
-            }
+        if (driverResponse != null && driverResponse.isSuccessful()){
+            assert driverResponse.body() != null;
+            driver = GsonUtilities.JsonToDriver(driverResponse.body().string());
+        } else {
+            driver = new Driver();
         }
 
         // Checking credentials
-        if(!Objects.equals(credentials.getToken(), "") && credentials.getDriverId() != -1){
+        if(!Objects.equals(driver.getUsername(), "") && driver.getId() != -1){
 
             usernameText.setText(driver.getUsername());
             loginButton.setVisibility(View.GONE);
@@ -77,10 +79,10 @@ public class ProfileScreen extends AppCompatActivity {
             signupButton.setVisibility(View.GONE);
             changeUsernameButton.setVisibility(View.VISIBLE);
             changePasswordButton.setVisibility(View.VISIBLE);
+            changeUsernameButton.setOnClickListener(v -> showChangeUsernameDialog());
+            changePasswordButton.setOnClickListener(v -> showChangePasswordDialog());
 
         } else {
-
-            //currentCredentials = null;
             usernameText.setText("Guest");
             loginButton.setVisibility(View.VISIBLE);
             logoutButton.setVisibility(View.GONE);
@@ -90,11 +92,10 @@ public class ProfileScreen extends AppCompatActivity {
         }
 
         loginButton.setOnClickListener(v -> navigateToLogin());
-        logoutButton.setOnClickListener(v -> performLogout(credentials));
+        logoutButton.setOnClickListener(v -> performLogout(driver));
         signupButton.setOnClickListener(v -> navigateToSignUp());
 
-        changeUsernameButton.setOnClickListener(v -> showChangeUsernameDialog());
-        changePasswordButton.setOnClickListener(v -> showChangePasswordDialog());
+
 
     }
 
@@ -124,21 +125,14 @@ public class ProfileScreen extends AppCompatActivity {
             Response response = networkManager.UpdateUsername(newUsername);
 
             if(response.isSuccessful()) {
-
                 Toast.makeText(this, "Username updated successfully", Toast.LENGTH_SHORT).show();
                 usernameText.setText(newUsername);
                 dialog.dismiss();
-
             } else {
-
                 Toast.makeText(this, "Failed to update username: " + response.message(), Toast.LENGTH_SHORT).show();
-
             }
-
         });
-
         dialog.show();
-
     }
 
     private void showChangePasswordDialog() {
@@ -199,9 +193,9 @@ public class ProfileScreen extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    private void performLogout(Credentials credentials) {
+    private void performLogout(Driver driver) {
 
-        if(credentials.getDriverId() == -1) {
+        if (driver.getId() == -1) {
 
             Toast.makeText(this, "No active session to logout from.", Toast.LENGTH_SHORT).show();
             return;
@@ -209,8 +203,6 @@ public class ProfileScreen extends AppCompatActivity {
         }
 
         Response response = networkManager.Logout();
-
-            //Toast.makeText(this, "An error occured: " + e.getMessage(), Toast.LENGTH_SHORT).show();
 
         if(response.isSuccessful()) {
 
@@ -223,13 +215,21 @@ public class ProfileScreen extends AppCompatActivity {
 
         } else {
 
-            Toast.makeText(this, "Logout failed: " + response.message(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "System Error", Toast.LENGTH_SHORT).show();
 
         }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu,menu);
+        MenuItem item = menu.findItem(R.id.profile);
+
+        if (item != null && item.getIcon() != null){
+            Drawable icon = DrawableCompat.wrap(item.getIcon());
+
+            DrawableCompat.setTint(icon, getResources().getColor(R.color.darkGrey));
+            item.setIcon(icon);
+        }
         return super.onCreateOptionsMenu(menu);
     }
     @Override

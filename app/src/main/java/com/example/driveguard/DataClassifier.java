@@ -102,7 +102,7 @@ public class DataClassifier
         // Classify and handle Hard Braking Event
         HardBrakeEvent brakeEvent = new HardBrakeEvent(gForce, timestamp, location, currentWeather);
         if (brakeEvent.isHarshBraking() && Boolean.FALSE.equals(eventHasBeenDetected.get("brake"))) {
-            eventHasBeenDetected.put("break", true);
+            eventHasBeenDetected.put("brake", true);
             Response eventResponse = networkManager.addEventToTrip(
                     new DrivingEvent(
                             timestamp,

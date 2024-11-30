@@ -21,11 +21,11 @@ public class Trip implements Serializable {
     private TripStatus status;
     private int score;
     private double distance;
-    private List<Event> drivingEvents;
+    private List<DrivingEvent> drivingEvents;
 
     public Trip(int id, int driverId,String startTime, String endTime,
                 ServerLocation startLocation, ServerLocation endLocation,
-                TripStatus status, int score, int distance, List<Event> events){
+                TripStatus status, int score, int distance, List<DrivingEvent> events){
         this.id = id;
         this.driverId = driverId;
         this.startTime = startTime;

@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.driveguard.R;
+import com.example.driveguard.objects.DrivingEvent;
 import com.example.driveguard.objects.Trip;
 
 import com.example.driveguard.objects.Event;
@@ -87,7 +88,7 @@ public class CompletedTripDialog extends DialogFragment {
 
             if(trip.getDrivingEvents() != null && !trip.getDrivingEvents().isEmpty()) {
 
-                for(Event event : trip.getDrivingEvents()) {
+                for(DrivingEvent event : trip.getDrivingEvents()) {
 
                     TextView deductionTextView = new TextView(getActivity());
                     deductionTextView.setText("- " + event);

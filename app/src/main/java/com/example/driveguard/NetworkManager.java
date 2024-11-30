@@ -17,6 +17,8 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 
+import lombok.Getter;
+import lombok.Setter;
 import okhttp3.Call;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -26,6 +28,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import com.example.driveguard.objects.DrivingEvent;
 
+@Getter
+@Setter
 public class NetworkManager {
 
     /*
@@ -42,6 +46,7 @@ public class NetworkManager {
     private final String authUrl = "auth";
     private final String driverUrl = "driver";
     private final String drivingContextUrl = "driving-context";
+    private DrivingEvent lastEvent;
     public NetworkManager(Context context){
         client = new OkHttpClient();
         this.context = context;
@@ -126,7 +131,7 @@ public class NetworkManager {
      */
     public Response addEventToTrip(@NonNull DrivingEvent event){
         Credentials credentials = Utilities.LoadCredentials(context);
-
+        lastEvent = event;
         Gson gson = new Gson();
         String jsonBody = gson.toJson(event);
 

@@ -37,6 +37,7 @@ public class DataCollector {
 
     // Initialize location and sensor listeners
     public void startDataCollection() {
+
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
 
         Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -73,7 +74,7 @@ public class DataCollector {
             if (lastLocation != null) {
                 float distance = location.distanceTo(lastLocation);
                 float timeElapsed = (location.getTime() - lastLocation.getTime()) / 1000.0f; // seconds
-                currentSpeed = distance / timeElapsed; // speed in m/s
+                currentSpeed = (distance / timeElapsed) * 3.6f; // speed converted to km/h
             }
             lastLocation = location;
         }

@@ -7,7 +7,7 @@
 
 
 
-    <androidx.appcompat.widget.SwitchCompat
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/darkMode"
         android:layout_width="297dp"
         android:layout_height="92dp"

@@ -67,6 +67,7 @@ public class HomeScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        //allows the UI thread to perform network calls. We could make them async if this causes issues
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -85,15 +86,14 @@ public class HomeScreen extends AppCompatActivity {
             LoadTimeMessage();
             LoadDriver(networkManager);
         }
-        //allows the UI thread to perform network calls. We could make them async if this causes issues
 
-        boolean darkMode = false;
         SharedPreferences preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);
-        darkMode = preferences.getBoolean("darkMode", false);
+        boolean darkMode = preferences.getBoolean("darkMode", false);
 
         if (darkMode){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             SaveDefaultDarkMode(preferences);
         }
 

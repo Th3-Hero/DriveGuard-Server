@@ -95,8 +95,12 @@ public class LoginScreen extends AppCompatActivity {
                     startActivity(intent);
                     finish();
 
+                } else if (response.code() == 401) {
+                    Toast.makeText(LoginScreen.this, "Invalid Username or Password", Toast.LENGTH_SHORT).show();
+                } else if (response.code() == 404) {
+                    Toast.makeText(LoginScreen.this, "No Matching Account Found", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(LoginScreen.this, "Error: " + response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginScreen.this, "System Error", Toast.LENGTH_SHORT).show();
                 }
             }
         });

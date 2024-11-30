@@ -5,9 +5,9 @@
     android:layout_height="match_parent">
 
     <ImageButton
+        android:id="@+id/previousTrips"
         style="@style/primary_button"
         android:src="@drawable/icon_trip_history"
-        android:id="@+id/previousTrips"
         android:layout_width="82dp"
         android:layout_height="48dp"
         android:layout_marginEnd="118dp"
@@ -16,9 +16,9 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageButton
+        android:id="@+id/homeButton"
         style="@style/primary_button"
         android:src="@drawable/icon_dashboard"
-        android:id="@+id/homeButton"
         android:layout_width="82dp"
         android:layout_height="48dp"
         android:layout_marginStart="24dp"
@@ -28,9 +28,9 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
+        android:id="@+id/help"
         style="@style/primary_button"
         android:src="@drawable/icon_help"
-        android:id="@+id/help"
         android:layout_width="82dp"
         android:layout_height="48dp"
         android:layout_marginEnd="24dp"
@@ -39,9 +39,9 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageButton
+        android:id="@+id/trip"
         style="@style/primary_button"
         android:src="@drawable/icon_car"
-        android:id="@+id/trip"
         android:layout_width="82dp"
         android:layout_height="48dp"
         android:layout_marginStart="118dp"

@@ -2,16 +2,20 @@ package com.example.driveguard.activities;
 
 import static com.example.driveguard.GsonUtilities.JsonToTrip;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -25,6 +29,7 @@ import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
 import com.example.driveguard.Utilities;
 import com.example.driveguard.objects.Credentials;
+import com.example.driveguard.objects.DrivingEvent;
 import com.example.driveguard.objects.Road;
 import com.example.driveguard.objects.Trip;
 
@@ -47,6 +52,10 @@ public class TripScreen extends AppCompatActivity {
     private Trip currentTrip;
     private final int START_TRIP_SUCCESS = 201;
     private final int STOP_TRIP_SUCCESS = 200;
+    private TextView limitText;
+    private TextView speedText;
+    private float speed;
+    private float limit;
 
     private Map<String, Boolean> eventHasBeenDetected = new HashMap<>();
 
@@ -104,6 +113,9 @@ public class TripScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.trip_screen);
 
+        limitText = findViewById(R.id.limit);
+        speedText = findViewById(R.id.speed);
+
         //allows the UI thread to perform network calls. We could make them async if this causes issues
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -133,6 +145,12 @@ public class TripScreen extends AppCompatActivity {
                 // Check for events periodically
                 checkForEvents();
 
+                DrivingEvent lastEvent = networkManager.getLastEvent();
+                if (lastEvent != null) {
+                    String event = lastEvent.toString();
+                    TextView e = findViewById(R.id.event);
+                    e.setText(event);
+                }
                 // Schedule the next execution after 25 milliseconds
                 handler.postDelayed(this, 25);
             }
@@ -154,6 +172,7 @@ public class TripScreen extends AppCompatActivity {
 
                         Toast.makeText(TripScreen.this, "Trip Successfully started!", Toast.LENGTH_LONG).show();
 
+                        ButtonDeck.ToggleButtons(TripScreen.this);
                         dataCollector.startDataCollection();
 
                         try {
@@ -194,12 +213,14 @@ public class TripScreen extends AppCompatActivity {
                     Response response = networkManager.EndTrip(dataCollector.getStartingLocation());
                     if (response != null && response.code() == STOP_TRIP_SUCCESS) {
 
-                        dataCollector.stopDataCollection();
-
                         Toast.makeText(TripScreen.this, "Trip successfully ended!", Toast.LENGTH_LONG).show();
 
                         // Stop the async loop
                         handler.removeCallbacks(runnable);
+
+                        dataCollector.stopDataCollection();
+
+                        ButtonDeck.ToggleButtons(TripScreen.this);
 
                         // Score screen ic called - Stephan
 
@@ -238,11 +259,24 @@ public class TripScreen extends AppCompatActivity {
     // Method to check for driving events
     private void checkForEvents() {
         // Get current data from the DataCollector
-        float speed = dataCollector.getSpeed();              // Current speed
+        //float speed = dataCollector.getSpeed();              // Current speed
+        float speed = 65f;
         float gForce = dataCollector.getAcceleration();      // Current g-force
         float turningRate = dataCollector.getTurningRate();  // Current turning rate
         android.location.Location location = dataCollector.getStartingLocation(); // Current location
-        String timestamp = String.valueOf(System.currentTimeMillis()); // Current timestamp
+
+        String timestamp = "";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Instant currentTime = Instant.now();
+            timestamp = DateTimeFormatter.ISO_INSTANT.format(currentTime);
+        }
+       // String timestamp = String.valueOf(System.currentTimeMillis()); // Current timestamp
+
+        String s = "Your Speed: " + String.valueOf(Math.round(speed));
+        speedText.setText(s);
+
+        String l = "Speed Limit: " + String.valueOf(getPostedSpeedLimit());
+        limitText.setText(l);
 
         if(this.getTimeLastChecked15Sec().getTime() >= this.getTimeLastChecked15Sec().getTime() + 15 * 1000)
         {
@@ -253,7 +287,7 @@ public class TripScreen extends AppCompatActivity {
         }
 
         // Use NetworkManager for additional data retrieval
-        NetworkManager networkManager = new NetworkManager(getApplicationContext());
+        //NetworkManager networkManager = new NetworkManager(getApplicationContext());
         if(this.getTimeLastChecked30Min().getTime() >= this.getTimeLastChecked30Min().getTime() + 30 * 60 * 1000)
         {
                 RequestWeather(location);

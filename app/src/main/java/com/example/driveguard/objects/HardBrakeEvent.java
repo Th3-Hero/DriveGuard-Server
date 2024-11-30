@@ -47,7 +47,7 @@ public class HardBrakeEvent extends Event
      */
     public boolean isHarshBraking()
     {
-        return this.gForce > 1.0;
+        return this.gForce < -0.5;
     }
 
     /* Method Name: deductPoints
