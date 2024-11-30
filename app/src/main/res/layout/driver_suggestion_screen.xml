@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:text="Your Total Average Score"
         android:textSize="20sp"
-        android:textColor="@color/black"
+        android:textColor="@color/textColorSecondary"
         app:layout_constraintTop_toBottomOf="@+id/textViewAverageScore"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +46,7 @@
         android:text="Trip History"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/textColorSecondary"
         app:layout_constraintTop_toBottomOf="@+id/textViewAverageLabel"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="16dp"
@@ -69,6 +69,7 @@
         app:layout_constraintVertical_bias="0.075"/>
 
     <Button
+        style="@style/primary_button"
         android:id="@+id/goToSuggestions"
         android:layout_width="200dp"
         android:layout_height="50dp"
@@ -77,6 +78,7 @@
         android:layout_marginEnd="106dp"
         android:backgroundTint="@color/navy"
         android:text="Suggestions"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"

@@ -10,6 +10,7 @@ import android.app.Activity;
 
 import com.example.driveguard.objects.Account;
 import com.example.driveguard.objects.Credentials;
+import com.example.driveguard.objects.Trip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -25,8 +26,8 @@ public class NetworkTests {
     @Test
     public void TestSignUp() throws IOException {
         Account account = new Account("bob", "burger", "helloo", "Password!5");
-
-        NetworkManager networkManager = new NetworkManager();
+        Activity activity = new Activity();
+        NetworkManager networkManager = new NetworkManager(activity.getApplicationContext());
 
         Response response = networkManager.SignUp(account);
 
@@ -44,7 +45,8 @@ public class NetworkTests {
     public void TestLogin() throws IOException {
         Account account = new Account("bob", "burger", "helloo", "Password!5");
 
-        NetworkManager networkManager = new NetworkManager();
+        Activity activity = new Activity();
+        NetworkManager networkManager = new NetworkManager(activity.getApplicationContext());
 
         Response response = networkManager.Login(account);
 
@@ -57,14 +59,15 @@ public class NetworkTests {
     public void TestLogout() throws IOException{
         Account account = new Account("bob", "burger", "helloo", "Password!5");
 
-        NetworkManager networkManager = new NetworkManager();
+        Activity activity = new Activity();
+        NetworkManager networkManager = new NetworkManager(activity.getApplicationContext());
 
         Response response = networkManager.Login(account);
 
         Credentials credentials = JsonToCredentials(response.body().string());
 
         if (response.isSuccessful()){
-            Response logoutResponse = networkManager.Logout(credentials);
+            Response logoutResponse = networkManager.Logout();
 
             assertTrue(logoutResponse.isSuccessful());
         }
@@ -74,8 +77,7 @@ public class NetworkTests {
         Account account = new Account("bob", "burger", "helloo", "Password!5");
 
         Activity activity = new Activity();
-
-        NetworkManager networkManager = new NetworkManager();
+        NetworkManager networkManager = new NetworkManager(activity.getApplicationContext());
 
         Response response = networkManager.Login(account);
 
@@ -85,7 +87,7 @@ public class NetworkTests {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             Credentials credentials = gson.fromJson(response.body().string(), Credentials.class);
 
-            Response response1 = networkManager.StartTrip(credentials, dataCollector.getStartingLocation());
+            Response response1 = networkManager.StartTrip(dataCollector.getStartingLocation());
 
             System.out.println(response1.code());
             System.out.println(response1.body().string());
@@ -94,5 +96,22 @@ public class NetworkTests {
         }
 
 
+    }
+    @Test
+    public void getTrips() throws IOException {
+        Account account = new Account("Connor", "Miller", "Millerforce", "Hello123");
+
+        Activity activity = mock(Activity.class);
+        NetworkManager networkManager = new NetworkManager(activity.getApplicationContext());
+
+        Response response = networkManager.getTripSummary(1001);
+
+        if (response.isSuccessful()){
+
+            assert response.body() != null;
+            Trip trip = GsonUtilities.JsonToTrip(response.body().string());
+
+            trip.toString();
+        }
     }
 }

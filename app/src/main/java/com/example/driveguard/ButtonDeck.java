@@ -68,10 +68,10 @@ public static void SetUpButtons(@NonNull Activity activity){
             home.setColorFilter(R.color.black, PorterDuff.Mode.SRC_ATOP);
         }
         else if (activity.getClass() == TripScreen.class){
-            home.setColorFilter(R.color.black, PorterDuff.Mode.SRC_ATOP);
+            trip.setColorFilter(R.color.black, PorterDuff.Mode.SRC_ATOP);
         }
         else if (activity.getClass() == HistoryScreen.class){
-            home.setColorFilter(R.color.black, PorterDuff.Mode.SRC_ATOP);
+            previousTrips.setColorFilter(R.color.black, PorterDuff.Mode.SRC_ATOP);
         }
 
     }

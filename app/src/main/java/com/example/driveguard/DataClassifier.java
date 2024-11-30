@@ -51,7 +51,7 @@ public class DataClassifier
      *             long timestamp (time of event)
      * Returns: N/A
      */
-    public Map<String, Boolean> classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, Credentials credentials, android.location.Location location, Weather currentWeather, Map<String, Boolean> eventHasBeenDetected)
+    public Map<String, Boolean> classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, android.location.Location location, Weather currentWeather, Map<String, Boolean> eventHasBeenDetected)
     {
         // Classify and handle Speeding Event
         if (speed > this.postedSpeedLimit) {
@@ -65,8 +65,7 @@ public class DataClassifier
                                 EventType.SPEEDING,
                                 EventSeverity.LOW,
                                 speedEvent.deductPoints()
-                        ),
-                        credentials
+                        )
                 );
                 try {
                     if (!eventResponse.isSuccessful()) {
@@ -89,8 +88,7 @@ public class DataClassifier
                             EventType.HARD_ACCELERATION,
                             EventSeverity.LOW,
                             accelerateEvent.deductPoints()
-                    ),
-                    credentials
+                    )
             );
             try {
                 if (!eventResponse.isSuccessful()) {
@@ -112,8 +110,7 @@ public class DataClassifier
                             EventType.HARD_BRAKING,
                             EventSeverity.LOW,
                             brakeEvent.deductPoints()
-                    ),
-                    credentials
+                    )
             );
             try {
                 if (!eventResponse.isSuccessful()) {
@@ -135,8 +132,7 @@ public class DataClassifier
                             EventType.HARD_CORNERING,
                             EventSeverity.LOW,
                             turningEvent.deductPoints()
-                    ),
-                    credentials
+                    )
             );
             try {
                 if (!eventResponse.isSuccessful()) {

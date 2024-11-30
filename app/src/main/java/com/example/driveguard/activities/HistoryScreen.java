@@ -48,6 +48,7 @@ public class HistoryScreen extends AppCompatActivity {
         recyclerViewTripHistory.setLayoutManager(new LinearLayoutManager(this));
 
         ButtonDeck.SetUpButtons(this);
+        ButtonDeck.TintButton(this);
         getTripHistory(this);
 
         try {

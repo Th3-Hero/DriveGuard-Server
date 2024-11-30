@@ -21,6 +21,7 @@ import com.example.driveguard.objects.Event;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class CompletedTripDialog extends DialogFragment {
@@ -53,28 +54,12 @@ public class CompletedTripDialog extends DialogFragment {
             scoreTextView.setText(String.valueOf(trip.getScore()));
 
             if(trip.getStartTime() != null) {
-
-                String formattedTime;
-
-                    try {
-
-                        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                        LocalDateTime dateTime = LocalDateTime.parse(trip.getStartTime(), inputFormatter);
-
-                        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                        formattedTime = dateTime.format(outputFormatter);
-
-                    } catch (DateTimeException e) {
-
-                        formattedTime = "Invalid date format";
-
-                    }
-
-                    startTimeTextView.setText(formattedTime);
-
+                startTimeTextView.setText(formatDate(trip.getStartTime()));
             }
 
-            endTimeTextView.setText(trip.getEndTime());
+            if (trip.getEndTime() != null) {
+                endTimeTextView.setText(formatDate(trip.getEndTime()));
+            }
 
             if(trip.getStartLocation() != null) {
 
@@ -96,7 +81,7 @@ public class CompletedTripDialog extends DialogFragment {
 
             }
 
-            distance.setText(trip.getDistance() + " km");
+            distance.setText(String.valueOf(trip.getDistance()) + " km");
 
             // adding deductions dynamically (some people drive perfectly)
 
@@ -121,5 +106,28 @@ public class CompletedTripDialog extends DialogFragment {
         }
         return dialogView;
 
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String formatDate(String time){
+        String formattedDate = time;
+
+        try {
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]");
+
+            // Parse the string into a LocalDateTime
+            LocalDateTime parsedDate = LocalDateTime.parse(formattedDate, formatter);
+
+            // Format it back into a standard string (or any other desired format)
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            formattedDate = parsedDate.format(outputFormatter);
+
+
+        } catch (DateTimeException e) {
+
+            formattedDate = "Invalid date format";
+
+        }
+        return formattedDate;
     }
 }

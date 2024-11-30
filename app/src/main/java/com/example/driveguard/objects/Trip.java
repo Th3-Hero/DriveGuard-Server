@@ -20,7 +20,7 @@ public class Trip implements Serializable {
     private ServerLocation endLocation;
     private TripStatus status;
     private int score;
-    private int distance;
+    private double distance;
     private List<Event> drivingEvents;
 
     public Trip(int id, int driverId,String startTime, String endTime,

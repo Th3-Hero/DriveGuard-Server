@@ -3,6 +3,8 @@ package com.example.driveguard;
 import static com.example.driveguard.GsonUtilities.JsonToCredentials;
 import static com.example.driveguard.GsonUtilities.JsonToCompletedTripList;
 
+import android.app.Activity;
+
 import com.example.driveguard.objects.Account;
 import com.example.driveguard.objects.CompletedTrip;
 import com.example.driveguard.objects.Credentials;
@@ -18,8 +20,8 @@ public class GsonUtilsTests {
     @Test
     public void getListOfTrips() throws IOException {
         Account account = new Account("Connor", "Test", "ConnorTest", "Hello12345");
-
-        NetworkManager networkManager = new NetworkManager();
+        Activity activity = new Activity();
+        NetworkManager networkManager = new NetworkManager(activity.getApplicationContext());
 
         Response logInResponse = networkManager.Login(account);
 

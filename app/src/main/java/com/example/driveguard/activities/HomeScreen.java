@@ -5,6 +5,7 @@ import static com.example.driveguard.GsonUtilities.JsonToWeather;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -80,6 +81,8 @@ public class HomeScreen extends AppCompatActivity {
 
         if (darkMode){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            SaveDefaultDarkMode(preferences);
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -109,6 +112,10 @@ public class HomeScreen extends AppCompatActivity {
     }
     @SneakyThrows
     public void LoadWeatherIcon(@NonNull NetworkManager networkManager){
+        Location location = dataCollector.getStartingLocation();
+        if (location == null){
+            return;
+        }
         Response weatherRes = networkManager.getWeatherFromLocation(dataCollector.getStartingLocation());
         if (weatherRes != null && weatherRes.isSuccessful()){
             assert weatherRes.body() != null;
@@ -156,5 +163,10 @@ public class HomeScreen extends AppCompatActivity {
             score.setVisibility(View.INVISIBLE);
             scoreMessage.setVisibility(View.INVISIBLE);
         }
+    }
+    public void SaveDefaultDarkMode(SharedPreferences preferences){
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("darkMode", false);
+        editor.apply();
     }
 }

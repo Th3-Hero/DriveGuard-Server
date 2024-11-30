@@ -123,6 +123,7 @@ public class TripScreen extends AppCompatActivity {
         ToggleButton startButton = findViewById(R.id.startButton);
 
         ButtonDeck.SetUpButtons(this);
+        ButtonDeck.TintButton(this);
 
         // Create a handler and runnable for the async loop
         final Handler handler = new Handler();
@@ -275,62 +276,10 @@ public class TripScreen extends AppCompatActivity {
 //                // Handle exceptions
 //                System.err.println("Error fetching road data: " + e.getMessage());
 //            }
-            this.setTimeLastChecked(new Date());
-        }
-        dataClassifier = new DataClassifier(this.getPostedSpeedLimit());
-        // Classify the data for events
-        dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, location, this.getCurrentWeather());
-    }
-
-    public void RequestWeather(Location location){
-        networkManager = new NetworkManager(getApplicationContext());
-        try {
-            // Get the weather data as a Response object
-            Response weatherResponse = networkManager.getWeatherFromLocation(location);
-
-            // Check if the response is successful
-            if (!weatherResponse.isSuccessful()) {
-                throw new IOException("Failed to fetch weather data. HTTP Code: " + weatherResponse.code());
-            }
-
-            // Deserialize the response body into a Weather object
-            String weatherResponseBody = null;
-            if (weatherResponse.body() != null) {
-                weatherResponseBody = weatherResponse.body().string();
-            }
-            Gson gson = new Gson();
-            this.setCurrentWeather(gson.fromJson(weatherResponseBody, Weather.class));
-
-        } catch (IOException e) {
-            System.err.println("Error retrieving or processing weather data: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-    public void RequestRoad(Location location){
-        try {
-            // Make the API call to fetch road data
-            Response response = networkManager.getRoadFromLocation(location);
-
-            // Check if the response is successful
-            if (response.isSuccessful() && response.body() != null) {
-                // Parse the response body into a Road object
-                String responseBody = response.body().string();
-                Gson gson = new Gson();
-                Road road = gson.fromJson(responseBody, Road.class);
-
-                    // Return the speed limit
-                    this.setPostedSpeedLimit(road.getSpeedLimit());
-                } else {
-                    // Log error or handle unsuccessful response
-                    System.err.println("Failed to fetch road data. HTTP Code: " + response.code());
-                }
-            } catch (IOException e) {
-                // Handle exceptions
-                System.err.println("Error fetching road data: " + e.getMessage());
-            }
             this.setTimeLastChecked30Min(new Date());
         }
         dataClassifier = new DataClassifier(this.getPostedSpeedLimit());
+        // Classify the data for events
 
         if (!this.getEventHasBeenDetected().containsKey("speed"))
         {
@@ -350,9 +299,56 @@ public class TripScreen extends AppCompatActivity {
         }
 
         // Classify the data for events
-        this.setEventHasBeenDetected(dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, credentials, location, this.getCurrentWeather(), this.getEventHasBeenDetected()));
+        this.setEventHasBeenDetected(dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, location, this.getCurrentWeather(), this.getEventHasBeenDetected()));
     }
+public void RequestWeather(Location location){
+    networkManager = new NetworkManager(getApplicationContext());
+    try {
+        // Get the weather data as a Response object
+        Response weatherResponse = networkManager.getWeatherFromLocation(location);
 
+        // Check if the response is successful
+        if (!weatherResponse.isSuccessful()) {
+            throw new IOException("Failed to fetch weather data. HTTP Code: " + weatherResponse.code());
+        }
+
+        // Deserialize the response body into a Weather object
+        String weatherResponseBody = null;
+        if (weatherResponse.body() != null) {
+            weatherResponseBody = weatherResponse.body().string();
+        }
+        Gson gson = new Gson();
+        this.setCurrentWeather(gson.fromJson(weatherResponseBody, Weather.class));
+
+    } catch (IOException e) {
+        System.err.println("Error retrieving or processing weather data: " + e.getMessage());
+        throw new RuntimeException(e);
+    }
+}
+public void RequestRoad(Location location){
+    try {
+        // Make the API call to fetch road data
+        Response response = networkManager.getRoadFromLocation(location);
+
+        // Check if the response is successful
+        if (response.isSuccessful() && response.body() != null) {
+            // Parse the response body into a Road object
+            String responseBody = response.body().string();
+            Gson gson = new Gson();
+            Road road = gson.fromJson(responseBody, Road.class);
+
+            // Return the speed limit
+            this.setPostedSpeedLimit(road.getSpeedLimit());
+        } else {
+            // Log error or handle unsuccessful response
+            System.err.println("Failed to fetch road data. HTTP Code: " + response.code());
+        }
+    } catch (IOException e) {
+        // Handle exceptions
+        System.err.println("Error fetching road data: " + e.getMessage());
+    }
+    this.setTimeLastChecked30Min(new Date());
 }
 
+}
 
