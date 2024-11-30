@@ -151,8 +151,10 @@ public class TripScreen extends AppCompatActivity {
                     // 201 means a trip was started successfully
                     Response response = networkManager.StartTrip(dataCollector.getStartingLocation());
                     if (response != null && response.code() == START_TRIP_SUCCESS) {
-                        //networkManager.dataCollector.startDataCollection();
+
                         Toast.makeText(TripScreen.this, "Trip Successfully started!", Toast.LENGTH_LONG).show();
+
+                        dataCollector.startDataCollection();
 
                         try {
                             assert response.body() != null;
@@ -191,7 +193,8 @@ public class TripScreen extends AppCompatActivity {
                 } else if (!startButton.isChecked()) { // For ending trip
                     Response response = networkManager.EndTrip(dataCollector.getStartingLocation());
                     if (response != null && response.code() == STOP_TRIP_SUCCESS) {
-                        //networkManager.dataCollector.stopDataCollection();
+
+                        dataCollector.stopDataCollection();
 
                         Toast.makeText(TripScreen.this, "Trip successfully ended!", Toast.LENGTH_LONG).show();
 

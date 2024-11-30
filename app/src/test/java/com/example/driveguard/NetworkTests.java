@@ -100,11 +100,13 @@ public class NetworkTests {
     @Test
     public void getTrips() throws IOException {
         Account account = new Account("Connor", "Miller", "Millerforce", "Hello123");
-
         Activity activity = mock(Activity.class);
         NetworkManager networkManager = new NetworkManager(activity.getApplicationContext());
 
-        Response response = networkManager.getTripSummary(1001);
+        Response response1 = networkManager.Login(account);
+        Credentials credentials;
+
+        Response response = networkManager.getTripSummary(1067);
 
         if (response.isSuccessful()){
 
