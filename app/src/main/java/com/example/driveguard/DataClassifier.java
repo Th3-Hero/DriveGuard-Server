@@ -13,6 +13,9 @@ import com.example.driveguard.objects.Weather;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import okhttp3.Response;
 
@@ -48,12 +51,13 @@ public class DataClassifier
      *             long timestamp (time of event)
      * Returns: N/A
      */
-    public void classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, android.location.Location location, Weather currentWeather)
+    public Map<String, Boolean> classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, Credentials credentials, android.location.Location location, Weather currentWeather, Map<String, Boolean> eventHasBeenDetected)
     {
         // Classify and handle Speeding Event
         if (speed > this.postedSpeedLimit) {
             SpeedingEvent speedEvent = new SpeedingEvent(speed, timestamp, location, networkManager, currentWeather);
-            if (speedEvent.isSpeeding()) {
+            if (speedEvent.isSpeeding() && Boolean.FALSE.equals(eventHasBeenDetected.get("speed"))) {
+                eventHasBeenDetected.put("speed", true);
                 Response eventResponse = networkManager.addEventToTrip(
                         new DrivingEvent(
                                 timestamp,
@@ -61,7 +65,8 @@ public class DataClassifier
                                 EventType.SPEEDING,
                                 EventSeverity.LOW,
                                 speedEvent.deductPoints()
-                        )
+                        ),
+                        credentials
                 );
                 try {
                     if (!eventResponse.isSuccessful()) {
@@ -75,7 +80,8 @@ public class DataClassifier
 
         // Classify and handle Hard Acceleration Event
         HardAccelerateEvent accelerateEvent = new HardAccelerateEvent(gForce, timestamp, location, currentWeather);
-        if (accelerateEvent.isHarshAcceleration()) {
+        if (accelerateEvent.isHarshAcceleration() && Boolean.FALSE.equals(eventHasBeenDetected.get("accelerate"))) {
+            eventHasBeenDetected.put("accelerate", true);
             Response eventResponse = networkManager.addEventToTrip(
                     new DrivingEvent(
                             timestamp,
@@ -83,7 +89,8 @@ public class DataClassifier
                             EventType.HARD_ACCELERATION,
                             EventSeverity.LOW,
                             accelerateEvent.deductPoints()
-                    )
+                    ),
+                    credentials
             );
             try {
                 if (!eventResponse.isSuccessful()) {
@@ -96,7 +103,8 @@ public class DataClassifier
 
         // Classify and handle Hard Braking Event
         HardBrakeEvent brakeEvent = new HardBrakeEvent(gForce, timestamp, location, currentWeather);
-        if (brakeEvent.isHarshBraking()) {
+        if (brakeEvent.isHarshBraking() && Boolean.FALSE.equals(eventHasBeenDetected.get("brake"))) {
+            eventHasBeenDetected.put("break", true);
             Response eventResponse = networkManager.addEventToTrip(
                     new DrivingEvent(
                             timestamp,
@@ -104,7 +112,8 @@ public class DataClassifier
                             EventType.HARD_BRAKING,
                             EventSeverity.LOW,
                             brakeEvent.deductPoints()
-                    )
+                    ),
+                    credentials
             );
             try {
                 if (!eventResponse.isSuccessful()) {
@@ -117,7 +126,8 @@ public class DataClassifier
 
         // Classify and handle Hard Turning Event
         HardCorneringEvent turningEvent = new HardCorneringEvent(turningRate, timestamp, location, currentWeather);
-        if (turningEvent.isAggressiveTurn()) {
+        if (turningEvent.isAggressiveTurn() && Boolean.FALSE.equals(eventHasBeenDetected.get("turn"))) {
+            eventHasBeenDetected.put("turn", true);
             Response eventResponse = networkManager.addEventToTrip(
                     new DrivingEvent(
                             timestamp,
@@ -125,7 +135,8 @@ public class DataClassifier
                             EventType.HARD_CORNERING,
                             EventSeverity.LOW,
                             turningEvent.deductPoints()
-                    )
+                    ),
+                    credentials
             );
             try {
                 if (!eventResponse.isSuccessful()) {
@@ -135,5 +146,6 @@ public class DataClassifier
                 eventResponse.close(); // Ensure response resources are released
             }
         }
+        return eventHasBeenDetected;
     }
 }
