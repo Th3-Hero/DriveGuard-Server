@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 
+import com.example.driveguard.activities.HelpScreen;
 import com.example.driveguard.activities.HistoryScreen;
 import com.example.driveguard.activities.HomeScreen;
 import com.example.driveguard.activities.TripScreen;
@@ -48,6 +49,18 @@ public static void SetUpButtons(@NonNull Activity activity){
                 }
             }
         });
+
+        final ImageButton helpButton = activity.findViewById(R.id.help);
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(activity.getClass() != HelpScreen.class) {
+                    Intent intent = new Intent(activity, HelpScreen.class);
+                    activity.startActivity(intent);
+                }
+            }
+        });
+
 }
     public static void ToggleButtons(@NonNull Activity activity){
         ImageButton home = activity.findViewById(R.id.homeButton);
@@ -72,6 +85,9 @@ public static void SetUpButtons(@NonNull Activity activity){
         }
         else if (activity.getClass() == HistoryScreen.class){
             previousTrips.setColorFilter(R.color.black, PorterDuff.Mode.SRC_ATOP);
+        }
+        else if (activity.getClass() == HelpScreen.class){
+            help.setColorFilter(R.color.black, PorterDuff.Mode.SRC_ATOP);
         }
 
     }

@@ -55,7 +55,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTripHistory"
         android:layout_width="0dp"
-        android:layout_height="220dp"
+        android:layout_height="400dp"
         android:layout_marginBottom="16dp"
         android:clipToPadding="false"
         android:overScrollMode="ifContentScrolls"
@@ -67,22 +67,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTripHistoryLabel"
         app:layout_constraintVertical_bias="0.075"/>
-
-    <Button
-        style="@style/primary_button"
-        android:id="@+id/goToSuggestions"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="106dp"
-        android:layout_marginTop="104dp"
-        android:layout_marginEnd="106dp"
-        android:backgroundTint="@color/navy"
-        android:text="Suggestions"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerViewTripHistory" />
 
     <include
         layout="@layout/button_deck"/>

@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
@@ -22,6 +24,8 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.DataClassifier;
@@ -30,6 +34,7 @@ import com.example.driveguard.R;
 import com.example.driveguard.Utilities;
 import com.example.driveguard.objects.Credentials;
 import com.example.driveguard.objects.DrivingEvent;
+import com.example.driveguard.objects.DrivingEventsAdapter;
 import com.example.driveguard.objects.Road;
 import com.example.driveguard.objects.Trip;
 
@@ -45,6 +50,8 @@ import com.google.gson.Gson;
 public class TripScreen extends AppCompatActivity {
 
     private DataCollector dataCollector;
+    private DrivingEventsAdapter drivingEventsAdapter;
+    private RecyclerView recyclerViewTripHistory;
     private NetworkManager networkManager;
     private DataClassifier dataClassifier;
     private Credentials credentials;
@@ -221,13 +228,12 @@ public class TripScreen extends AppCompatActivity {
 
                         ButtonDeck.ToggleButtons(TripScreen.this);
 
-                        // Score screen ic called - Stephan
+                        // SCORE SCREEN IS CALLED
 
                         ScoreScreen scoreScreen = new ScoreScreen();
-
                         scoreScreen.setTrip(currentTrip);
+                        scoreScreen.show(getSupportFragmentManager(), "ScoreScreen");
 
-                        scoreScreen.show(getSupportFragmentManager(), "ScoreScreenDialog");
                     }
                     }
                 }
@@ -262,7 +268,7 @@ public class TripScreen extends AppCompatActivity {
 //        float speed = 65f;
         float gForce = dataCollector.getAcceleration();      // Current g-force
         float turningRate = dataCollector.getTurningRate();  // Current turning rate
-        android.location.Location location = dataCollector.getStartingLocation(); // Current location
+        Location location = dataCollector.getStartingLocation(); // Current location
 
         String timestamp = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

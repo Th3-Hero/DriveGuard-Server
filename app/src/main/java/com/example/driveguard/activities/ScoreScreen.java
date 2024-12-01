@@ -1,23 +1,37 @@
 package com.example.driveguard.activities;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.driveguard.GsonUtilities;
+import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
-import com.example.driveguard.objects.DrivingEvent;
-import com.example.driveguard.objects.Event;
+import com.example.driveguard.objects.Address;
+import com.example.driveguard.objects.DrivingEventsAdapter;
+import com.example.driveguard.objects.ServerLocation;
 import com.example.driveguard.objects.Trip;
 
+import java.io.IOException;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Objects;
+
+import okhttp3.Response;
 
 // once trip is finished, call the scoring from trip.java
 // call the score as a dialogue box, once clicked it disappears
@@ -25,6 +39,9 @@ import java.util.Objects;
 
 public class ScoreScreen extends DialogFragment {
     private Trip trip;
+    private DrivingEventsAdapter drivingEventsAdapter;
+
+    private NetworkManager networkManager;
 
     public void setTrip(Trip trip) {
 
@@ -32,14 +49,17 @@ public class ScoreScreen extends DialogFragment {
 
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "NewApi"})
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View dialogView = inflater.inflate(R.layout.average_score_screen, (ViewGroup) container, false);
 
-        LinearLayout deductionsLayout = dialogView.findViewById(R.id.linearLayoutDeductions);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        networkManager = new NetworkManager(getActivity());
 
         TextView scoreTextView = dialogView.findViewById(R.id.textViewDriverScore);
         TextView startTimeTextView = dialogView.findViewById(R.id.startTime);
@@ -52,25 +72,26 @@ public class ScoreScreen extends DialogFragment {
 
             scoreTextView.setText(String.valueOf(trip.getScore()));
 
-            startTimeTextView.setText(trip.getStartTime());
-            endTimeTextView.setText(trip.getEndTime());
+            if(trip.getStartTime() != null) {
+                startTimeTextView.setText(formatDate(trip.getStartTime()));
+            }
+
+            if (trip.getEndTime() != null) {
+                endTimeTextView.setText(formatDate(trip.getEndTime()));
+            }
 
             if(trip.getStartLocation() != null) {
-
-                startLocationTextView.setText("Lat: " + trip.getStartLocation().getLatitude() + ", Lng: " + trip.getStartLocation().getLongitude());
+                startLocationTextView.setText(formatLocation(trip.getStartLocation()));
 
             } else {
-
                 startLocationTextView.setText("N/A");
 
             }
 
             if(trip.getEndLocation() != null) {
-
-                endLocationTextView.setText("Lat: " + trip.getEndLocation().getLatitude() + ", Lng: " + trip.getEndLocation().getLongitude());
+                endLocationTextView.setText(formatLocation(trip.getEndLocation()));
 
             } else {
-
                 endLocationTextView.setText("N/A");
 
             }
@@ -79,26 +100,81 @@ public class ScoreScreen extends DialogFragment {
 
             // adding deductions dynamically (some people drive perfectly)
 
+            RecyclerView recyclerViewTripDeductions = dialogView.findViewById(R.id.recyclerViewTripDeductions);
+            recyclerViewTripDeductions.setLayoutManager(new LinearLayoutManager(getActivity()));
+
             if(trip.getDrivingEvents() != null && !trip.getDrivingEvents().isEmpty()) {
 
-                for(DrivingEvent event : trip.getDrivingEvents()) {
-
-                    TextView deductionTextView = new TextView(getActivity());
-                    deductionTextView.setText("- " + event);
-                    deductionsLayout.addView(deductionTextView);
-
-                }
+                drivingEventsAdapter = new DrivingEventsAdapter(trip.getDrivingEvents(), getActivity());
 
             } else {
 
-                TextView perfectDriving = new TextView(getActivity());
-                perfectDriving.setText("No deductions for this trip.");
-                deductionsLayout.addView(perfectDriving);
+                drivingEventsAdapter = new DrivingEventsAdapter(new ArrayList<>(1), getActivity());
+
+            }
+            recyclerViewTripDeductions.setAdapter(drivingEventsAdapter);
+        }
+        return dialogView;
+    }
+
+    public String formatLocation(@NonNull ServerLocation serverLocation) {
+
+        networkManager = new NetworkManager(getActivity());
+
+        try {
+
+            Response response = networkManager.getAddress(serverLocation);
+
+            if(response != null && response.isSuccessful() && response.body() != null) {
+
+                String responseBody = response.body().string();
+                Address address = GsonUtilities.JsonToAddress(responseBody);
+
+                if(address != null) {
+
+                    return address.getStreet() + ", " + address.getCity() + ", " + address.getState();
+
+                } else {
+
+                    return "Invalid address data.";
+
+                }
+            } else {
+
+                return "Unable to retrieve address";
 
             }
 
+        } catch (IOException e) {
+
+            return "Error getting address";
+
         }
-        return dialogView;
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String formatDate(String time){
+        String formattedDate = time;
+
+        try {
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]");
+
+            // Parse the string into a LocalDateTime
+            LocalDateTime parsedDate = LocalDateTime.parse(formattedDate, formatter);
+
+            // Format it back into a standard string (or any other desired format)
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            formattedDate = parsedDate.format(outputFormatter);
+
+
+        } catch (DateTimeException e) {
+
+            formattedDate = "Invalid date format";
+
+        }
+        return formattedDate;
     }
 
    @Override
