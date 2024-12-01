@@ -120,6 +120,11 @@ public class HomeScreen extends AppCompatActivity {
             intent = new Intent(HomeScreen.this, ProfileScreen.class);
             startActivity(intent);
         }
+        else if (id == R.id.notifications) {
+            Intent intent;
+            intent = new Intent(HomeScreen.this, HelpScreen.class);
+            startActivity(intent);
+        }
         return true;
     }
     @SneakyThrows

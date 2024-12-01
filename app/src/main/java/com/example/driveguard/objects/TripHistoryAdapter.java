@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.driveguard.GsonUtilities;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
-import com.example.driveguard.activities.CompletedTripDialog;
+import com.example.driveguard.activities.ScoreScreen;
 
 import java.io.IOException;
 import java.util.List;
@@ -75,7 +75,7 @@ public class TripHistoryAdapter extends RecyclerView.Adapter<TripHistoryAdapter.
 
                 if(trip != null) {
 
-                    CompletedTripDialog dialog = new CompletedTripDialog();
+                    ScoreScreen dialog = new ScoreScreen();
                     dialog.setTrip(trip);
                     dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "TrpSummaryDialog");
 
