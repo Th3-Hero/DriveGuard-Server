@@ -1,7 +1,6 @@
 package com.example.driveguard.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -29,6 +28,7 @@ import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import okhttp3.Response;
@@ -39,10 +39,9 @@ import okhttp3.Response;
 
 public class ScoreScreen extends DialogFragment {
     private Trip trip;
+    private DrivingEventsAdapter drivingEventsAdapter;
 
     private NetworkManager networkManager;
-
-    private RecyclerView recyclerViewTripDeductions;
 
     public void setTrip(Trip trip) {
 
@@ -60,10 +59,7 @@ public class ScoreScreen extends DialogFragment {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        networkManager = new NetworkManager(getContext());
-
-        recyclerViewTripDeductions = dialogView.findViewById(R.id.recyclerViewTripDeductions);
-        recyclerViewTripDeductions.setLayoutManager(new LinearLayoutManager(getContext()));
+        networkManager = new NetworkManager(getActivity());
 
         TextView scoreTextView = dialogView.findViewById(R.id.textViewDriverScore);
         TextView startTimeTextView = dialogView.findViewById(R.id.startTime);
@@ -104,26 +100,26 @@ public class ScoreScreen extends DialogFragment {
 
             // adding deductions dynamically (some people drive perfectly)
 
+            RecyclerView recyclerViewTripDeductions = dialogView.findViewById(R.id.recyclerViewTripDeductions);
+            recyclerViewTripDeductions.setLayoutManager(new LinearLayoutManager(getActivity()));
+
             if(trip.getDrivingEvents() != null && !trip.getDrivingEvents().isEmpty()) {
 
-                DrivingEventsAdapter adapter = new DrivingEventsAdapter(trip.getDrivingEvents(), getContext());
-                recyclerViewTripDeductions.setAdapter(adapter);
+                drivingEventsAdapter = new DrivingEventsAdapter(trip.getDrivingEvents(), getActivity());
 
             } else {
 
-                TextView perfectDriving = new TextView(getActivity());
-                perfectDriving.setText("No deductions for this trip.");
-                recyclerViewTripDeductions.addView(perfectDriving);
+                drivingEventsAdapter = new DrivingEventsAdapter(new ArrayList<>(1), getActivity());
 
             }
-
+            recyclerViewTripDeductions.setAdapter(drivingEventsAdapter);
         }
         return dialogView;
     }
 
     public String formatLocation(@NonNull ServerLocation serverLocation) {
 
-        networkManager = new NetworkManager(getContext());
+        networkManager = new NetworkManager(getActivity());
 
         try {
 

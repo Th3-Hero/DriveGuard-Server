@@ -1,5 +1,8 @@
 package com.example.driveguard.objects;
 
+import lombok.Getter;
+
+@Getter
 public class DrivingEvent {
     private String eventTime;
     private ServerLocation location;
