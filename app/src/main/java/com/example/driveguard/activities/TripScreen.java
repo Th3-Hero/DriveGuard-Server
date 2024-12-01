@@ -34,7 +34,6 @@ import com.example.driveguard.objects.Road;
 import com.example.driveguard.objects.Trip;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import lombok.SneakyThrows;
@@ -259,8 +258,8 @@ public class TripScreen extends AppCompatActivity {
     // Method to check for driving events
     private void checkForEvents() {
         // Get current data from the DataCollector
-        //float speed = dataCollector.getSpeed();              // Current speed
-        float speed = 65f;
+        float speed = dataCollector.getSpeed();              // Current speed
+//        float speed = 65f;
         float gForce = dataCollector.getAcceleration();      // Current g-force
         float turningRate = dataCollector.getTurningRate();  // Current turning rate
         android.location.Location location = dataCollector.getStartingLocation(); // Current location
@@ -292,27 +291,6 @@ public class TripScreen extends AppCompatActivity {
         {
                 RequestWeather(location);
                 RequestRoad(location);
-//            try {
-//                // Make the API call to fetch road data
-//                Response response = networkManager.getRoadFromLocation(location);
-//
-//                // Check if the response is successful
-//                if (response.isSuccessful() && response.body() != null) {
-//                    // Parse the response body into a Road object
-//                    String responseBody = response.body().string();
-//                    Gson gson = new Gson();
-//                    Road road = gson.fromJson(responseBody, Road.class);
-//
-//                    // Return the speed limit
-//                    this.setPostedSpeedLimit(road.getSpeedLimit());
-//                } else {
-//                    // Log error or handle unsuccessful response
-//                    System.err.println("Failed to fetch road data. HTTP Code: " + response.code());
-//                }
-//            } catch (IOException e) {
-//                // Handle exceptions
-//                System.err.println("Error fetching road data: " + e.getMessage());
-//            }
             this.setTimeLastChecked30Min(new Date());
         }
         dataClassifier = new DataClassifier(this.getPostedSpeedLimit());
@@ -336,7 +314,7 @@ public class TripScreen extends AppCompatActivity {
         }
 
         // Classify the data for events
-        this.setEventHasBeenDetected(dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, location, this.getCurrentWeather(), this.getEventHasBeenDetected()));
+        this.setEventHasBeenDetected(dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, location, this.getCurrentWeather(), this.getPostedSpeedLimit(), this.getEventHasBeenDetected()));
     }
 public void RequestWeather(Location location){
     networkManager = new NetworkManager(getApplicationContext());

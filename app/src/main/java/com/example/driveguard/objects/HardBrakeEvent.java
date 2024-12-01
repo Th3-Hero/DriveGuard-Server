@@ -43,11 +43,11 @@ public class HardBrakeEvent extends Event
      * Method Author: Brooke Cronin
      * Description: Checks if the braking is considered harsh (g-force greater than 1.0).
      * Parameters: N/A
-     * Returns: boolean (true if g-force is above 1.0, indicating harsh braking)
+     * Returns: boolean (true if g-force is less than -0.4, indicating harsh braking)
      */
     public boolean isHarshBraking()
     {
-        return this.gForce < -0.5;
+        return this.gForce < -0.4;
     }
 
     /* Method Name: deductPoints

@@ -51,11 +51,11 @@ public class DataClassifier
      *             long timestamp (time of event)
      * Returns: N/A
      */
-    public Map<String, Boolean> classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, android.location.Location location, Weather currentWeather, Map<String, Boolean> eventHasBeenDetected)
+    public Map<String, Boolean> classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, android.location.Location location, Weather currentWeather, int postedSpeedLimit, Map<String, Boolean> eventHasBeenDetected)
     {
         // Classify and handle Speeding Event
         if (speed > this.postedSpeedLimit) {
-            SpeedingEvent speedEvent = new SpeedingEvent(speed, timestamp, location, networkManager, currentWeather);
+            SpeedingEvent speedEvent = new SpeedingEvent(speed, timestamp, location, networkManager, currentWeather, postedSpeedLimit);
             if (speedEvent.isSpeeding() && Boolean.FALSE.equals(eventHasBeenDetected.get("speed"))) {
                 eventHasBeenDetected.put("speed", true);
                 Response eventResponse = networkManager.addEventToTrip(

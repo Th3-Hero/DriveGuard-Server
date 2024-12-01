@@ -29,24 +29,11 @@ public class SpeedingEvent extends Event
      *             float postedSpeedLimit (the speed limit for the event location), Location location (the event location)
      * Returns: N/A
      */
-    public SpeedingEvent(float speed, String timestamp, android.location.Location location, NetworkManager networkManager, Weather weather)
+    public SpeedingEvent(float speed, String timestamp, android.location.Location location, NetworkManager networkManager, Weather weather, int postedSpeedLimit)
     {
         super(timestamp, location, weather);
         this.speed = speed;
-        try {
-            // Make the network call and parse the response
-            Response response = networkManager.getRoadFromLocation(location);
-            if (response.isSuccessful() && response.body() != null) {
-                String jsonResponse = response.body().string();
-                Gson gson = new Gson();
-                Road roadData = gson.fromJson(jsonResponse, Road.class);
-                this.postedSpeedLimit = roadData.getSpeedLimit();
-            } else {
-                throw new IOException("Failed to fetch speed limit. Response: " + response);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Error fetching road data", e);
-        }
+        this.postedSpeedLimit = postedSpeedLimit;
         this.postedSpeedLimitAllowance = this.postedSpeedLimit + 10;
     }
 
