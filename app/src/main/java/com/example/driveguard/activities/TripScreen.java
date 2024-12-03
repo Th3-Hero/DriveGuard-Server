@@ -1,14 +1,19 @@
 package com.example.driveguard.activities;
 
 import static com.example.driveguard.GsonUtilities.JsonToTrip;
+import static com.example.driveguard.activities.HomeScreen.CHANNEL_ID;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.app.Activity;
+import android.Manifest;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,7 +29,9 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.driveguard.ButtonDeck;
@@ -33,7 +40,6 @@ import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
 import com.example.driveguard.Utilities;
 import com.example.driveguard.objects.Credentials;
-import com.example.driveguard.objects.DrivingEvent;
 import com.example.driveguard.objects.DrivingEventsAdapter;
 import com.example.driveguard.objects.Road;
 import com.example.driveguard.objects.Trip;
@@ -50,11 +56,8 @@ import com.google.gson.Gson;
 public class TripScreen extends AppCompatActivity {
 
     private DataCollector dataCollector;
-    private DrivingEventsAdapter drivingEventsAdapter;
-    private RecyclerView recyclerViewTripHistory;
     private NetworkManager networkManager;
     private DataClassifier dataClassifier;
-    private Credentials credentials;
     private Trip currentTrip;
     private final int START_TRIP_SUCCESS = 201;
     private final int STOP_TRIP_SUCCESS = 200;
@@ -62,62 +65,16 @@ public class TripScreen extends AppCompatActivity {
     private TextView speedText;
     private float speed;
     private float limit;
-
     private Map<String, Boolean> eventHasBeenDetected = new HashMap<>();
-
-    public Map<String, Boolean> getEventHasBeenDetected() {
-        return eventHasBeenDetected;
-    }
-
-    public void setEventHasBeenDetected(Map<String, Boolean> eventHasBeenDetected) {
-        this.eventHasBeenDetected = eventHasBeenDetected;
-    }
-
     private Date timeLastChecked30Min = new Date();
-    // Getter
-    public Date getTimeLastChecked30Min() {
-        return timeLastChecked30Min;
-    }
-
-    // Setter
-    public void setTimeLastChecked30Min(Date timeLastChecked30Min) {
-        this.timeLastChecked30Min = timeLastChecked30Min;
-    }
     private Date timeLastChecked15Sec = new Date();
-
-
-    public Date getTimeLastChecked15Sec() {
-        return timeLastChecked15Sec;
-    }
-
-    public void setTimeLastChecked15Sec(Date timeLastChecked15Sec) {
-        this.timeLastChecked15Sec = timeLastChecked15Sec;
-    }
-
     private Weather currentWeather;
-
     private int postedSpeedLimit;
 
-    // Getter for currentWeather
-    public Weather getCurrentWeather() { return currentWeather;}
-    // Setter for currentWeather
-    public void setCurrentWeather(Weather currentWeather) {
-        this.currentWeather = currentWeather;
-    }
-
-    // Getter for postedSpeedLimit
-    public int getPostedSpeedLimit() {
-        return postedSpeedLimit;
-    }
-
-    // Setter for postedSpeedLimit
-    public void setPostedSpeedLimit(int postedSpeedLimit) {
-        this.postedSpeedLimit = postedSpeedLimit;
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.trip_screen);
+        setContentView(R.layout.screen_trip);
 
         limitText = findViewById(R.id.limit);
         speedText = findViewById(R.id.speed);
@@ -126,12 +83,11 @@ public class TripScreen extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        Utilities.ResetTripId(this);
+
         dataCollector = new DataCollector(getApplicationContext());
 
         NetworkManager networkManager = new NetworkManager(getApplicationContext());
-
-        RequestWeather(dataCollector.getStartingLocation());
-        RequestRoad(dataCollector.getStartingLocation());
 
         //defines the toolbar used in the activity
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -143,6 +99,17 @@ public class TripScreen extends AppCompatActivity {
         ButtonDeck.SetUpButtons(this);
         ButtonDeck.TintButton(this);
 
+        if (!Utilities.CheckLoggedIn(this) || !Utilities.CheckDataCollection(this)){
+            startButton.setEnabled(false);
+        }
+        if (Utilities.checkConnection(this)) {
+            RequestWeather(dataCollector.getStartingLocation());
+            RequestRoad(dataCollector.getStartingLocation());
+        } else {
+            Toast.makeText(this, "Unable to Access Network Connection", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Trip Functionality Disabled", Toast.LENGTH_SHORT).show();
+            startButton.setEnabled(false);
+        }
         // Create a handler and runnable for the async loop
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -151,12 +118,6 @@ public class TripScreen extends AppCompatActivity {
                 // Check for events periodically
                 checkForEvents();
 
-                DrivingEvent lastEvent = networkManager.getLastEvent();
-                if (lastEvent != null) {
-                    String event = lastEvent.toString();
-                    TextView e = findViewById(R.id.event);
-                    e.setText(event);
-                }
                 // Schedule the next execution after 25 milliseconds
                 handler.postDelayed(this, 25);
             }
@@ -178,8 +139,7 @@ public class TripScreen extends AppCompatActivity {
 
                         Toast.makeText(TripScreen.this, "Trip Successfully started!", Toast.LENGTH_LONG).show();
 
-                        ButtonDeck.ToggleButtons(TripScreen.this);
-                        dataCollector.startDataCollection();
+                        dataCollector.startDataCollection(getApplicationContext());
 
                         try {
                             assert response.body() != null;
@@ -226,19 +186,56 @@ public class TripScreen extends AppCompatActivity {
 
                         dataCollector.stopDataCollection();
 
-                        ButtonDeck.ToggleButtons(TripScreen.this);
-
-                        // SCORE SCREEN IS CALLED
-
-                        ScoreScreen scoreScreen = new ScoreScreen();
-                        scoreScreen.setTrip(currentTrip);
-                        scoreScreen.show(getSupportFragmentManager(), "ScoreScreen");
-
+                        // Score screen ic called - Stephan
+                        assert response.body() != null;
+                        currentTrip = JsonToTrip(response.body().string());
+                        ScoreDialog scoreDialog = new ScoreDialog();
+                        scoreDialog.setTrip(currentTrip);
+                        scoreDialog.show(getSupportFragmentManager(), "ScoreScreen");
+                        Utilities.ResetTripId(TripScreen.this);
                     }
                     }
                 }
             });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        int tripId = Utilities.LoadTripID(this);
+        if (tripId != -1){
+
+            if (Utilities.CheckNotifications(this)) {
+                // Create an explicit intent for an Activity in your app.
+                Intent intent = new Intent(this, TripScreen.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.logo_drive_guard)
+                        .setContentTitle("Trip Cancelled")
+                        .setContentText("DriveGuard was closed and the current trip has been cancelled. Please safely pull over and start a new trip if you wish to continue tracking your driving")
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText("DriveGuard was closed and the current trip has been cancelled. Please safely pull over and start a new trip if you wish to continue tracking your driving."))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        // Set the intent that fires when the user taps the notification.
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true);
+
+                NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                manager.notify(1, builder.build());
+            }
+        networkManager = new NetworkManager(getApplicationContext());
+        Response response = networkManager.EndTrip(dataCollector.getStartingLocation());
+        if (response.isSuccessful()) {
+            Toast.makeText(this, "Leaving Activity, Trip Ended", Toast.LENGTH_SHORT).show();
         }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -250,12 +247,17 @@ public class TripScreen extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         int id = item.getItemId();
         if (id == R.id.settings){
-            Intent intent = new Intent(TripScreen.this, Settings.class);
+            Intent intent = new Intent(this, SettingsScreen.class);
             startActivity(intent);
+            finish();
         }
         else if (id == R.id.profile){
-            Intent intent;
-            intent = new Intent(this, ProfileScreen.class);
+            Intent intent = new Intent(this, ProfileScreen.class);
+            startActivity(intent);
+            finish();
+        }
+        else if (id == R.id.notifications){
+            Intent intent = new Intent(this, SuggestionScreen.class);
             startActivity(intent);
         }
         return true;
@@ -264,18 +266,17 @@ public class TripScreen extends AppCompatActivity {
     // Method to check for driving events
     private void checkForEvents() {
         // Get current data from the DataCollector
-        float speed = dataCollector.getSpeed();              // Current speed
-//        float speed = 65f;
+        //float speed = dataCollector.getSpeed();// Current speed
+        float speed = 70f;
         float gForce = dataCollector.getAcceleration();      // Current g-force
-        float turningRate = dataCollector.getTurningRate();  // Current turning rate
-        Location location = dataCollector.getStartingLocation(); // Current location
+        float turningRate = dataCollector.getTurningRate(); // Current turning rate
+        float brakingRate = dataCollector.getDecelerationRate();
+        android.location.Location location = dataCollector.getStartingLocation(); // Current location
 
         String timestamp = "";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Instant currentTime = Instant.now();
-            timestamp = DateTimeFormatter.ISO_INSTANT.format(currentTime);
-        }
-       // String timestamp = String.valueOf(System.currentTimeMillis()); // Current timestamp
+        Instant currentTime = Instant.now();
+        timestamp = DateTimeFormatter.ISO_INSTANT.format(currentTime);
+        // String timestamp = String.valueOf(System.currentTimeMillis()); // Current timestamp
 
         String s = "Your Speed: " + String.valueOf(Math.round(speed));
         speedText.setText(s);
@@ -320,9 +321,9 @@ public class TripScreen extends AppCompatActivity {
         }
 
         // Classify the data for events
-        this.setEventHasBeenDetected(dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, location, this.getCurrentWeather(), this.getPostedSpeedLimit(), this.getEventHasBeenDetected()));
+        this.setEventHasBeenDetected(dataClassifier.classifyData(speed, gForce, turningRate, timestamp, networkManager, location, this.getCurrentWeather(), this.getPostedSpeedLimit(), this.getEventHasBeenDetected(), brakingRate));
     }
-public void RequestWeather(Location location){
+    public void RequestWeather(Location location){
     networkManager = new NetworkManager(getApplicationContext());
     try {
         // Get the weather data as a Response object
@@ -346,7 +347,7 @@ public void RequestWeather(Location location){
         throw new RuntimeException(e);
     }
 }
-public void RequestRoad(Location location){
+    public void RequestRoad(Location location){
     try {
         // Make the API call to fetch road data
         Response response = networkManager.getRoadFromLocation(location);
@@ -370,6 +371,43 @@ public void RequestRoad(Location location){
     }
     this.setTimeLastChecked30Min(new Date());
 }
+    public Map<String, Boolean> getEventHasBeenDetected() {
+        return eventHasBeenDetected;
+    }
+    public void setEventHasBeenDetected(Map<String, Boolean> eventHasBeenDetected) {
+        this.eventHasBeenDetected = eventHasBeenDetected;
+    }
+    // Getter
+    public Date getTimeLastChecked30Min() {
+        return timeLastChecked30Min;
+    }
 
+    // Setter
+    public void setTimeLastChecked30Min(Date timeLastChecked30Min) {
+        this.timeLastChecked30Min = timeLastChecked30Min;
+    }
+    public Date getTimeLastChecked15Sec() {
+        return timeLastChecked15Sec;
+    }
+
+    public void setTimeLastChecked15Sec(Date timeLastChecked15Sec) {
+        this.timeLastChecked15Sec = timeLastChecked15Sec;
+    }
+
+    // Getter for currentWeather
+    public Weather getCurrentWeather() { return currentWeather;}
+    // Setter for currentWeather
+    public void setCurrentWeather(Weather currentWeather) {
+        this.currentWeather = currentWeather;
+    }
+
+    // Getter for postedSpeedLimit
+    public int getPostedSpeedLimit() {
+        return postedSpeedLimit;
+    }
+    // Setter for postedSpeedLimit
+    public void setPostedSpeedLimit(int postedSpeedLimit) {
+        this.postedSpeedLimit = postedSpeedLimit;
+    }
 }
 

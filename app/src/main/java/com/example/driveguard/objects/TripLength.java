@@ -34,7 +34,13 @@ public class TripLength {
         this.minutes = (int) ((seconds % 3600) / 60);
     }
     public String getFormattedTime(){
-        return String.valueOf(this.hours) + " Hours, " + String.valueOf(this.minutes) + " Minutes, and " + this.seconds + "Seconds";
+        if (this.hours != 0) {
+            return String.valueOf(this.hours) + " Hours, " + String.valueOf(this.minutes) + " Minutes, and " + (this.seconds % 60) + " Seconds";
+        } else if (this.minutes != 0){
+            return String.valueOf(this.minutes) + " Minutes, and " + (this.seconds % 60) + " Seconds";
+        } else {
+            return (this.seconds % 60) + " Seconds";
+        }
     }
 
 }

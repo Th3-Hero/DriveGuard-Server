@@ -22,7 +22,9 @@ public class DataCollector {
     private Location lastLocation;
     private float currentSpeed;
     private float currentGForce;
+    private float previousGForce;
     private float turningRate;
+    private float decelerationRate;
 
     public DataCollector(Context context) {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -36,8 +38,10 @@ public class DataCollector {
     }
 
     // Initialize location and sensor listeners
-    public void startDataCollection() {
-
+    public void startDataCollection(Context context) {
+        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
 
         Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -55,6 +59,9 @@ public class DataCollector {
     // Retrieve the current speed from GPS
     public float getSpeed() {
         return currentSpeed;
+    }
+    public float getDecelerationRate(){
+        return decelerationRate;
     }
 
     // Retrieve the current g-force from accelerometer data
@@ -98,6 +105,10 @@ public class DataCollector {
                 float y = event.values[1];
                 float z = event.values[2];
                 currentGForce = (float) Math.sqrt(x * x + y * y + z * z) / SensorManager.GRAVITY_EARTH;
+
+                decelerationRate = currentGForce - previousGForce;
+
+                previousGForce = currentGForce;
             } else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
                 float angularSpeedZ = event.values[2]; // rotation rate around the Z axis (yaw)
                 turningRate = Math.abs(angularSpeedZ); // taking the absolute value to reflect turn rate

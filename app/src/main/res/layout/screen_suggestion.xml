@@ -7,12 +7,12 @@
     android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbarAverageScore"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/navy"
         app:title="Driving Suggestions"
-        app:titleTextColor="@color/white"
+        app:titleTextColor="@color/textColorPrimary"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -20,13 +20,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="What You Can Do to Improve Your Driving"
-        android:textColor="@color/black"
+        android:text="@string/what_you_can_do_to_improve_your_driving"
+        android:textColor="@color/textColorSecondary"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarAverageScore" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <TextView
 
@@ -36,7 +36,9 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="80dp"
         android:layout_marginEnd="6dp"
-        android:text="Take turns at a steady speed to stay in control and keep passengers comfortable."
+        android:text="@string/turn_slow"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +52,9 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="21dp"
         android:layout_marginEnd="6dp"
-        android:text="Smooth starts save fuel and reduce wear on your car. Accelerate gently for a better drive!"
+        android:text="@string/start_slow"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewAverageLabel" />
@@ -63,7 +67,9 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="140dp"
         android:layout_marginEnd="6dp"
-        android:text="Sudden stops can wear out your brakes. Anticipate traffic and brake gradually!"
+        android:text="@string/brake_slow"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -77,9 +83,10 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="200dp"
         android:layout_marginEnd="6dp"
-        android:text="Slow down to stay safe! Speeding increases your risk of accidents and tickets."
+        android:text="@string/drive_slow2"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewAverageLabel" />
 
@@ -91,7 +98,9 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="260dp"
         android:layout_marginEnd="6dp"
-        android:text="Drive at a steady speed to save fuel and keep your insurance rates low!"
+        android:text="@string/drive_slow"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"

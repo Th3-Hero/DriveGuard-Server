@@ -2,5 +2,4 @@
 
 <network-security-config>
     <!--Set application-wide security config using base-config tag.-->
-    <base-config cleartextTrafficPermitted="true"/>
 </network-security-config>

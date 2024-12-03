@@ -56,11 +56,11 @@ public class DrivingEventsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         if (viewType == VIEW_TYPE_EMPTY) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.empty_deduction_item, parent, false);
+                    .inflate(R.layout.item_empty_deduction, parent, false);
             return new EmptyViewHolder(view);
         } else {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.driving_event_item, parent, false);
+                    .inflate(R.layout.item_driving_event, parent, false);
             return new EventViewHolder(view);
         }
 

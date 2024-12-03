@@ -2,6 +2,8 @@ package com.example.driveguard.activities;
 
 import static com.example.driveguard.GsonUtilities.JsonToWeather;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +37,7 @@ import com.example.driveguard.GsonUtilities;
 //import com.example.driveguard.Manifest;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
+import com.example.driveguard.Utilities;
 import com.example.driveguard.objects.Driver;
 import com.example.driveguard.objects.Weather;
 import com.squareup.picasso.Picasso;
@@ -46,6 +49,7 @@ import okhttp3.Response;
 
 public class HomeScreen extends AppCompatActivity {
     private ImageView weatherIcon;
+    public static String CHANNEL_ID = "Primary_Channel";
     private TextView welcomeMessage;
     private TextView username;
     private TextView score;
@@ -67,9 +71,22 @@ public class HomeScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         //allows the UI thread to perform network calls. We could make them async if this causes issues
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        createNotificationChannel();
+
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);
+        boolean darkMode = preferences.getBoolean("darkMode", false);
+
+        if (darkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            SaveDefaultDarkMode(preferences);
+        }
 
         dataCollector = new DataCollector(getApplicationContext());
         networkManager = new NetworkManager(getApplicationContext());
@@ -83,19 +100,11 @@ public class HomeScreen extends AppCompatActivity {
                     LOCATION_PERMISSION_REQUEST_CODE);
         } else {
             LoadWeatherIcon(networkManager);
-            LoadTimeMessage();
-            LoadDriver(networkManager);
         }
 
-        SharedPreferences preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);
-        boolean darkMode = preferences.getBoolean("darkMode", false);
-
-        if (darkMode){
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            SaveDefaultDarkMode(preferences);
-        }
+        //Display welcome message based on system clock
+        LoadTimeMessage();
+        LoadDriver(networkManager);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -112,7 +121,7 @@ public class HomeScreen extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         int id = item.getItemId();
         if (id == R.id.settings){
-            Intent intent = new Intent(HomeScreen.this, Settings.class);
+            Intent intent = new Intent(HomeScreen.this, SettingsScreen.class);
             startActivity(intent);
         }
         else if (id == R.id.profile){
@@ -122,57 +131,61 @@ public class HomeScreen extends AppCompatActivity {
         }
         else if (id == R.id.notifications) {
             Intent intent;
-            intent = new Intent(HomeScreen.this, HelpScreen.class);
+            intent = new Intent(HomeScreen.this, SuggestionScreen.class);
             startActivity(intent);
         }
         return true;
     }
     @SneakyThrows
-    public void LoadWeatherIcon(@NonNull NetworkManager networkManager){
-        Location location = dataCollector.getStartingLocation();
-        if (location == null){
-            return;
-        }
-        Response weatherRes = networkManager.getWeatherFromLocation(dataCollector.getStartingLocation());
-        if (weatherRes != null && weatherRes.isSuccessful()){
-            assert weatherRes.body() != null;
-            weather = JsonToWeather(weatherRes.body().string());
-            weatherIcon = findViewById(R.id.weather);
-            Picasso.get()
-                    .load(weather.getIconUrl())
-                    .placeholder(R.drawable.icon_sun)
-                    .into(weatherIcon);
+    public void LoadWeatherIcon(@NonNull NetworkManager networkManager) {
+        weatherIcon = findViewById(R.id.weather);
+        if (Utilities.checkConnection(this)) {
+            Location location = dataCollector.getStartingLocation();
+            if (location == null) {
+                return;
+            }
+            Response weatherRes = networkManager.getWeatherFromLocation(dataCollector.getStartingLocation());
+            if (weatherRes != null && weatherRes.isSuccessful()) {
+                assert weatherRes.body() != null;
+                weather = JsonToWeather(weatherRes.body().string());
+                Picasso.get()
+                        .load(weather.getIconUrl())
+                        .placeholder(R.drawable.icon_sun)
+                        .into(weatherIcon);
+            }
         }
     }
     public void LoadTimeMessage(){
         welcomeMessage = findViewById(R.id.greeting);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            LocalDateTime current = LocalDateTime.now();
-            if (current.getHour() < 4){
-                welcomeMessage.setText(R.string.go_sleep);
-            } else if (current.getHour() < 12) {
-                welcomeMessage.setText(R.string.good_morning);
-            } else if (current.getHour() < 18) {
-                welcomeMessage.setText(R.string.good_afternoon);
-            } else {
-                welcomeMessage.setText(R.string.good_evening);
-            }
-        } else{
-            welcomeMessage.setText(R.string.good_day);
+        LocalDateTime current = LocalDateTime.now();
+        if (current.getHour() < 4){
+            welcomeMessage.setText(R.string.go_sleep);
+        } else if (current.getHour() < 12) {
+            welcomeMessage.setText(R.string.good_morning);
+        } else if (current.getHour() < 18) {
+            welcomeMessage.setText(R.string.good_afternoon);
+        } else {
+            welcomeMessage.setText(R.string.good_evening);
         }
     }
     @SneakyThrows
-    public void LoadDriver(@NonNull NetworkManager networkManager){
-        Response response = networkManager.getDriver();
+    public void LoadDriver(@NonNull NetworkManager networkManager) {
         username = findViewById(R.id.username);
         score = findViewById(R.id.score);
         scoreMessage = findViewById(R.id.score_message);
-        if (response!= null && response.isSuccessful()){
-            assert response.body() != null;
-            Driver driver = GsonUtilities.JsonToDriver(response.body().string());
-            if (driver != null){
-                username.setText(driver.getUsername());
-                score.setText(String.valueOf(driver.getOverallScore()));
+        if (Utilities.checkConnection(this)) {
+            Response response = networkManager.getDriver();
+            if (response != null && response.isSuccessful()) {
+                assert response.body() != null;
+                Driver driver = GsonUtilities.JsonToDriver(response.body().string());
+                if (driver != null) {
+                    username.setText(driver.getUsername());
+                    score.setText(String.valueOf(driver.getOverallScore()));
+                }
+            } else {
+                username.setText(R.string.guest);
+                score.setVisibility(View.INVISIBLE);
+                scoreMessage.setVisibility(View.INVISIBLE);
             }
         }
         else {
@@ -201,8 +214,19 @@ public class HomeScreen extends AppCompatActivity {
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
                 Toast.makeText(this, "Functionality will be limited", Toast.LENGTH_SHORT).show();
             }
-            LoadTimeMessage();
-            LoadDriver(networkManager);
         }
+    }
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is not in the Support Library.
+        CharSequence name = "DriveGuard Notificaion Channel";
+        String description = "DriveGuards Notification Channel for sending notification related to trips";
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+        channel.setDescription(description);
+        // Register the channel with the system; you can't change the importance
+        // or other notification behaviors after this.
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
     }
 }

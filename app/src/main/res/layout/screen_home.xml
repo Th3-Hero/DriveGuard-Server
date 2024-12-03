@@ -48,7 +48,7 @@
         android:layout_marginEnd="21dp"
         android:layout_marginBottom="244dp"
         android:backgroundTint="@color/navy"
-        android:src="@drawable/img"
+        android:src="@drawable/logo_drive_guard"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -62,7 +62,7 @@
         android:layout_marginBottom="656dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/icon_car" />
+        app:srcCompat="@drawable/icon_sun" />
 
     <TextView
         android:id="@+id/username"

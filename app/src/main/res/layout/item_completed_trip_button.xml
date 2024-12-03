@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp"
+    android:padding="8dp"
     android:gravity="center_vertical">
 
     <Button
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         style="@style/primary_button"
         android:textColor="@color/white"
-        android:padding="12dp"
+        android:padding="10dp"
         android:text="Trip Summary"
         android:textSize="14sp" />
 

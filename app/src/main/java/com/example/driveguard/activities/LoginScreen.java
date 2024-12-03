@@ -8,12 +8,15 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.NetworkManager;
@@ -40,6 +43,9 @@ public class LoginScreen extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
         networkManager = new NetworkManager(getApplicationContext());
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         ButtonDeck.SetUpButtons(this);
 
@@ -104,6 +110,28 @@ public class LoginScreen extends AppCompatActivity {
                 }
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        int id = item.getItemId();
+        if (id == R.id.settings){
+            Intent intent = new Intent(this, SettingsScreen.class);
+            startActivity(intent);
+        }
+        else if (id == R.id.profile){
+            Intent intent = new Intent(this, ProfileScreen.class);
+            startActivity(intent);
+        }
+        else if (id == R.id.notifications){
+            Intent intent = new Intent(this, SuggestionScreen.class);
+            startActivity(intent);
+        }
+        return true;
     }
 public void SaveCredentials(@NonNull Credentials credentials){
     SharedPreferences preferences = getSharedPreferences(getString(R.string.preferences_file), Context.MODE_PRIVATE);

@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/switch1"
+        android:id="@+id/notification_switch"
         android:layout_width="297dp"
         android:layout_height="92dp"
         android:layout_marginStart="57dp"
@@ -38,7 +38,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/switch2"
+        android:id="@+id/data_switch"
         android:layout_width="297dp"
         android:layout_height="92dp"
         android:layout_marginStart="57dp"

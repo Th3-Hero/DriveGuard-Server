@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <!-- Required only when requesting background location access on Android 10 (API level 29) -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
@@ -22,7 +23,6 @@
         android:roundIcon="@mipmap/drive_guard_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
 
 
@@ -38,9 +38,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.Settings"/>
+        <activity android:name=".activities.SettingsScreen"/>
         <activity
-            android:name=".activities.SignupScreen"
+            android:name=".activities.SignUpScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.example.driveguard.SIGNUP" />
@@ -64,7 +64,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.ScoreScreen"
+            android:name=".activities.ScoreDialog"
             android:exported="true"
             tools:ignore="Instantiatable">
             <intent-filter>
@@ -89,7 +89,15 @@
             </intent-filter>
 
         </activity>
+        <activity
+            android:name=".activities.SuggestionScreen"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
 
+        </activity>
     </application>
 
 </manifest>

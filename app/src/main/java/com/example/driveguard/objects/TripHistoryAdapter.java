@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.driveguard.GsonUtilities;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
-import com.example.driveguard.activities.ScoreScreen;
+import com.example.driveguard.activities.ScoreDialog;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,18 +44,18 @@ public class TripHistoryAdapter extends RecyclerView.Adapter<TripHistoryAdapter.
     @Override
     public TripHistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.trip_history_button, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_completed_trip_button, parent, false);
         return new TripHistoryViewHolder(view);
 
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     @Override
     public void onBindViewHolder(@NonNull TripHistoryViewHolder holder, int position) {
 
         CompletedTrip completedTrip = completedTrips.get(position);
 
-        holder.tripSummaryButton.setText("Duration: " + completedTrip.getDuration().getFormattedTime() + "\nScore: " + completedTrip.getScore() + "\nDistance: " + completedTrip.getDistanceKM() + " km");
+        holder.tripSummaryButton.setText("Duration: " + completedTrip.getDuration().getFormattedTime() + "\nScore: " + completedTrip.getScore() + "\nDistance: " + String.format("%.2f", completedTrip.getDistanceKM()) + " km");
 
         networkManager = new NetworkManager(context.getApplicationContext());
 
@@ -75,7 +75,7 @@ public class TripHistoryAdapter extends RecyclerView.Adapter<TripHistoryAdapter.
 
                 if(trip != null) {
 
-                    ScoreScreen dialog = new ScoreScreen();
+                    ScoreDialog dialog = new ScoreDialog();
                     dialog.setTrip(trip);
                     dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "TrpSummaryDialog");
 

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.driveguard.GsonUtilities;
 import com.example.driveguard.NetworkManager;
 import com.example.driveguard.R;
+import com.example.driveguard.Utilities;
 import com.example.driveguard.objects.Address;
 import com.example.driveguard.objects.DrivingEventsAdapter;
 import com.example.driveguard.objects.ServerLocation;
@@ -37,7 +38,7 @@ import okhttp3.Response;
 // call the score as a dialogue box, once clicked it disappears
 // that trip will be passed to the trip history which then displays it as an item (includes start time, end time, start location and end location)
 
-public class ScoreScreen extends DialogFragment {
+public class ScoreDialog extends DialogFragment {
     private Trip trip;
     private DrivingEventsAdapter drivingEventsAdapter;
 
@@ -49,12 +50,12 @@ public class ScoreScreen extends DialogFragment {
 
     }
 
-    @SuppressLint({"SetTextI18n", "NewApi"})
+    @SuppressLint({"SetTextI18n", "NewApi", "DefaultLocale"})
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View dialogView = inflater.inflate(R.layout.average_score_screen, (ViewGroup) container, false);
+        View dialogView = inflater.inflate(R.layout.dialog_trip_summary, (ViewGroup) container, false);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -73,11 +74,11 @@ public class ScoreScreen extends DialogFragment {
             scoreTextView.setText(String.valueOf(trip.getScore()));
 
             if(trip.getStartTime() != null) {
-                startTimeTextView.setText(formatDate(trip.getStartTime()));
+                startTimeTextView.setText("Started: " + Utilities.formatTime(trip.getStartTime()));
             }
 
             if (trip.getEndTime() != null) {
-                endTimeTextView.setText(formatDate(trip.getEndTime()));
+                endTimeTextView.setText("Ended: " + Utilities.formatTime(trip.getEndTime()));
             }
 
             if(trip.getStartLocation() != null) {
@@ -96,7 +97,7 @@ public class ScoreScreen extends DialogFragment {
 
             }
 
-            distanceTextView.setText(trip.getDistance() + " km");
+            distanceTextView.setText(String.format("%.2f", trip.getDistance()) + " km");
 
             // adding deductions dynamically (some people drive perfectly)
 
@@ -153,7 +154,6 @@ public class ScoreScreen extends DialogFragment {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public String formatDate(String time){
         String formattedDate = time;
 

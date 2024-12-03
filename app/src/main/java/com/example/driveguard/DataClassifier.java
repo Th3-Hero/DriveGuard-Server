@@ -51,7 +51,7 @@ public class DataClassifier
      *             long timestamp (time of event)
      * Returns: N/A
      */
-    public Map<String, Boolean> classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, android.location.Location location, Weather currentWeather, int postedSpeedLimit, Map<String, Boolean> eventHasBeenDetected)
+    public Map<String, Boolean> classifyData(float speed, float gForce, float turningRate, String timestamp, NetworkManager networkManager, android.location.Location location, Weather currentWeather, int postedSpeedLimit, Map<String, Boolean> eventHasBeenDetected, float decelerationRate)
     {
         // Classify and handle Speeding Event
         if (speed > this.postedSpeedLimit) {
@@ -100,7 +100,7 @@ public class DataClassifier
         }
 
         // Classify and handle Hard Braking Event
-        HardBrakeEvent brakeEvent = new HardBrakeEvent(gForce, timestamp, location, currentWeather);
+        HardBrakeEvent brakeEvent = new HardBrakeEvent(decelerationRate, timestamp, location, currentWeather);
         if (brakeEvent.isHarshBraking() && Boolean.FALSE.equals(eventHasBeenDetected.get("brake"))) {
             eventHasBeenDetected.put("brake", true);
             Response eventResponse = networkManager.addEventToTrip(

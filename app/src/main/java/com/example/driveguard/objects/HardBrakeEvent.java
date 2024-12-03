@@ -14,6 +14,7 @@ import android.location.Location;
 public class HardBrakeEvent extends Event
 {
     private float gForce;
+    private float brakingRate;
 
     /* Method Name: HardBrakeEvent
      * Method Author: Brooke Cronin
@@ -22,10 +23,10 @@ public class HardBrakeEvent extends Event
      *             Location location (the location of the event)
      * Returns: N/A
      */
-    public HardBrakeEvent(float gForce, String timestamp, android.location.Location location, Weather weather)
+    public HardBrakeEvent(float brakingRate, String timestamp, android.location.Location location, Weather weather)
     {
         super(timestamp, location, weather);
-        this.gForce = gForce;
+        this.brakingRate = brakingRate;
     }
 
     /* Method Name: getGForce
@@ -38,16 +39,17 @@ public class HardBrakeEvent extends Event
     {
         return this.gForce;
     }
+    public float getBrakingRate () {return this.brakingRate;}
 
     /* Method Name: isHarshBraking
      * Method Author: Brooke Cronin
      * Description: Checks if the braking is considered harsh (g-force greater than 1.0).
      * Parameters: N/A
-     * Returns: boolean (true if g-force is less than -0.4, indicating harsh braking)
+     * Returns: boolean (true if g-force is less than 0.4, indicating harsh braking)
      */
     public boolean isHarshBraking()
     {
-        return this.gForce < -0.4;
+        return this.brakingRate <= -0.4;
     }
 
     /* Method Name: deductPoints
@@ -61,7 +63,7 @@ public class HardBrakeEvent extends Event
     {
         if (isHarshBraking())
         {
-            return (int) (this.getGForce() * 10 + this.getWeatherDeduction());
+            return (int) (this.brakingRate * -10 + this.getWeatherDeduction());
         }
         return 0;
     }

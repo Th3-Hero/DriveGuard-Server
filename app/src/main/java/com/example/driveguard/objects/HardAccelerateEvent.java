@@ -61,7 +61,7 @@ public class HardAccelerateEvent extends Event
     {
         if (isHarshAcceleration())
         {
-            return (int) (this.gForce * 10 + this.getWeatherDeduction());
+            return (int) (this.gForce * 4 + this.getWeatherDeduction());
         }
         return 0;
     }

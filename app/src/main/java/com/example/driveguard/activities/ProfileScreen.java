@@ -3,20 +3,22 @@ package com.example.driveguard.activities;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.example.driveguard.ButtonDeck;
 import com.example.driveguard.GsonUtilities;
@@ -33,7 +35,11 @@ import okhttp3.Response;
 public class ProfileScreen extends AppCompatActivity {
     private Driver driver;
     private TextView usernameText;
-    private Button loginButton, logoutButton, signupButton, changeUsernameButton, changePasswordButton;
+    private Button loginButton;
+    private Button logoutButton;
+    private Button signupButton;
+    private Button changeUsernameButton;
+    private Button changePasswordButton;
     private NetworkManager networkManager;
     private Credentials credentials;
 
@@ -57,17 +63,24 @@ public class ProfileScreen extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         logoutButton = findViewById(R.id.logoutButton);
         signupButton = findViewById(R.id.signupButton);
+        Button deleteButton = findViewById(R.id.main_delete_button);
 
         changeUsernameButton = findViewById(R.id.changeUsernameButton);
         changePasswordButton = findViewById(R.id.changePasswordButton);
 
-        Response driverResponse = networkManager.getDriver();
+        if (Utilities.checkConnection(this)) {
+            Response driverResponse = networkManager.getDriver();
 
-        if (driverResponse != null && driverResponse.isSuccessful()){
-            assert driverResponse.body() != null;
-            driver = GsonUtilities.JsonToDriver(driverResponse.body().string());
-        } else {
+            if (driverResponse != null && driverResponse.isSuccessful()) {
+                assert driverResponse.body() != null;
+                driver = GsonUtilities.JsonToDriver(driverResponse.body().string());
+            } else {
+                driver = new Driver();
+            }
+        }else {
             driver = new Driver();
+            loginButton.setVisibility(View.GONE);
+            signupButton.setVisibility(View.GONE);
         }
 
         // Checking credentials
@@ -81,14 +94,13 @@ public class ProfileScreen extends AppCompatActivity {
             changePasswordButton.setVisibility(View.VISIBLE);
             changeUsernameButton.setOnClickListener(v -> showChangeUsernameDialog());
             changePasswordButton.setOnClickListener(v -> showChangePasswordDialog());
-
+            deleteButton.setOnClickListener(v -> showDeleteAccountDialog());
         } else {
             usernameText.setText("Guest");
-            loginButton.setVisibility(View.VISIBLE);
             logoutButton.setVisibility(View.GONE);
-            signupButton.setVisibility(View.VISIBLE);
             changeUsernameButton.setVisibility(View.GONE);
             changePasswordButton.setVisibility(View.GONE);
+            deleteButton.setVisibility(View.GONE);
         }
 
         loginButton.setOnClickListener(v -> navigateToLogin());
@@ -97,6 +109,28 @@ public class ProfileScreen extends AppCompatActivity {
 
 
 
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        int id = item.getItemId();
+        if (id == R.id.settings){
+            Intent intent = new Intent(this, SettingsScreen.class);
+            startActivity(intent);
+        }
+        else if (id == R.id.profile){
+            Intent intent = new Intent(this, ProfileScreen.class);
+            startActivity(intent);
+        }
+        else if (id == R.id.notifications){
+            Intent intent = new Intent(this, SuggestionScreen.class);
+            startActivity(intent);
+        }
+        return true;
     }
 
     private void showChangeUsernameDialog() {
@@ -179,6 +213,63 @@ public class ProfileScreen extends AppCompatActivity {
         dialog.show();
 
     }
+    private void showDeleteAccountDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_delete_account, null);
+
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        Button yes = view.findViewById(R.id.yes_button);
+        Button no = view.findViewById(R.id.no_button);
+        Button delete = view.findViewById(R.id.delete_button);
+        TextView question = view.findViewById(R.id.delete_question);
+        TextView confirm = view.findViewById(R.id.delete_confirm);
+        EditText passwordInput = view.findViewById(R.id.password_delete);
+
+        no.setOnClickListener(v -> dialog.dismiss());
+
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                yes.setVisibility(View.GONE);
+                no.setVisibility(View.GONE);
+                delete.setVisibility(View.VISIBLE);
+                question.setVisibility(View.GONE);
+                confirm.setVisibility(View.VISIBLE);
+                passwordInput.setVisibility(View.VISIBLE);
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String password = String.valueOf(passwordInput.getText());
+                if (TextUtils.isEmpty(password)){
+                    Toast.makeText(ProfileScreen.this, "Please Enter Your Password", Toast.LENGTH_SHORT).show();
+                }else{
+                    Response response = networkManager.DeleteAccount(password);
+
+                    if (response != null && response.isSuccessful()){
+                        Toast.makeText(ProfileScreen.this, "Account Successfully Deleted", Toast.LENGTH_SHORT).show();
+                        recreate();
+                    } else {
+                        assert response != null;
+                        if (response.code() == 401) {
+                            Toast.makeText(ProfileScreen.this, "Invalid Password", Toast.LENGTH_SHORT).show();
+                        } else if (response.code() == 400) {
+                            Toast.makeText(ProfileScreen.this, "System Error", Toast.LENGTH_SHORT).show();
+                        } else if (response.code() == 404) {
+                            Toast.makeText(ProfileScreen.this, "Account Not Found", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+            }
+        });
+        dialog.show();
+    }
 
     private void navigateToLogin() {
 
@@ -188,7 +279,7 @@ public class ProfileScreen extends AppCompatActivity {
     }
 
     private void navigateToSignUp(){
-        Intent intent = new Intent(ProfileScreen.this, SignupScreen.class);
+        Intent intent = new Intent(ProfileScreen.this, SignUpScreen.class);
         startActivity(intent);
     }
 
@@ -208,6 +299,7 @@ public class ProfileScreen extends AppCompatActivity {
 
             Utilities.DeleteCredentials(getApplicationContext());
             Toast.makeText(this, "Logged out.", Toast.LENGTH_SHORT).show();
+            recreate();
             usernameText.setText("Guest");
             loginButton.setVisibility(View.VISIBLE);
             logoutButton.setVisibility(View.GONE);
@@ -219,32 +311,4 @@ public class ProfileScreen extends AppCompatActivity {
 
         }
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
-        MenuItem item = menu.findItem(R.id.profile);
-
-        if (item != null && item.getIcon() != null){
-            Drawable icon = DrawableCompat.wrap(item.getIcon());
-
-            DrawableCompat.setTint(icon, getResources().getColor(R.color.darkGrey));
-            item.setIcon(icon);
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item){
-        int id = item.getItemId();
-        if (id == R.id.settings){
-            Intent intent = new Intent(this, Settings.class);
-            startActivity(intent);
-        }
-        else if (id == R.id.profile){
-            Intent intent;
-            intent = new Intent(this, ProfileScreen.class);
-            startActivity(intent);
-        }
-        return true;
-    }
-
 }
