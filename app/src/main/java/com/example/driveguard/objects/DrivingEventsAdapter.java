@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.driveguard.R;
+import com.example.driveguard.Utilities;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
@@ -73,7 +74,7 @@ public class DrivingEventsAdapter extends RecyclerView.Adapter<RecyclerView.View
             EventViewHolder eventHolder = (EventViewHolder) holder;
             eventHolder.eventTypeTextView.setText("Type: " + formatType(event.getEventType()));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                eventHolder.eventTimeTextView.setText("Time: " + formatDate(event.getEventTime()));
+                eventHolder.eventTimeTextView.setText("Time: " + Utilities.formatTime(event.getEventTime()));
             }
             eventHolder.eventPointTextView.setText("Points deducted: " + event.getPointsDeducted());
         }

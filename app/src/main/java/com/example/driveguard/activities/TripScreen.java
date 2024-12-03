@@ -170,6 +170,7 @@ public class TripScreen extends AppCompatActivity {
                                 Toast.makeText(TripScreen.this, "ERROR: cancelling previous trip", Toast.LENGTH_LONG).show();
                             }
                             startButton.setChecked(false);
+                            ButtonDeck.ToggleButtons(TripScreen.this);
                         } else { // Set button back to unchecked
                             Toast.makeText(TripScreen.this, "ERROR: " + response.code(), Toast.LENGTH_LONG).show();
                             startButton.setChecked(false);
@@ -266,8 +267,7 @@ public class TripScreen extends AppCompatActivity {
     // Method to check for driving events
     private void checkForEvents() {
         // Get current data from the DataCollector
-        //float speed = dataCollector.getSpeed();// Current speed
-        float speed = 70f;
+        float speed = dataCollector.getSpeed();// Current speed
         float gForce = dataCollector.getAcceleration();      // Current g-force
         float turningRate = dataCollector.getTurningRate(); // Current turning rate
         float brakingRate = dataCollector.getDecelerationRate();
@@ -284,22 +284,22 @@ public class TripScreen extends AppCompatActivity {
         String l = "Speed Limit: " + String.valueOf(getPostedSpeedLimit());
         limitText.setText(l);
 
-        if(this.getTimeLastChecked15Sec().getTime() >= this.getTimeLastChecked15Sec().getTime() + 15 * 1000)
-        {
+        if (this.getTimeLastChecked15Sec().getTime() + 15 * 1000 <= new Date().getTime()) {
             this.getEventHasBeenDetected().put("speed", false);
             this.getEventHasBeenDetected().put("accelerate", false);
             this.getEventHasBeenDetected().put("brake", false);
             this.getEventHasBeenDetected().put("turn", false);
+            this.setTimeLastChecked15Sec(new Date());
         }
 
         // Use NetworkManager for additional data retrieval
-        //NetworkManager networkManager = new NetworkManager(getApplicationContext());
-        if(this.getTimeLastChecked30Min().getTime() >= this.getTimeLastChecked30Min().getTime() + 30 * 60 * 1000)
-        {
-                RequestWeather(location);
-                RequestRoad(location);
+        // NetworkManager networkManager = new NetworkManager(getApplicationContext());
+        if (this.getTimeLastChecked30Min().getTime() + 30 * 60 * 1000 <= new Date().getTime()) {
+            RequestWeather(location);
+            RequestRoad(location);
             this.setTimeLastChecked30Min(new Date());
         }
+
         dataClassifier = new DataClassifier(this.getPostedSpeedLimit());
         // Classify the data for events
 
